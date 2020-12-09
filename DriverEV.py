@@ -339,6 +339,21 @@ class DriverEV(Driver):
 
         return vehicleDict
 
+    # GET A LIST OF ALL EMERGENCY VEHICLES AND THEIR DISTANCE TO INTERSECTION AND QUEUE LENGTH AHEAD
+    def getEVs(self, trafficLight) -> dict:
+        vehicleList = self.getVehicleList(trafficLight)
+        EVs = {}
+
+        # Loop to construct list of emergency vehicles
+        for lane in vehicleList:
+            EVs[lane] = []
+
+            for veh in vehicleList[lane]:
+                if "_EV" in veh["ID"]:
+                    EVs[lane].append(veh)
+
+        return EVs
+
                         if "_Stopped_L" in veh:
                             vehIDSplit = veh.split("_")
                         if "_Stopped_S" in veh:
