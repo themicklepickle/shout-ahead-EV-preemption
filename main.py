@@ -7,7 +7,7 @@ import datetime
 import timeit
 import time
 
-from Driver import Driver
+from DriverEV import DriverEV
 import EvolutionaryLearner
 
 
@@ -58,8 +58,8 @@ if __name__ == "__main__":
 
         print("----- Start time:", datetime.datetime.now())
         setUpTuple = InitSetUp.run(sumoNetworkName, individualRunsPerGen)
-        simRunner = Driver(sumoCmd, setUpTuple, maxGreenPhaseTime, maxYellowPhaseTime, maxSimulationTime,
-                           maxGreenAndYellowPhaseTime_UDRule, maxRedPhaseTime_UDRule, assignGreenPhaseToSingleWaitingPhase_UDRule)
+        simRunner = DriverEV(sumoCmd, setUpTuple, maxGreenPhaseTime, maxYellowPhaseTime, maxSimulationTime,
+                             maxGreenAndYellowPhaseTime_UDRule, maxRedPhaseTime_UDRule, assignGreenPhaseToSingleWaitingPhase_UDRule)
         generations = 1
         episode = 0
         allIndividualsTested = False
@@ -90,8 +90,8 @@ if __name__ == "__main__":
                 elif generations >= 15:
                     maxSimulationTime = 4000
 
-                simRunner = Driver(sumoCmd, setUpTuple, maxGreenPhaseTime, maxYellowPhaseTime, maxSimulationTime,
-                                   maxGreenAndYellowPhaseTime_UDRule, maxRedPhaseTime_UDRule, assignGreenPhaseToSingleWaitingPhase_UDRule)
+                simRunner = DriverEV(sumoCmd, setUpTuple, maxGreenPhaseTime, maxYellowPhaseTime, maxSimulationTime,
+                                     maxGreenAndYellowPhaseTime_UDRule, maxRedPhaseTime_UDRule, assignGreenPhaseToSingleWaitingPhase_UDRule)
 
                 print('----- Episode {}'.format(episode+1),
                       "of GENERATION {} of {}".format(generations, totalGenerations))
