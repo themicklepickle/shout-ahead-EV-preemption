@@ -456,7 +456,7 @@ class Driver:
             for lane in state:
                 if lane in trafficLight.getLanes():
                     for veh in state[lane]:
-                        if "_L" in veh:
+                        if "_Stopped_L" in veh:
                             vehIDSplit = veh.split("_")
                             vehID = vehIDSplit[0]
                             if traci.vehicle.getWaitingTime(vehID) > maxWaitTime:
