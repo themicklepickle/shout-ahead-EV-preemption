@@ -354,6 +354,17 @@ class DriverEV(Driver):
 
         return EVs
 
+    # GET LEADING EMERGENCY VEHICLE
+    def getLeadingEV(self, trafficLight, lane) -> dict:
+        EVs = self.getEVs(trafficLight)
+        # since vehicleList is sorted based on queue length, EVs is sorted as well
+        if EVs[lane] != []:
+            leadingEV = EVs[lane][0]
+        else:
+            leadingEV = None
+
+        return leadingEV
+
                         if "_Stopped_L" in veh:
                             vehIDSplit = veh.split("_")
                         if "_Stopped_S" in veh:
