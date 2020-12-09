@@ -20,6 +20,32 @@ from pprint import pprint
 #       whereas in Driver.py vehID was the split tuple
 
 class DriverEV(Driver):
+    # def __init__(self, sumoCmd, setUpTuple, maxGreenPhaseTime, maxYellowPhaseTime, maxSimulationTime, maxGreenAndYellow_UDRule, maxRedPhaseTime_UDRule, assignGreenPhaseToSingleWaitingPhase):
+    #     super().__init__(sumoCmd, setUpTuple, maxGreenPhaseTime, maxYellowPhaseTime, maxSimulationTime, maxGreenAndYellow_UDRule, maxRedPhaseTime_UDRule, assignGreenPhaseToSingleWaitingPhase)
+    #     self.lanes = {
+    #         "T-intersection": {
+    #             "left": [
+    #                 "bend2T-intersection_LTL_1"
+    #             ],
+    #             "straight/right": [
+    #                 "SEB2T-intersection_0",
+    #                 "SEB2T-intersection_1",
+    #                 "bend2T-intersection_LTL_0"
+    #             ]
+    #         },
+    #         "four-arm": {
+    #             "left": [
+    #                 "WB2four-arm_LTL_1",
+    #                 "NWB2four-arm_LTL_1",
+    #                 "incoming2four-arm_LTL_1",
+
+    #             ],
+    #             "straight/right": [
+
+    #             ]
+    #         }
+    #     }
+
     # CONTAINS MAIN TRACI SIMULATION LOOP
     def run(self):
         numOfRSRulesApplied = 0
@@ -309,7 +335,208 @@ class DriverEV(Driver):
                                           "queue": i})
 
         return vehicleList
-                        if "_Stopped_L" in veh:
-                            vehIDSplit = veh.split("_")
+
+    # CONVERT VEHICLE LIST TO A SINGLE DICT WITHOUT SPECIFIC LANES
+    def getVehicleDict(self, trafficLight):
+        vehicleList = self.getVehicleList(trafficLight)
+        vehicleDict = {}
+
+        # Loop through vehicle list to map each vehicle's ID to to a dict of distance and queue
+        for lane in vehicleList:
+            for veh in vehicleList[lane]:
+                vehicleDict[veh["ID"]] = {"distance": veh["distance"],
+                                          "queue": veh["queue"],
+                                          "lane": lane}
+
+        return vehicleDict
+
+    # CONVERT VEHICLE LIST TO A SINGLE DICT WITH SPECIFIC LANES
+    def getVehicleDictWithLanes(self, trafficLight):
+        vehicleList = self.getVehicleList(trafficLight)
+        vehicleDict = {}
+
+        # Loop through vehicle list to map each vehicle's ID to to a dict of distance and queue
+        for lane in vehicleList:
+            vehicleDict[lane] = {}
+            for veh in vehicleList[lane]:
+                vehicleDict[lane][veh["ID"]] = {"distance": veh["distance"],
+                                                "queue": veh["queue"],
+                                                "lane": lane}
+
+        return vehicleDict
+
+    # GET A LIST OF ALL EMERGENCY VEHICLES AND THEIR DISTANCE TO INTERSECTION AND QUEUE LENGTH AHEAD
+    def getEVs(self, trafficLight) -> dict:
+        vehicleList = self.getVehicleList(trafficLight)
+        EVs = {}
+
+        # Loop to construct list of emergency vehicles
+        for lane in vehicleList:
+            EVs[lane] = []
+
+            for veh in vehicleList[lane]:
+                if "_EV" in veh["ID"]:
+                    EVs[lane].append(veh)
+
+        return EVs
+
+    # GET LEADING EMERGENCY VEHICLE
+    def getLeadingEV(self, trafficLight, lane) -> dict:
+        EVs = self.getEVs(trafficLight)
+        # since vehicleList is sorted based on queue length, EVs is sorted as well
+        if EVs[lane] != []:
+            leadingEV = EVs[lane][0]
+        else:
+            leadingEV = None
+
+        return leadingEV
+
+    # GET A VEHICLE'S TRAFFIC DENSITY (vehicles/distance)
+    def getTrafficDensity(self, trafficLight, veh) -> float:  # TODO: make a vehicle class
+        vehicleDict = self.getVehicleDict(trafficLight)
+        veh = vehicleDict[veh]
+
+        distanceToIntersection = veh["distance"]
+        queueLengthAhead = veh["queue"]
+
+        trafficDensity = queueLengthAhead / distanceToIntersection  # TODO: avoid division by 0 and normalize value
+
+        return trafficDensity
+
+    # GET A VEHICLE'S DISTANCE TO THE INTERSECTION
+    def getDistanceToIntersection(self, trafficLight, veh):  # NOTE: can also be done using traci method
+        vehicleDict = self.getVehicleDict(trafficLight)
+        veh = vehicleDict[veh]
+
+        return veh["distance"]
+
+    # GET THE LEADING EMERGENCY VEHICLE'S QUEUE LENGTH AHEAD
+    def getQueueLengthAhead(self, trafficLight, veh):
+        vehicleDict = self.getVehicleDict(trafficLight)
+        veh = vehicleDict[veh]
+
+        return veh["queue"]
+
+    # GET THE LEADING EMERGENCY VEHICLE'S LANE ID
+    def getEVLaneID(self, trafficLight):
+        # TODO: check if it possible to store the leading EV as an attribute of a trafficLight object
+        leadingEV = self.getLeadingEV(trafficLight)
+        vehID = leadingEV["ID"].split("_")[0]
+
+        return traci.vehicle.getLaneID(vehID)
+
+#---------------------------------- EV PREDICATES END ----------------------------------#
+
+    def getPredicateParameters(self, trafficLight, predicate):
+        if predicate == "longestTimeWaitedToProceedStraight":
+            # Find max wait time for relevant intersection
+            maxWaitTime = 0
+            # Retrieve state of specified intersection
+            state = self.getState(trafficLight)
+            for lane in state:
+                if lane in trafficLight.getLanes():
+                    for veh in state[lane]:
                         if "_Stopped_S" in veh:
                             vehIDSplit = veh.split("_")
+                            vehID = vehIDSplit[0]
+                            if traci.vehicle.getWaitingTime(vehID) > maxWaitTime:
+                                maxWaitTime = traci.vehicle.getWaitingTime(
+                                    vehID)
+            return maxWaitTime
+
+        elif predicate == "longestTimeWaitedToTurnLeft":
+            # Find max wait time for relevant intersection
+            maxWaitTime = 0
+            # Retrieve state of specified intersection
+            state = self.getState(trafficLight)
+            for lane in state:
+                if lane in trafficLight.getLanes():
+                    for veh in state[lane]:
+                        if "_Stopped_L" in veh:
+                            vehIDSplit = veh.split("_")
+                            vehID = vehIDSplit[0]
+                            if traci.vehicle.getWaitingTime(vehID) > maxWaitTime:
+                                maxWaitTime = traci.vehicle.getWaitingTime(
+                                    vehID)
+            return maxWaitTime
+
+        elif predicate == "numCarsWaitingToProceedStraight":
+            carsWaiting = 0
+            # Retrieve state of specified intersection
+            state = self.getState(trafficLight)
+            for lane in state:
+                if lane in trafficLight.getLanes():
+                    for veh in state[lane]:
+                        if "_Stopped_S" in veh:
+                            vehIDSplit = veh.split("_")
+                            vehID = vehIDSplit[0]
+                            if traci.vehicle.getWaitingTime(vehID) > 0:
+                                carsWaiting += 1
+            return carsWaiting
+
+        elif predicate == "numCarsWaitingToTurnLeft":
+            carsWaiting = 0
+            # Retrieve state of specified intersection
+            state = self.getState(trafficLight)
+            for lane in state:
+                if lane in trafficLight.getLanes():
+                    for veh in state[lane]:
+                        if "_Stopped_L" in veh:
+                            vehIDSplit = veh.split("_")
+                            vehID = vehIDSplit[0]
+                            if traci.vehicle.getWaitingTime(vehID) > 0:
+                                carsWaiting += 1
+
+            return carsWaiting
+
+        elif predicate == "timeSpentInCurrentPhase":
+            return traci.trafficlight.getPhaseDuration(trafficLight.getName())
+
+        elif "verticalPhaseIs" in predicate or "horizontalPhaseIs" in predicate or "northSouthPhaseIs" in predicate or "southNorthPhaseIs" in predicate or "eastWestPhaseIs" in predicate or "westEastPhaseIs" in predicate:
+            return traci.trafficlight.getPhaseName(trafficLight.getName()).split("_")
+
+        elif "maxGreenPhaseTimeReached" == predicate:
+            parameters = []
+            parameters.append(
+                traci.trafficlight.getPhaseName(trafficLight.getName()))
+
+            # Get phase (G or Y) from phase name
+            getPhase = parameters[0].split("_")
+            parameters[0] = getPhase[2]
+
+            parameters.append(traci.trafficlight.getPhaseDuration(trafficLight.getName(
+            )) - (traci.trafficlight.getNextSwitch(trafficLight.getName()) - traci.simulation.getTime()))
+            parameters.append(self.maxGreenPhaseTime)
+
+            return parameters
+
+        elif "maxYellowPhaseTimeReached" == predicate:
+            parameters = []
+            parameters.append(traci.trafficlight.getPhaseName(
+                trafficLight.getName()))  # Get traffic light phase name
+
+            # Get phase (G or Y) from phase name
+            getPhase = parameters[0].split("_")
+            parameters[0] = getPhase[2]
+
+            parameters.append(traci.trafficlight.getPhaseDuration(trafficLight.getName(
+            )) - (traci.trafficlight.getNextSwitch(trafficLight.getName()) - traci.simulation.getTime()))
+            parameters.append(self.maxYellowPhaseTime)
+
+            return parameters
+
+#------------------------------------ EV PREDICATES ------------------------------------#
+
+        elif "isEVApproaching" == predicate:
+            return self.getIsEVApproaching(trafficLight)
+
+        elif "EVDistanceToIntersection" == predicate:
+            return self.getDistanceToIntersection(trafficLight)
+
+        elif "EVTrafficDensity" == predicate:
+            return self.getTrafficDensity(trafficLight)
+
+        elif "EVLaneID" == predicate:
+            return self.getEVLaneID(trafficLight)
+
+#---------------------------------- EV PREDICATES END ----------------------------------#
