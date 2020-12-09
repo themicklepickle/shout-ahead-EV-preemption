@@ -309,6 +309,36 @@ class DriverEV(Driver):
                                           "queue": i})
 
         return vehicleList
+
+    # CONVERT VEHICLE LIST TO A SINGLE DICT WITHOUT SPECIFIC LANES
+    def getVehicleDict(self, trafficLight):
+        vehicleList = self.getVehicleList(trafficLight)
+        vehicleDict = {}
+
+        # Loop through vehicle list to map each vehicle's ID to to a dict of distance and queue
+        for lane in vehicleList:
+            for veh in vehicleList[lane]:
+                vehicleDict[veh["ID"]] = {"distance": veh["distance"],
+                                          "queue": veh["queue"],
+                                          "lane": lane}
+
+        return vehicleDict
+
+    # CONVERT VEHICLE LIST TO A SINGLE DICT WITH SPECIFIC LANES
+    def getVehicleDictWithLanes(self, trafficLight):
+        vehicleList = self.getVehicleList(trafficLight)
+        vehicleDict = {}
+
+        # Loop through vehicle list to map each vehicle's ID to to a dict of distance and queue
+        for lane in vehicleList:
+            vehicleDict[lane] = {}
+            for veh in vehicleList[lane]:
+                vehicleDict[lane][veh["ID"]] = {"distance": veh["distance"],
+                                                "queue": veh["queue"],
+                                                "lane": lane}
+
+        return vehicleDict
+
                         if "_Stopped_L" in veh:
                             vehIDSplit = veh.split("_")
                         if "_Stopped_S" in veh:
