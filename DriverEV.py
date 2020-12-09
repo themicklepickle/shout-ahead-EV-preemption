@@ -390,7 +390,119 @@ class DriverEV(Driver):
         veh = vehicleDict[veh]
 
         return veh["queue"]
-                        if "_Stopped_L" in veh:
-                            vehIDSplit = veh.split("_")
+
+#---------------------------------- EV PREDICATES END ----------------------------------#
+
+    def getPredicateParameters(self, trafficLight, predicate):
+        if predicate == "longestTimeWaitedToProceedStraight":
+            # Find max wait time for relevant intersection
+            maxWaitTime = 0
+            # Retrieve state of specified intersection
+            state = self.getState(trafficLight)
+            for lane in state:
+                if lane in trafficLight.getLanes():
+                    for veh in state[lane]:
                         if "_Stopped_S" in veh:
                             vehIDSplit = veh.split("_")
+                            vehID = vehIDSplit[0]
+                            if traci.vehicle.getWaitingTime(vehID) > maxWaitTime:
+                                maxWaitTime = traci.vehicle.getWaitingTime(
+                                    vehID)
+            return maxWaitTime
+
+        elif predicate == "longestTimeWaitedToTurnLeft":
+            # Find max wait time for relevant intersection
+            maxWaitTime = 0
+            # Retrieve state of specified intersection
+            state = self.getState(trafficLight)
+            for lane in state:
+                if lane in trafficLight.getLanes():
+                    for veh in state[lane]:
+                        if "_Stopped_L" in veh:
+                            vehIDSplit = veh.split("_")
+                            vehID = vehIDSplit[0]
+                            if traci.vehicle.getWaitingTime(vehID) > maxWaitTime:
+                                maxWaitTime = traci.vehicle.getWaitingTime(
+                                    vehID)
+            return maxWaitTime
+
+        elif predicate == "numCarsWaitingToProceedStraight":
+            carsWaiting = 0
+            # Retrieve state of specified intersection
+            state = self.getState(trafficLight)
+            for lane in state:
+                if lane in trafficLight.getLanes():
+                    for veh in state[lane]:
+                        if "_Stopped_S" in veh:
+                            vehIDSplit = veh.split("_")
+                            vehID = vehIDSplit[0]
+                            if traci.vehicle.getWaitingTime(vehID) > 0:
+                                carsWaiting += 1
+            return carsWaiting
+
+        elif predicate == "numCarsWaitingToTurnLeft":
+            carsWaiting = 0
+            # Retrieve state of specified intersection
+            state = self.getState(trafficLight)
+            for lane in state:
+                if lane in trafficLight.getLanes():
+                    for veh in state[lane]:
+                        if "_Stopped_L" in veh:
+                            vehIDSplit = veh.split("_")
+                            vehID = vehIDSplit[0]
+                            if traci.vehicle.getWaitingTime(vehID) > 0:
+                                carsWaiting += 1
+
+            return carsWaiting
+
+        elif predicate == "timeSpentInCurrentPhase":
+            return traci.trafficlight.getPhaseDuration(trafficLight.getName())
+
+        elif "verticalPhaseIs" in predicate or "horizontalPhaseIs" in predicate or "northSouthPhaseIs" in predicate or "southNorthPhaseIs" in predicate or "eastWestPhaseIs" in predicate or "westEastPhaseIs" in predicate:
+            return traci.trafficlight.getPhaseName(trafficLight.getName()).split("_")
+
+        elif "maxGreenPhaseTimeReached" == predicate:
+            parameters = []
+            parameters.append(
+                traci.trafficlight.getPhaseName(trafficLight.getName()))
+
+            # Get phase (G or Y) from phase name
+            getPhase = parameters[0].split("_")
+            parameters[0] = getPhase[2]
+
+            parameters.append(traci.trafficlight.getPhaseDuration(trafficLight.getName(
+            )) - (traci.trafficlight.getNextSwitch(trafficLight.getName()) - traci.simulation.getTime()))
+            parameters.append(self.maxGreenPhaseTime)
+
+            return parameters
+
+        elif "maxYellowPhaseTimeReached" == predicate:
+            parameters = []
+            parameters.append(traci.trafficlight.getPhaseName(
+                trafficLight.getName()))  # Get traffic light phase name
+
+            # Get phase (G or Y) from phase name
+            getPhase = parameters[0].split("_")
+            parameters[0] = getPhase[2]
+
+            parameters.append(traci.trafficlight.getPhaseDuration(trafficLight.getName(
+            )) - (traci.trafficlight.getNextSwitch(trafficLight.getName()) - traci.simulation.getTime()))
+            parameters.append(self.maxYellowPhaseTime)
+
+            return parameters
+
+#------------------------------------ EV PREDICATES ------------------------------------#
+
+        elif "isEVApproaching" == predicate:
+            return self.getIsEVApproaching(trafficLight)
+
+        elif "EVDistanceToIntersection" == predicate:
+            return self.getDistanceToIntersection(trafficLight)
+
+        elif "EVTrafficDensity" == predicate:
+            return self.getTrafficDensity(trafficLight)
+
+        elif "EVLaneID" == predicate:
+            return self.getEVLaneID(trafficLight)
+
+#---------------------------------- EV PREDICATES END ----------------------------------#
