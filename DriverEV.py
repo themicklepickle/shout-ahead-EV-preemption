@@ -281,6 +281,34 @@ class DriverEV(Driver):
                     return True  # Return True if at least one vehicle was an EV
 
         return False  # Return False if no EVs were found
+
+    # GET A LIST OF THE DISTANCE AND QUEUE FOR ALL VEHICLES
+    def getVehicleList(self, trafficLight) -> dict:
+        state = self.getState(trafficLight)
+        vehicleList = {}
+
+        for lane in state:
+            vehicleDistancesList = []
+
+            # Populate vehicleDistancesList
+            for veh in state[lane]:
+                vehID = veh.split("_")[0]
+                distanceToIntersection = traci.lane.getLength(lane) - traci.vehicle.getLanePosition(vehID)
+                vehicleDistancesList.append({"ID": veh,
+                                             "distance": distanceToIntersection})
+
+            # Sort vehicles based on their distance to the intersection
+            vehicleDistancesList.sort(key=lambda v: v["distance"])
+
+            # Obtain queue length ahead based on the vehicle's index in the list
+            vehicleList[lane] = []
+
+            for i, veh in enumerate(vehicleDistancesList):
+                vehicleList[lane].append({"ID": veh["ID"],
+                                          "distance": veh["distance"],
+                                          "queue": i})
+
+        return vehicleList
                         if "_Stopped_L" in veh:
                             vehIDSplit = veh.split("_")
                         if "_Stopped_S" in veh:
