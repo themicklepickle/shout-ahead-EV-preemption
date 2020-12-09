@@ -384,6 +384,12 @@ class DriverEV(Driver):
 
         return veh["distance"]
 
+    # GET A VEHICLE'S QUEUE LENGTH AHEAD
+    def getQueueLengthAhead(self, trafficLight, veh):
+        vehicleDict = self.getVehicleDict(trafficLight)
+        veh = vehicleDict[veh]
+
+        return veh["queue"]
                         if "_Stopped_L" in veh:
                             vehIDSplit = veh.split("_")
                         if "_Stopped_S" in veh:
