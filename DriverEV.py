@@ -365,6 +365,17 @@ class DriverEV(Driver):
 
         return leadingEV
 
+    # GET A VEHICLE'S TRAFFIC DENSITY (vehicles/distance)
+    def getTrafficDensity(self, trafficLight, veh) -> float:  # TODO: make a vehicle class
+        vehicleDict = self.getVehicleDict(trafficLight)
+        veh = vehicleDict[veh]
+
+        distanceToIntersection = veh["distance"]
+        queueLengthAhead = veh["queue"]
+
+        trafficDensity = queueLengthAhead / distanceToIntersection  # TODO: avoid division by 0 and normalize value
+
+        return trafficDensity
                         if "_Stopped_L" in veh:
                             vehIDSplit = veh.split("_")
                         if "_Stopped_S" in veh:
