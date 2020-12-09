@@ -376,6 +376,14 @@ class DriverEV(Driver):
         trafficDensity = queueLengthAhead / distanceToIntersection  # TODO: avoid division by 0 and normalize value
 
         return trafficDensity
+
+    # GET A VEHICLE'S DISTANCE TO THE INTERSECTION
+    def getDistanceToIntersection(self, trafficLight, veh):  # NOTE: can also be done using traci method
+        vehicleDict = self.getVehicleDict(trafficLight)
+        veh = vehicleDict[veh]
+
+        return veh["distance"]
+
                         if "_Stopped_L" in veh:
                             vehIDSplit = veh.split("_")
                         if "_Stopped_S" in veh:
