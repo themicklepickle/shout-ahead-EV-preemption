@@ -422,7 +422,7 @@ class Driver:
             currPhase[5] = "Y"
             traci.trafficlight.setPhase(trafficLight.getName(), currPhase)
 
-            # If max yellow phase time reached, switch to next phase in the schedule
+        # If max yellow phase time reached, switch to next phase in the schedule
         elif rule.getConditions()[0] == "maxYellowPhaseTimeReached":
             if traci.trafficlight.getPhase(trafficLight.getName()) >= (len(trafficLight.getPhases()) - 2):
                 traci.trafficlight.setPhase(trafficLight.getName(), 0)
@@ -430,7 +430,7 @@ class Driver:
                 traci.trafficlight.setPhase(trafficLight.getName(
                 ), traci.trafficlight.getPhase(trafficLight.getName()) + 1)
 
-        # PROVIDE SIMULATION RELEVANT PARAMETERS
+    # PROVIDE SIMULATION RELEVANT PARAMETERS
     def getPredicateParameters(self, trafficLight, predicate):
         if predicate == "longestTimeWaitedToProceedStraight":
             # Find max wait time for relevant intersection
