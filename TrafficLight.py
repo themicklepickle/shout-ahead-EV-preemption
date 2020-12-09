@@ -35,6 +35,12 @@ class TrafficLight:
         self.maxRedPhaseTime = 0
         self.phaseTimeSpentInRed = []
 
+    def __str__(self) -> str:
+        return self.getName()
+
+    def __repr__(self) -> str:
+        return self.getName()
+
         # RETURNS THE TRAFFIC LIGHT'S NAME
     def getName(self):
         return self.name
