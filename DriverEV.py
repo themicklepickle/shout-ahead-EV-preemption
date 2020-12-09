@@ -270,6 +270,17 @@ class DriverEV(Driver):
 
         return state
 
+#------------------------------------ EV PREDICATES ------------------------------------#
+
+    # DETERMINE WHETHER OR NOT AN EMERGENCY VEHICLE IS APPROACHING
+    def getIsEVApproaching(self, trafficLight) -> bool:
+        state = self.getState(trafficLight)
+        for lane in state:
+            for veh in state[lane]:
+                if "_EV" in veh:
+                    return True  # Return True if at least one vehicle was an EV
+
+        return False  # Return False if no EVs were found
                         if "_Stopped_L" in veh:
                             vehIDSplit = veh.split("_")
                         if "_Stopped_S" in veh:
