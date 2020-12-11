@@ -380,20 +380,6 @@ class DriverEV(Driver):
 
         return trafficDensity
 
-    # GET A VEHICLE'S DISTANCE TO THE INTERSECTION
-    def getDistanceToIntersection(self, trafficLight, veh):  # NOTE: can also be done using traci method
-        vehicleDict = self.getVehicleDict(trafficLight)
-        veh = vehicleDict[veh]
-
-        return veh["distance"]
-
-    # GET A VEHICLE'S QUEUE LENGTH AHEAD
-    def getQueueLengthAhead(self, trafficLight, veh):
-        vehicleDict = self.getVehicleDict(trafficLight)
-        veh = vehicleDict[veh]
-
-        return veh["queue"]
-
 #---------------------------------- EV PREDICATES END ----------------------------------#
 
     def getPredicateParameters(self, trafficLight, predicate):
