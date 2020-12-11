@@ -354,12 +354,21 @@ class DriverEV(Driver):
 
         return EVs
 
-    # GET LEADING EMERGENCY VEHICLE
+    # GET LEADING EMERGENCY VEHICLE AMONG ALL LANES
+    # TODO check with denzinger to see if this should be per lane or for all the lanes
     def getLeadingEV(self, trafficLight, lane) -> dict:
         EVs = self.getEVs(trafficLight)
+        leadingEV = None
         # since vehicleList is sorted based on queue length, EVs is sorted as well
-        if EVs[lane] != []:
-            leadingEV = EVs[lane][0]
+        for lane in EVs:
+            if EVs[lane] == []:
+                continue
+            if leadingEV is None:
+                leadingEV = EVs[lane][0]
+            elif EVs[lane][0]["distance"] < leadingEV["distance"]:
+                leadingEV = EVs[lane][0]
+
+        return leadingEV
         else:
             leadingEV = None
 
