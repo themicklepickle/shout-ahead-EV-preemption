@@ -70,8 +70,7 @@ if __name__ == "__main__":
         while generations <= totalGenerations:
             print('----- GENERATION {} of {}'.format(generations, totalGenerations))
             print("This simulation began at:", simulationStartTime)
-            print("The average generation runtime is",
-                  sum(generationRuntimes)/generations)
+            print("The average generation runtime is", sum(generationRuntimes)/generations)
             genStart = datetime.datetime.now()
             startTime = time.time()
 
@@ -119,7 +118,7 @@ if __name__ == "__main__":
                             continue
                 # allIndividualsTested = True # Uncomment for quick testing
 
-                # Prepare individuals for the next run through
+            # Prepare individuals for the next run through
             for ap in setUpTuple[2]:
                 # Normalize the fitness values of each Individual in an agent pool for breeding purposes
                 ap.normalizeIndividualsFitnesses()

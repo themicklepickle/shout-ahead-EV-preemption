@@ -184,7 +184,7 @@ from random import randrange
 #         return True
 #     else:
 #         return False
-        
+
 # def intendedActionIs_WE_L_G(action):
 #     if action == "WE_L_G":
 #         return True
@@ -195,15 +195,18 @@ from random import randrange
 #     if action == "WE_L_Y":
 #         return True
 #     else:
-#         return False       
+#         return False
 #---------------------------------- end ---------------------------------------#
 
 #------------------- timeSinceLastCommunication predicates --------------------#
+
+
 def timeSinceCommunication_0(timeSinceCommunication):
     if timeSinceCommunication == 0:
         return True
     else:
         return False
+
 
 def timeSinceCommunication_0_5(timeSinceCommunication):
     if 0 < timeSinceCommunication < 5:
@@ -211,11 +214,13 @@ def timeSinceCommunication_0_5(timeSinceCommunication):
     else:
         return False
 
+
 def timeSinceCommunication_5_10(timeSinceCommunication):
     if 5 < timeSinceCommunication < 10:
         return True
     else:
         return False
+
 
 def timeSinceCommunication_10_15(timeSinceCommunication):
     if 10 < timeSinceCommunication < 15:
@@ -223,11 +228,13 @@ def timeSinceCommunication_10_15(timeSinceCommunication):
     else:
         return False
 
+
 def timeSinceCommunication_15_20(timeSinceCommunication):
     if 15 < timeSinceCommunication < 20:
         return True
     else:
         return False
+
 
 def timeSinceCommunication_20_25(timeSinceCommunication):
     if 20 < timeSinceCommunication < 25:
@@ -237,6 +244,8 @@ def timeSinceCommunication_20_25(timeSinceCommunication):
 #---------------------------------- end ----------------------------------#
 
     # EVALUATES VALIDITY OF A CUSTOM PREDICATE RELATIVE TO A COMMUNICATED INTENTION
+
+
 def customPredicate(predicate, intention):
     predicate = predicate.split("_", 1)
 
@@ -246,26 +255,30 @@ def customPredicate(predicate, intention):
         return False
 
     # RETURN LIST OF PREDICATE FUNCTIONS AS DEFINED ABOVE
+
+
 def getPredicateSet(agentPool):
-    thisModule = sys.modules[__name__] # Get reference to this module for next operation
-    methodsDict = dict(inspect.getmembers(thisModule, predicate=inspect.isfunction)) # Get a dictionary with all methods (predicates) in this module
-        # Remove all methods that are not predicates from dictionary 
+    thisModule = sys.modules[__name__]  # Get reference to this module for next operation
+    methodsDict = dict(inspect.getmembers(thisModule, predicate=inspect.isfunction))  # Get a dictionary with all methods (predicates) in this module
+    # Remove all methods that are not predicates from dictionary
     methodsDict.pop("getPredicateSet")
-    methodsDict.pop("getRandomPredicate") 
+    methodsDict.pop("getRandomPredicate")
     methodsDict.pop("getPredicateSetFromFile")
     methodsDict.pop("getAgentSpecificPredicates")
-    #methodsDict.pop("run")
+    # methodsDict.pop("run")
 
-        # Seperate methods/predicates from rest of data in dictionary into a list
+    # Seperate methods/predicates from rest of data in dictionary into a list
     predicateList = []
     for predicate in methodsDict:
         predicateList.append(predicate)
-    
+
     predicateList = predicateList + getAgentSpecificPredicates(agentPool)
-    
+
     return predicateList
-    
+
     # RETURN LIST OF PREDICATE FUNCTIONS FROM AN INPUT FILE
+
+
 def getPredicateSetFromFile(file):
     predicateList = []
     f = open(file, "r")                                     # Open desired file
@@ -277,14 +290,17 @@ def getPredicateSetFromFile(file):
         else:
             pred = x.split("\n")
             predicateList.append(pred[0])
-    
+
     return predicateList
 
     # RETURN RANDOM PREDICATE FROM LIST OF PREDICATE FUNCTIONS
+
+
 def getRandomPredicate(agentPool):
     # Add some ap specific stuff here
     predicateList = getPredicateSet(agentPool)
     return predicateList[randrange(len(predicateList))]
+
 
 def getAgentSpecificPredicates(agentPool):
     customPredicates = []

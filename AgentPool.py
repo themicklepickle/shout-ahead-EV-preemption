@@ -2,7 +2,7 @@ import os
 import sys
 import inspect
 
-import PredicateSet 
+import PredicateSet
 import CoopPredicateSet
 
 import EvolutionaryLearner as EvolutionaryLearner
@@ -11,17 +11,19 @@ from Rule import Rule
 from random import randrange
 from operator import attrgetter
 
+
 class AgentPool:
-                
-        # INTIALIZE AGENT POOL VARIABLES
+
+    # INTIALIZE AGENT POOL VARIABLES
     def __init__(self, identifier, actionSet, minIndividualRunsPerGen, trafficLightsAssigned):
         self.id = identifier                                            # AgentPool name
         self.actionSet = actionSet                                      # A list of action names that can be applied by assigned TL's of the pool
-        self.addDoNothingAction()                                       # Add "do nothing" action to action set 
-        self.trafficLightsAssigned = []                                 # List of traffic lights using Agent Pool 
+        self.addDoNothingAction()                                       # Add "do nothing" action to action set
+        self.trafficLightsAssigned = []                                 # List of traffic lights using Agent Pool
         self.setTrafficLightsAssigned(trafficLightsAssigned)
-        self.individuals = []                   
-        self.userDefinedRuleSet = [Rule(-1, ["emergencyVehicleApproachingVertical"], -1, self), Rule(-1, ["emergencyVehicleApproachingHorizontal"], -1, self), Rule(-1, ["maxGreenPhaseTimeReached"], -1, self), Rule(-1, ["maxYellowPhaseTimeReached"], -1, self)]
+        self.individuals = []
+        self.userDefinedRuleSet = [Rule(-1, ["emergencyVehicleApproachingVertical"], -1, self), Rule(-1, ["emergencyVehicleApproachingHorizontal"], -1, self),
+                                   Rule(-1, ["maxGreenPhaseTimeReached"], -1, self), Rule(-1, ["maxYellowPhaseTimeReached"], -1, self)]
         self.minIndividualRunsPerGen = minIndividualRunsPerGen
 
     def getID(self):
@@ -29,22 +31,22 @@ class AgentPool:
 
     def getActionSet(self):
         return self.actionSet
-    
+
     def getCoopPredicates(self):
         return self.coopPredicates
 
     def getIndividualsSet(self):
         return self.individuals
-    
+
     def updateIndividualsSet(self, individuals):
         self.individuals = individuals
-    
+
     def initIndividuals(self):
         self.individuals = EvolutionaryLearner.initIndividuals(self)
 
     def getAssignedTrafficLights(self):
         return self.trafficLightsAssigned
-    
+
     def setTrafficLightsAssigned(self, trafficLightsAssigned):
         if isinstance(trafficLightsAssigned, list):
             for tl in trafficLightsAssigned:
@@ -57,7 +59,7 @@ class AgentPool:
     def addNewTrafficLight(self, trafficLight):
         self.trafficLightsAssigned.append(trafficLight)
         trafficLight.assignToAgentPool(self)
-    
+
     def addDoNothingAction(self):
         self.actionSet.append("DoNothing")
 
@@ -74,10 +76,10 @@ class AgentPool:
         for i in self.individuals:
             if i.getSelectedCount() < self.minIndividualRunsPerGen:
                 self.individualsNeedingRuns.append(i)
-        
+
         if len(self.individualsNeedingRuns) == 0:
-            return self.getIndividualsSet()[randrange(0, len(self.getIndividualsSet()))] # Currently returning a random rule
-        
+            return self.getIndividualsSet()[randrange(0, len(self.getIndividualsSet()))]  # Currently returning a random rule
+
         elif len(self.individualsNeedingRuns) == 1:
             return self.individualsNeedingRuns[0]
         else:
@@ -86,14 +88,14 @@ class AgentPool:
         # RETURN RANDOM PREDICATE FROM coopPredicate LIST FOR A RULE IN RSint
     def getRandomRSintPredicate(self):
         return self.coopPredicates[randrange(len(self.coopPredicates))]
-    
+
     def initCoopPredicates(self):
         return CoopPredicateSet.getPredicateSet(self)
-    
+
     def getBestIndividual(self):
         bestIndivList = sorted(self.individuals, key=lambda x: x.getFitness())
         return bestIndivList[0]
-        
+
         # RETURN THE BEST SIMULATION TIME
     def getBestIndividualSimulationTime(self):
         bestIndivSimTimeList = sorted(self.individuals, key=lambda x: x.getLastRunTime())
@@ -104,19 +106,20 @@ class AgentPool:
         return bestIndivAggregateVehWaitTimeList[0].getAggregateVehicleWaitTime()
 
     def normalizeIndividualsFitnesses(self):
-        self.individuals.sort(key=lambda x: x.getNegatedFitness(), reverse = True) # Sort individuals by fitness 
+        self.individuals.sort(key=lambda x: x.getNegatedFitness(), reverse=True)  # Sort individuals by fitness
 
         if (self.individuals[0].getNegatedFitness() - self.individuals[len(self.individuals)-1].getNegatedFitness()) == 0:
             for i in self.individuals:
                 i.setNormalizedFitness(0.0001)  # Set normalized fitness to an arbitrary, small value
-        else:        
-                # Calculate normalized fitness value for each individual in the agent pool
+        else:
+            # Calculate normalized fitness value for each individual in the agent pool
             for i in self.individuals:
-                i.setNormalizedFitness((i.getNegatedFitness()-self.individuals[len(self.individuals)-1].getNegatedFitness())/(self.individuals[0].getNegatedFitness()-self.individuals[len(self.individuals)-1].getNegatedFitness())) 
+                i.setNormalizedFitness((i.getNegatedFitness()-self.individuals[len(self.individuals)-1].getNegatedFitness()) /
+                                       (self.individuals[0].getNegatedFitness()-self.individuals[len(self.individuals)-1].getNegatedFitness()))
 
 # def run():
 #     ap = AgentPool("ap1", ["H_S_G", "H_S_Y", "H_L_G", "H_L_Y"])
-#     for i in ap.getIndividualsSet():    
+#     for i in ap.getIndividualsSet():
 #         print("Individual", i.getID(), "has rules with the following conditions and actions:\n")
 #         for r in i.getRuleSet():
 #             print(r.getConditions(), "and the action is:", r.getAction(), "\n\n")
