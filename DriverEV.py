@@ -69,6 +69,11 @@ class DriverEV(Driver):
         # Variables for rule rewards
         carsWaitingBefore = {}
         carsWaitingAfter = {}
+        EVSpeedBefore = None
+        EVSpeedAfter = None
+        EVTrafficDensityBefore = None
+        EVTrafficDensityAfter = None
+
         while traci.simulation.getMinExpectedNumber() > 0 and traci.simulation.getTime() < self.maxSimulationTime:
 
             tl.removeOldIntentions(traci.simulation.getTime())
@@ -103,6 +108,16 @@ class DriverEV(Driver):
 
                     carsWaitingBefore = tl.getCarsWaiting()
                     carsWaitingAfter = self.carsWaiting(tl)
+
+                    leadingEV = self.getLeadingEV(tl)
+
+                    EVSpeedBefore = tl.getEVSpeed()
+                    EVSpeedAfter = leadingEV["speed"]
+
+                    EVTrafficDensityBefore = tl.getEVTrafficDensity()
+                    EVTrafficDensityAfter = self.EVTrafficDensity(leadingEV["queue"], leadingEV["distance"])
+
+                    EVIsStopped = traci.vehicle.isStopped(leadingEV["ID"].split("_")[0])
 
                     # Check if a user-defined rule can be applied
                     nextRule = self.applicableUserDefinedRule(tl, userDefinedRules)
@@ -142,7 +157,10 @@ class DriverEV(Driver):
                                                 self.getThroughputWaitingTime(tl, carsWaitingBefore, carsWaitingAfter),
                                                 self.getTotalWaitingTime(carsWaitingBefore)
                                             ),
-                                            len(carsWaitingAfter) - len(carsWaitingBefore)
+                                            len(carsWaitingAfter) - len(carsWaitingBefore),
+                                            EVSpeedAfter - EVSpeedBefore,
+                                            EVTrafficDensityAfter - EVTrafficDensityBefore,
+                                            EVIsStopped
                                         )
                                     )
                                     tl.getAssignedIndividual().updateFitnessPenalty(True, oldRule.getWeight() > ruleWeightBefore)
@@ -182,6 +200,10 @@ class DriverEV(Driver):
                     tl.setCurrentRule(nextRule)
                     # Set the number of cars waiting count within the TL itself
                     tl.updateCarsWaiting(carsWaitingAfter)
+                    # Update EV details within the TL itself
+                    tl.setEVSpeed(EVSpeedAfter)
+                    tl.setEVTrafficDensity(EVTrafficDensityAfter)
+                    # NOTE: The TL doesn't need to store whether or not an EV is stopped because a change in that does not affect the reward function. This might change.
 
             step += 1  # Increment step in line with simulator
 
