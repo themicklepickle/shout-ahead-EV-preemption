@@ -1,4 +1,4 @@
-#  EVOLUTIONARY LEARNER ALGORITHM
+# EVOLUTIONARY LEARNER ALGORITHM
 
 import os
 import sys
@@ -141,7 +141,7 @@ def createNewGeneration(agentPools):
 def initIndividuals(agentPool):
     individuals = []
     for x in range(maxIndividuals):
-        RS = []     # RS is a rule set with no shout-ahead predicates
+        RS = []  # RS is a rule set with no shout-ahead predicates
         RSint = []  # RSint is a rule set with shout-ahead predicates
         # Populate a rule set
         for i in range(maxRules):
@@ -191,7 +191,7 @@ def crossover(indiv1, indiv2):
     agentPool = indiv1.getAgentPool()
 
     superRS = indiv1.getRS() + indiv2.getRS()
-    superRS = removeDuplicateRules(superRS)    # Remove duplicate rules from set
+    superRS = removeDuplicateRules(superRS)  # Remove duplicate rules from set
 
     while len(superRS) < maxRulesInNewGenerationSet:
         superRS.append(createRandomRule(agentPool, 0))

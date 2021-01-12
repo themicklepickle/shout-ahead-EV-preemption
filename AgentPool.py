@@ -63,14 +63,14 @@ class AgentPool:
     def addDoNothingAction(self):
         self.actionSet.append("DoNothing")
 
-        # COMPLETES THE INITIALIZATION OF AGENT POOL COMPONENTS THAT REQUIRE ALL AGENT POOLS TO BE INITIALIZED FIRST
+    # COMPLETES THE INITIALIZATION OF AGENT POOL COMPONENTS THAT REQUIRE ALL AGENT POOLS TO BE INITIALIZED FIRST
     def finishSetUp(self):
-        self.coopPredicates = self.initCoopPredicates()                 # Store Observations of communicated intentions here since they are agent specific
-        self.initIndividuals()                                          # Populate Agent Pool's own rule set with random rules
+        self.coopPredicates = self.initCoopPredicates()  # Store Observations of communicated intentions here since they are agent specific
+        self.initIndividuals()  # Populate Agent Pool's own rule set with random rules
         for tl in self.trafficLightsAssigned:
             tl.initPhaseTimeSpentInRedArray()
 
-        # SELECTS AN INDIVIDUAL TO PASS TO A TRAFFIC LIGHT WHEN REQUESTED
+    # SELECTS AN INDIVIDUAL TO PASS TO A TRAFFIC LIGHT WHEN REQUESTED
     def selectIndividual(self):
         self.individualsNeedingRuns = []
         for i in self.individuals:
@@ -85,7 +85,7 @@ class AgentPool:
         else:
             return self.individualsNeedingRuns[randrange(0, len(self.individualsNeedingRuns))]
 
-        # RETURN RANDOM PREDICATE FROM coopPredicate LIST FOR A RULE IN RSint
+    # RETURN RANDOM PREDICATE FROM coopPredicate LIST FOR A RULE IN RSint
     def getRandomRSintPredicate(self):
         return self.coopPredicates[randrange(len(self.coopPredicates))]
 
@@ -96,7 +96,7 @@ class AgentPool:
         bestIndivList = sorted(self.individuals, key=lambda x: x.getFitness())
         return bestIndivList[0]
 
-        # RETURN THE BEST SIMULATION TIME
+    # RETURN THE BEST SIMULATION TIME
     def getBestIndividualSimulationTime(self):
         bestIndivSimTimeList = sorted(self.individuals, key=lambda x: x.getLastRunTime())
         return bestIndivSimTimeList[0].getLastRunTime()

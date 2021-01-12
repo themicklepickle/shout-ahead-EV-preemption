@@ -85,6 +85,7 @@ class DriverEV(Driver):
                         applied = self.checkAssignGreenPhaseToSingleWaitingPhaseRule(tl)
                         if applied is True:
                             continue
+
                     if self.maxGreenAndYellow_UDRule:
                         applied = self.checkMaxGreenAndYellowPhaseRule(tl, nextRule)
                         if applied is True:
@@ -146,14 +147,13 @@ class DriverEV(Driver):
                                     )
                                     tl.getAssignedIndividual().updateFitnessPenalty(True, oldRule.getWeight() > ruleWeightBefore)
 
-                                    # Apply the next rule; if action is -1 then action is do nothing
+                                # Apply the next rule; if action is -1 then action is do nothing
                                 if not nextRule.hasDoNothingAction():
-                                    traci.trafficlight.setPhase(
-                                        tl.getName(), nextRule.getAction())
+                                    traci.trafficlight.setPhase(tl.getName(), nextRule.getAction())
 
+                                    # change the phase if the action is different than the current action
                                     if nextRule is not tl.getCurrentRule():
-                                        traci.trafficlight.setPhase(
-                                            tl.getName(), nextRule.getAction())
+                                        traci.trafficlight.setPhase(tl.getName(), nextRule.getAction())
                                         tl.resetTimeInCurrentPhase()
 
                                 if nextRule.getType() == 0:
@@ -162,10 +162,10 @@ class DriverEV(Driver):
                                     numOfRSRulesApplied += 1
                                 else:
                                     # print("Applying TL action from RSint! Action is", nextRule.getAction(), "\n\n")
+
                                     numofRSintRulesApplied += 1
                     else:
-                        self.applyUserDefinedRuleAction(
-                            tl, traci.trafficlight.getPhaseName(tl.getName()), nextRule)
+                        self.applyUserDefinedRuleAction(tl, traci.trafficlight.getPhaseName(tl.getName()), nextRule)
                         tl.resetTimeInCurrentPhase()
 
                     # USER DEFINED RULE CHECK
@@ -361,7 +361,7 @@ class DriverEV(Driver):
 #---------------------------------- EV PREDICATES END ----------------------------------#
 
     def getPredicateParameters(self, trafficLight, predicate):
-        if predicate == "longestTimeWaitedToProceedStraight":
+        if "longestTimeWaitedToProceedStraight" == predicate:
             # Find max wait time for relevant intersection
             maxWaitTime = 0
             # Retrieve state of specified intersection
@@ -377,7 +377,7 @@ class DriverEV(Driver):
                                     vehID)
             return maxWaitTime
 
-        elif predicate == "longestTimeWaitedToTurnLeft":
+        elif "longestTimeWaitedToTurnLeft" == predicate:
             # Find max wait time for relevant intersection
             maxWaitTime = 0
             # Retrieve state of specified intersection
@@ -393,7 +393,7 @@ class DriverEV(Driver):
                                     vehID)
             return maxWaitTime
 
-        elif predicate == "numCarsWaitingToProceedStraight":
+        elif "numCarsWaitingToProceedStraight" == predicate:
             carsWaiting = 0
             # Retrieve state of specified intersection
             state = self.getState(trafficLight)
@@ -407,7 +407,7 @@ class DriverEV(Driver):
                                 carsWaiting += 1
             return carsWaiting
 
-        elif predicate == "numCarsWaitingToTurnLeft":
+        elif "numCarsWaitingToTurnLeft" == predicate:
             carsWaiting = 0
             # Retrieve state of specified intersection
             state = self.getState(trafficLight)
@@ -422,7 +422,7 @@ class DriverEV(Driver):
 
             return carsWaiting
 
-        elif predicate == "timeSpentInCurrentPhase":
+        elif "timeSpentInCurrentPhase" == predicate:
             return traci.trafficlight.getPhaseDuration(trafficLight.getName())
 
         elif "verticalPhaseIs" in predicate or "horizontalPhaseIs" in predicate or "northSouthPhaseIs" in predicate or "southNorthPhaseIs" in predicate or "eastWestPhaseIs" in predicate or "westEastPhaseIs" in predicate:

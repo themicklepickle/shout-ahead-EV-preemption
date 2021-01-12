@@ -26,42 +26,42 @@ class Individual:
         self.aggregateVehicleWaitTime = 0
         self.fitnessRuleApplicationPenalty = 0      # A penalty applied to the fitness of an Individual when its rule aren't applied, or result in negative outcomes, in a simulation
 
-        # RETURN INDIVIDUAL IDENTIFIER
+    # RETURN INDIVIDUAL IDENTIFIER
     def getID(self):
         return self.id
 
-        # RETURN INDIVIDUAL'S RULE SET
+    # RETURN INDIVIDUAL'S RULE SET
     def getRS(self):
         return self.RS
 
-        # RETURN INDIVIDUAL'S RULE SET
+    # RETURN INDIVIDUAL'S RULE SET
     def getRSint(self):
         return self.RSint
 
-        # INCREMENT selectedCount BY ONE FOR EVOLUTIONARY LEARNING PURPOSES
+    # INCREMENT selectedCount BY ONE FOR EVOLUTIONARY LEARNING PURPOSES
     def selected(self):
         self.selectedCount += 1
         self.totalSelectedCount += 1
 
-        # RESET selectedCount TO ZERO
+    # RESET selectedCount TO ZERO
     def resetSelectedCount(self):
         self.selectedCount = 0
 
-        # RETURN selectedCount
+    # RETURN selectedCount
     def getSelectedCount(self):
         return self.selectedCount
 
     def getTotalSelectedCount(self):
         return self.totalSelectedCount
 
-        # RETURN INDIVIDUAL'S FITNESS SCORE
+    # RETURN INDIVIDUAL'S FITNESS SCORE
     def getFitness(self):
         return self.fitness
 
     def getNegatedFitness(self):
         return self.fitness*-1
 
-        # UPDATE INDIVIDUAL'S FITNESS SCORE
+    # UPDATE INDIVIDUAL'S FITNESS SCORE
     def updateFitness(self, fitness):
         self.runFitnessResults.append(fitness + self.fitnessRuleApplicationPenalty)  # Add run fitness plus rule application penalty to master rFit list
         self.fitnessRuleApplicationPenalty = 0  # Reset penalty value for next sim run
@@ -80,11 +80,11 @@ class Individual:
     def setNormalizedFitness(self, fitnessValue):
         self.normalizedFitness = fitnessValue
 
-        # RETURN THE LENGTH OF THE LAST RUN THE INDIVIDUAL PARTICIPATED IN
+    # RETURN THE LENGTH OF THE LAST RUN THE INDIVIDUAL PARTICIPATED IN
     def getLastRunTime(self):
         return self.lastRunTime
 
-        # UPDATE THE LENGTH OF THE LAST RUN THE INDIVIDUAL PARTICIPATED IN
+    # UPDATE THE LENGTH OF THE LAST RUN THE INDIVIDUAL PARTICIPATED IN
     def updateLastRunTime(self, runtime):
         self.lastRunTime = runtime
 
@@ -100,14 +100,14 @@ class Individual:
     def resetAggregateVehicleWaitTime(self):
         self.aggregateVehicleWaitTime = 0
 
-        # RETURN SUM OF ALL WEIGHTS IN A RULE SET
+    # RETURN SUM OF ALL WEIGHTS IN A RULE SET
     def getSumRuleWeights(self):
         ruleSet = self.getRS()
         self.ruleWeightSum = sum(rule.getWeight() for rule in ruleSet)
 
         return self.ruleWeightSum
 
-        # RETURN A RULE FROM RS BASED ON THEIR PROBABILITIES
+    # RETURN A RULE FROM RS BASED ON THEIR PROBABILITIES
     def selectRule(self, validRules):
         if len(validRules) == 0:
             return -1
@@ -124,7 +124,7 @@ class Individual:
             rules.append(rule)
             probabilities.append(probability)
 
-            # If rsRest contains elements too, calculate their probabilities
+        # If rsRest contains elements too, calculate their probabilities
         if len(ruleSets[1]) > 0:
             # Acquire sum of weights in rsRest
             sumOfWeights = self.getSumOfWeights(ruleSets[1])
@@ -158,7 +158,7 @@ class Individual:
 
         return rule[0]  # Choice function returns an array, so we take the only element in it
 
-        # RETURN A RULE FROM RSint BASED ON THEIR PROBABILITIES
+    # RETURN A RULE FROM RSint BASED ON THEIR PROBABILITIES
     def selectCoopRule(self, validRules):
         if len(validRules) == 0:
             return -1
@@ -177,7 +177,7 @@ class Individual:
                 rules.append(rule)
                 probabilities.append(probability)
 
-            # If rsRest contains elements too, calculate their probabilities
+        # If rsRest contains elements too, calculate their probabilities
         if len(ruleSets[1]) > 0:
             # Acquire sum of weights in rsRest
             sumOfWeights = self.getSumOfWeights(ruleSets[1])
@@ -210,39 +210,39 @@ class Individual:
 
         return rule[0]  # Choice function returns an array, so we take the only element in it
 
-        # RETURN A RANDOM RULE FROM RS
+    # RETURN A RANDOM RULE FROM RS
     def selectRandomRule(self, validRules):
         return self.RS[randrange(0, len(self.ruleSet))]    # Return a random rule
 
-        # RETURN AGENT POOL THE INDIVIDUAL BELONGS TO
+    # RETURN AGENT POOL THE INDIVIDUAL BELONGS TO
     def getAgentPool(self):
         return self.agentPool
 
-        # RETURN PROBABILITY OF SELECTION FOR A RULE IN rsMax
+    # RETURN PROBABILITY OF SELECTION FOR A RULE IN rsMax
     def getRuleProbabilityMax(self, rule, rsMax, rsRest):
         weight = rule.getWeight()
 
         if len(rsRest) == 0:
             return 1/len(rsMax)
 
-            # Avoid dividing by zero
+        # Avoid dividing by zero
         if weight == 0:
             weight = 2.2250738585072014e-308
 
         return ((1-epsilon)*(weight/(weight*len(rsMax))))
 
-        # RETURN PROBABILITY OF SELECTION FOR A RULE IN rsRest
+    # RETURN PROBABILITY OF SELECTION FOR A RULE IN rsRest
     def getRuleProbabilityRest(self, rule, probabilities, sumOfWeights, rsRest):
         weight = rule.getNormalizedWeight()
 
         # print("Rule with weight", rule.getNormalizedWeight(), "has a probability of", epsilon*(weight/sumOfWeights))
         return epsilon*(weight/sumOfWeights)
 
-        # RETURN SUM OF ALL WEIGHTS IN A RULE SET
+    # RETURN SUM OF ALL WEIGHTS IN A RULE SET
     def getSumOfWeights(self, setOfRules):
         return sum(rule.getNormalizedWeight() for rule in setOfRules)
 
-        # RETURN A LIST OF ALL WEIGHTS IN A LIST OF RULES
+    # RETURN A LIST OF ALL WEIGHTS IN A LIST OF RULES
     def getWeightsList(self, setOfRules):
         weightsList = []
         for r in setOfRules:
@@ -250,7 +250,7 @@ class Individual:
 
         return weightsList
 
-        # RETURN A LIST OF WEIGHTS NORMALIZED BETWEEN 0.1 AND 1.1
+    # RETURN A LIST OF WEIGHTS NORMALIZED BETWEEN 0.1 AND 1.1
     def getNormalizedWeightsList(self, setOfRules):
         weightsList = []
         for r in setOfRules:
@@ -258,13 +258,12 @@ class Individual:
 
         return weightsList
 
-        # NORMALIZE WEIGHTS BETWEEN 0.1 AND 1.1 (WEIGHTS ARE NORMALIZED BETWEEN 0 AND 1, AND 0.1 IS ADDED TO AVOID WEIGHTS OF 0)
+    # NORMALIZE WEIGHTS BETWEEN 0.1 AND 1.1 (WEIGHTS ARE NORMALIZED BETWEEN 0 AND 1, AND 0.1 IS ADDED TO AVOID WEIGHTS OF 0)
     def normalizeWeights(self, setOfRules, weightsList):
         for r in setOfRules:
             r.setNormalizedWeight(((r.getWeight()-min(weightsList))/(max(weightsList)-min(weightsList))) + 0.1)
 
-        # SEPERATE RULES INTO rsMax AND rsRest
-
+    # SEPERATE RULES INTO rsMax AND rsRest
     def subDivideValidRules(self, validRules):
         rsMax = []
         ruleWeights = []
@@ -273,7 +272,7 @@ class Individual:
         for rule in validRules:
             ruleWeights.append(rule.getWeight())
 
-        ruleWeights.sort(reverse=True)   # Sort rule weights from highest to lowest
+        ruleWeights.sort(reverse=True)  # Sort rule weights from highest to lowest
 
         # Add rules with highest weight into rsMax, and then remove them from primary list
         for rule in validRules:
@@ -282,13 +281,13 @@ class Individual:
                 validRules.remove(rule)
 
         # print("RSMax contains:", rsMax, "\nRSRest contains:", validRules)
-        return (rsMax, validRules)       # Return the two rule sets (validRules now serves as rsRest)
+        return (rsMax, validRules)  # Return the two rule sets (validRules now serves as rsRest)
 
     def updateFitnessPenalty(self, ruleApplied, positiveRuleReward):
         # If no rule is applied, add a big penalty to the fitness
         if not ruleApplied:
             self.fitnessRuleApplicationPenalty += 30
 
-            # If rule is applied but reward is negative, add a smaller penalty to the fitness
+        # If rule is applied but reward is negative, add a smaller penalty to the fitness
         elif not positiveRuleReward:
             self.fitnessRuleApplicationPenalty += 10
