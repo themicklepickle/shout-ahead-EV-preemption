@@ -74,22 +74,6 @@ class DriverEV(Driver):
             tl.removeOldIntentions(traci.simulation.getTime())
             traci.simulationStep()  # Advance SUMO simulation one step (1 second)
 
-            # TODO: TESTING
-            for tl in trafficLights:
-                # if self.getIsEVApproaching(tl):
-                print(str(tl))
-                # pprint(self.getVehicleDict(tl))
-
-                # pprint(self.getEVs(tl))
-
-                # for lane in tl.getLanes():
-                #     print(lane, end=": ")
-                #     pprint(self.getLeadingEV(tl, lane))
-
-                pprint(self.get)
-                print()
-            print("\n" + 80 * "—" + "\n\n")
-
             # Traffic Light agents reevaluate their state every 5 seconds
             if step % 5 == 0:
                 # For every traffic light in simulation, select and evaluate new rule from its agent pool
@@ -125,8 +109,7 @@ class DriverEV(Driver):
                     # If no user-defined rules can be applied, get a rule from Agent Pool
                     if nextRule == False:
                         validRules = self.getValidRules(tl, tl.getAssignedIndividual())
-                        # print("Valid rules for RS are",
-                        #       validRules[0], "and valid rules for RSint are", validRules[1], "\n\n")
+                        # print("Valid rules for RS are", validRules[0], "and valid rules for RSint are", validRules[1], "\n\n")
 
                         if len(validRules[0]) == 0 and len(validRules[1]) == 0:
                             nextRule = -1  # -1 is used to represent "no valid next rule"
@@ -174,12 +157,11 @@ class DriverEV(Driver):
                                         tl.resetTimeInCurrentPhase()
 
                                 if nextRule.getType() == 0:
-                                    # print("Applying TL action from RS! Action is",
-                                    #       nextRule.getAction(), "\n\n")
+                                    # print("Applying TL action from RS! Action is", nextRule.getAction(), "\n\n")
+
                                     numOfRSRulesApplied += 1
                                 else:
-                                    # print(
-                                    #     "Applying TL action from RSint! Action is", nextRule.getAction(), "\n\n")
+                                    # print("Applying TL action from RSint! Action is", nextRule.getAction(), "\n\n")
                                     numofRSintRulesApplied += 1
                     else:
                         self.applyUserDefinedRuleAction(
@@ -203,22 +185,18 @@ class DriverEV(Driver):
 
             step += 1  # Increment step in line with simulator
 
-            # Update the fitnesses of the individuals involved in the simulation based on their fitnesses
+        # Update the fitnesses of the individuals involved in the simulation based on their fitnesses
         simRunTime = traci.simulation.getTime()
-        # print("***SIMULATION TIME:", simRunTime, "\n\n")
+        print("***SIMULATION TIME:", simRunTime, "\n\n")
         for tl in trafficLights:
             tl.resetRecievedIntentions()
             i = tl.getAssignedIndividual()
             i.updateLastRunTime(simRunTime)
-            # print("Individual", i, "has a last runtime of", i.getLastRunTime())
-            i.updateFitness(EvolutionaryLearner.rFit(
-                i, simRunTime, i.getAggregateVehicleWaitTime()))
-            # print(tl.getName(), "'s coop rules were invalid",
-            #       tl.getCoopRuleValidRate(), "percent of the time.")
-            # print(tl.getName(), "'s RS rules were invalid",
-            #       tl.getRSRuleValidRate(), "percent of the time.")
-            # print("\n\nA total of", numOfRSRulesApplied, "rules from RS were applied and",
-            #       numofRSintRulesApplied, "rules from RSint were applied.")
+            print("Individual", i, "has a last runtime of", i.getLastRunTime())
+            i.updateFitness(EvolutionaryLearner.rFit(i, simRunTime))
+            print(tl.getName(), "'s coop rules were invalid", tl.getCoopRuleValidRate(), "percent of the time.")
+            print(tl.getName(), "'s RS rules were invalid", tl.getRSRuleValidRate(), "percent of the time.")
+            print("\n\nA total of", numOfRSRulesApplied, "rules from RS were applied and", numofRSintRulesApplied, "rules from RSint were applied.")
         traci.close()       # End simulation
 
         # Returns all the agent pools to the main module
