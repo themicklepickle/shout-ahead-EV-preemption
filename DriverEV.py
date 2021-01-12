@@ -464,12 +464,29 @@ class DriverEV(Driver):
             return self.getIsEVApproaching(trafficLight)
 
         elif "EVDistanceToIntersection" == predicate:
-            return self.getDistanceToIntersection(trafficLight)
+            leadingEV = self.getLeadingEV(trafficLight)
+
+            if leadingEV is None:
+                return -1
+
+            return leadingEV["distance"]
 
         elif "EVTrafficDensity" == predicate:
-            return self.getTrafficDensity(trafficLight)
+            leadingEV = self.getLeadingEV(trafficLight)
+
+            if leadingEV is None:
+                return -1
+
+            return self.EVTrafficDensity(leadingEV["queue"], leadingEV["distance"])
 
         elif "EVLaneID" == predicate:
-            return self.getEVLaneID(trafficLight)
+            leadingEV = self.getLeadingEV(trafficLight)
+
+            if leadingEV is None:
+                return None
+
+            vehID = leadingEV["ID"].split("_")[0]
+
+            return traci.vehicle.getLaneID(vehID)
 
 #---------------------------------- EV PREDICATES END ----------------------------------#
