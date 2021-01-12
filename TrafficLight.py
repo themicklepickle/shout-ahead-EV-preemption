@@ -34,6 +34,7 @@ class TrafficLight:
         self.currentPhase = None
         self.maxRedPhaseTime = 0
         self.phaseTimeSpentInRed = []
+        self.EVSpeed = None
 
     def __str__(self) -> str:
         return self.getName()
@@ -275,3 +276,9 @@ class TrafficLight:
 
     def getRSRuleValidRate(self):
         return (self.numOfTimesNoRSRuleWasValid/self.numOfRulesSelected)*100
+
+    def getEVSpeed(self):
+        return self.EVSpeed
+
+    def setEVSpeed(self, EVSpeed):
+        self.EVSpeed = EVSpeed
