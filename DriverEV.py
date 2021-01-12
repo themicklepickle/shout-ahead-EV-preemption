@@ -260,7 +260,7 @@ class DriverEV(Driver):
 
         return False  # Return False if no EVs were found
 
-    # GET A LIST OF THE DISTANCE AND QUEUE FOR ALL VEHICLES
+    # GET A LIST OF THE SPEED, DISTANCE, AND QUEUE FOR ALL VEHICLES
     def getVehicleList(self, trafficLight) -> dict:
         state = self.getState(trafficLight)
         vehicleList = {}
@@ -271,8 +271,10 @@ class DriverEV(Driver):
             # Populate vehicleDistancesList
             for veh in state[lane]:
                 vehID = veh.split("_")[0]
+                speed = traci.vehicle.getSpeed(vehID)
                 distanceToIntersection = traci.lane.getLength(lane) - traci.vehicle.getLanePosition(vehID)
                 vehicleDistancesList.append({"ID": veh,
+                                             "speed": speed,
                                              "distance": distanceToIntersection})
 
             # Sort vehicles based on their distance to the intersection
@@ -283,6 +285,7 @@ class DriverEV(Driver):
 
             for i, veh in enumerate(vehicleDistancesList):
                 vehicleList[lane].append({"ID": veh["ID"],
+                                          "speed": veh["speed"],
                                           "distance": veh["distance"],
                                           "queue": i})
 
@@ -293,10 +296,11 @@ class DriverEV(Driver):
         vehicleList = self.getVehicleList(trafficLight)
         vehicleDict = {}
 
-        # Loop through vehicle list to map each vehicle's ID to to a dict of distance and queue
+        # Loop through vehicle list to map each vehicle's ID to to a dict of speed, distance, and queue
         for lane in vehicleList:
             for veh in vehicleList[lane]:
                 vehicleDict[veh["ID"]] = {"distance": veh["distance"],
+                                          "speed": veh["speed"],
                                           "queue": veh["queue"],
                                           "lane": lane}
 
@@ -307,17 +311,18 @@ class DriverEV(Driver):
         vehicleList = self.getVehicleList(trafficLight)
         vehicleDict = {}
 
-        # Loop through vehicle list to map each vehicle's ID to to a dict of distance and queue
+        # Loop through vehicle list to map each vehicle's ID to to a dict of speed, distance, and queue
         for lane in vehicleList:
             vehicleDict[lane] = {}
             for veh in vehicleList[lane]:
                 vehicleDict[lane][veh["ID"]] = {"distance": veh["distance"],
+                                                "speed": veh["speed"],
                                                 "queue": veh["queue"],
                                                 "lane": lane}
 
         return vehicleDict
 
-    # GET A LIST OF ALL EMERGENCY VEHICLES AND THEIR DISTANCE TO INTERSECTION AND QUEUE LENGTH AHEAD
+    # GET A LIST OF ALL EMERGENCY VEHICLES AND THEIR SPEED, DISTANCE TO INTERSECTION, AND QUEUE LENGTH AHEAD
     def getEVs(self, trafficLight) -> dict:
         vehicleList = self.getVehicleList(trafficLight)
         EVs = {}
