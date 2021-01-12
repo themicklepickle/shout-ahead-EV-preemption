@@ -26,7 +26,7 @@ if __name__ == "__main__":
 
     for _ in range(10):
         # --- TRAINING OPTIONS ---
-        gui = True
+        gui = False
         totalGenerations = 50
         # Min number of training runs an individual gets per generation
         individualRunsPerGen = 3
