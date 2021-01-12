@@ -355,7 +355,7 @@ class DriverEV(Driver):
         else:
             trafficDensity = queueLengthAhead / distanceToIntersection
 
-        return trafficDensity
+        return trafficDensity * 1000  # multiply by 1000 to give a better range
 
 #---------------------------------- EV PREDICATES END ----------------------------------#
 
