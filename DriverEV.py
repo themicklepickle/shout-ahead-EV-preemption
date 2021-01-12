@@ -348,8 +348,7 @@ class DriverEV(Driver):
         return leadingEV
 
     # GET A VEHICLE'S TRAFFIC DENSITY
-    # TODO include vehicle lengths
-    def getTrafficDensity(self, queueLengthAhead: int, distanceToIntersection: float):
+    def EVTrafficDensity(self, queueLengthAhead: int, distanceToIntersection: float):
         if distanceToIntersection == 0:
             trafficDensity = queueLengthAhead / 2.2250738585072014e-308
         else:
