@@ -136,13 +136,11 @@ class Driver:
                             nextRule = -1  # -1 is used to represent "no valid next rule"
                         else:
                             # Get a rule from assigned Individual
-                            nextRule = tl.getNextRule(
-                                validRules[0], validRules[1], traci.simulation.getTime())
+                            nextRule = tl.getNextRule(validRules[0], validRules[1], traci.simulation.getTime())
 
                         if nextRule == -1:
                             tl.doNothing()  # Update traffic light's Do Nothing counter
-                            tl.getAssignedIndividual().updateFitnessPenalty(
-                                False, False)   # Update fitness penalty for individual
+                            tl.getAssignedIndividual().updateFitnessPenalty(False, False)   # Update fitness penalty for individual
 
                             # If next rule is not a user-defined rule, update the weight of the last applied rule
                         else:
@@ -152,10 +150,22 @@ class Driver:
                                 if oldRule != -1:
                                     # Used to calculate fitness penalty to individual
                                     ruleWeightBefore = oldRule.getWeight()
-                                    oldRule.updateWeight(ReinforcementLearner.updatedWeight(oldRule, nextRule, self.getThroughputRatio(self.getThroughput(tl, carsWaitingBefore, carsWaitingAfter), len(carsWaitingBefore)), self.getWaitTimeReducedRatio(
-                                        self.getThroughputWaitingTime(tl, carsWaitingBefore, carsWaitingAfter), self.getTotalWaitingTime(carsWaitingBefore)), len(carsWaitingAfter) - len(carsWaitingBefore)))
-                                    tl.getAssignedIndividual().updateFitnessPenalty(
-                                        True, oldRule.getWeight() > ruleWeightBefore)
+                                    oldRule.updateWeight(
+                                        ReinforcementLearner.updatedWeight(
+                                            oldRule,
+                                            nextRule,
+                                            self.getThroughputRatio(
+                                                self.getThroughput(tl, carsWaitingBefore, carsWaitingAfter),
+                                                len(carsWaitingBefore)
+                                            ),
+                                            self.getWaitTimeReducedRatio(
+                                                self.getThroughputWaitingTime(tl, carsWaitingBefore, carsWaitingAfter),
+                                                self.getTotalWaitingTime(carsWaitingBefore)
+                                            ),
+                                            len(carsWaitingAfter) - len(carsWaitingBefore)
+                                        )
+                                    )
+                                    tl.getAssignedIndividual().updateFitnessPenalty(True, oldRule.getWeight() > ruleWeightBefore)
 
                                     # Apply the next rule; if action is -1 then action is do nothing
                                 if not nextRule.hasDoNothingAction():
@@ -345,15 +355,15 @@ class Driver:
         # EVALUATE RULE VALIDITY (fEval)
     def evaluateRule(self, trafficLight, rule):
         if rule.getType() == 1:
-            return evaluateCoopRule(trafficLight, rule)
+            return self.evaluateCoopRule(trafficLight, rule)
 
             # For each condition, its parameters are acquired and the condition predicate is evaluated
         for cond in rule.getConditions():
             predicateSplit = cond.split("_")
             predicate = predicateSplit[0]
 
-            predCall = getattr(PredicateSet, cond)(self.getPredicateParameters(
-                trafficLight, predicate))  # Construct predicate fuction call
+            # Construct predicate fuction call
+            predCall = getattr(PredicateSet, cond)(self.getPredicateParameters(trafficLight, predicate))
             # Determine validity of predicate
             if predCall == False:
                 return False
@@ -422,7 +432,7 @@ class Driver:
             currPhase[5] = "Y"
             traci.trafficlight.setPhase(trafficLight.getName(), currPhase)
 
-            # If max yellow phase time reached, switch to next phase in the schedule
+        # If max yellow phase time reached, switch to next phase in the schedule
         elif rule.getConditions()[0] == "maxYellowPhaseTimeReached":
             if traci.trafficlight.getPhase(trafficLight.getName()) >= (len(trafficLight.getPhases()) - 2):
                 traci.trafficlight.setPhase(trafficLight.getName(), 0)
@@ -430,7 +440,7 @@ class Driver:
                 traci.trafficlight.setPhase(trafficLight.getName(
                 ), traci.trafficlight.getPhase(trafficLight.getName()) + 1)
 
-        # PROVIDE SIMULATION RELEVANT PARAMETERS
+    # PROVIDE SIMULATION RELEVANT PARAMETERS
     def getPredicateParameters(self, trafficLight, predicate):
         if predicate == "longestTimeWaitedToProceedStraight":
             # Find max wait time for relevant intersection
@@ -456,7 +466,7 @@ class Driver:
             for lane in state:
                 if lane in trafficLight.getLanes():
                     for veh in state[lane]:
-                        if "_L" in veh:
+                        if "_Stopped_L" in veh:
                             vehIDSplit = veh.split("_")
                             vehID = vehIDSplit[0]
                             if traci.vehicle.getWaitingTime(vehID) > maxWaitTime:

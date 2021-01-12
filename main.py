@@ -7,7 +7,7 @@ import datetime
 import timeit
 import time
 
-from Driver import Driver
+from DriverEV import DriverEV
 import EvolutionaryLearner
 
 
@@ -26,7 +26,7 @@ if __name__ == "__main__":
 
     for _ in range(10):
         # --- TRAINING OPTIONS ---
-        gui = True
+        gui = False
         totalGenerations = 50
         # Min number of training runs an individual gets per generation
         individualRunsPerGen = 3
@@ -58,8 +58,8 @@ if __name__ == "__main__":
 
         print("----- Start time:", datetime.datetime.now())
         setUpTuple = InitSetUp.run(sumoNetworkName, individualRunsPerGen)
-        simRunner = Driver(sumoCmd, setUpTuple, maxGreenPhaseTime, maxYellowPhaseTime, maxSimulationTime,
-                           maxGreenAndYellowPhaseTime_UDRule, maxRedPhaseTime_UDRule, assignGreenPhaseToSingleWaitingPhase_UDRule)
+        simRunner = DriverEV(sumoCmd, setUpTuple, maxGreenPhaseTime, maxYellowPhaseTime, maxSimulationTime,
+                             maxGreenAndYellowPhaseTime_UDRule, maxRedPhaseTime_UDRule, assignGreenPhaseToSingleWaitingPhase_UDRule)
         generations = 1
         episode = 0
         allIndividualsTested = False
@@ -70,8 +70,7 @@ if __name__ == "__main__":
         while generations <= totalGenerations:
             print('----- GENERATION {} of {}'.format(generations, totalGenerations))
             print("This simulation began at:", simulationStartTime)
-            print("The average generation runtime is",
-                  sum(generationRuntimes)/generations)
+            print("The average generation runtime is", sum(generationRuntimes)/generations)
             genStart = datetime.datetime.now()
             startTime = time.time()
 
@@ -90,8 +89,8 @@ if __name__ == "__main__":
                 elif generations >= 15:
                     maxSimulationTime = 4000
 
-                simRunner = Driver(sumoCmd, setUpTuple, maxGreenPhaseTime, maxYellowPhaseTime, maxSimulationTime,
-                                   maxGreenAndYellowPhaseTime_UDRule, maxRedPhaseTime_UDRule, assignGreenPhaseToSingleWaitingPhase_UDRule)
+                simRunner = DriverEV(sumoCmd, setUpTuple, maxGreenPhaseTime, maxYellowPhaseTime, maxSimulationTime,
+                                     maxGreenAndYellowPhaseTime_UDRule, maxRedPhaseTime_UDRule, assignGreenPhaseToSingleWaitingPhase_UDRule)
 
                 print('----- Episode {}'.format(episode+1),
                       "of GENERATION {} of {}".format(generations, totalGenerations))
@@ -119,7 +118,7 @@ if __name__ == "__main__":
                             continue
                 # allIndividualsTested = True # Uncomment for quick testing
 
-                # Prepare individuals for the next run through
+            # Prepare individuals for the next run through
             for ap in setUpTuple[2]:
                 # Normalize the fitness values of each Individual in an agent pool for breeding purposes
                 ap.normalizeIndividualsFitnesses()

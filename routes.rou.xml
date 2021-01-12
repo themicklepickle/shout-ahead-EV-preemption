@@ -28,6 +28,12 @@
 -->
 
 <routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/routes_file.xsd">
+
+    <!-- Emergency Vehicle Type -->
+    <vType id="FireTruck" vClass="emergency" guiShape="firebrigade"/>
+    <vType id="Ambulance" vClass="emergency" guiShape="emergency"/>
+    <vType id="PoliceCar" vClass="emergency" guiShape="police"/>
+
     <vehicle id="0" depart="0.00">
         <route edges="NWB2four-arm_LTL four-arm2bend bend2T-intersection_LTL T-intersection2incoming_LTL incoming2four-arm_LTL four-arm2NWB"/>
     </vehicle>
@@ -49,7 +55,7 @@
     <vehicle id="7" depart="7.00">
         <route edges="four-arm2bend bend2T-intersection_LTL T-intersection2incoming_LTL incoming2four-arm_LTL four-arm2WB"/>
     </vehicle>
-    <vehicle id="8" depart="8.00">
+    <vehicle id="8" depart="8.00" type="FireTruck">
         <route edges="incoming2four-arm_LTL four-arm2bend bend2T-intersection_LTL T-intersection2SEB"/>
     </vehicle>
     <vehicle id="9" depart="9.00">
@@ -61,13 +67,13 @@
     <vehicle id="12" depart="12.00">
         <route edges="NWB2four-arm_LTL four-arm2incoming"/>
     </vehicle>
-    <vehicle id="14" depart="14.00">
+    <vehicle id="14" depart="14.00" type="Ambulance">
         <route edges="incoming2four-arm_LTL four-arm2NWB"/>
     </vehicle>
     <vehicle id="15" depart="15.00">
         <route edges="incoming2four-arm_LTL four-arm2bend bend2T-intersection_LTL T-intersection2incoming_LTL"/>
     </vehicle>
-    <vehicle id="16" depart="16.00">
+    <vehicle id="16" depart="16.00" type="PoliceCar">
         <route edges="WB2four-arm_LTL four-arm2bend bend2T-intersection_LTL T-intersection2incoming_LTL"/>
     </vehicle>
     <vehicle id="18" depart="18.00">
@@ -292,7 +298,7 @@
     <vehicle id="117" depart="117.00">
         <route edges="T-intersection2incoming_LTL incoming2four-arm_LTL"/>
     </vehicle>
-    <vehicle id="118" depart="118.00">
+    <vehicle id="118" depart="118.00" type="Ambulance">
         <route edges="incoming2four-arm_LTL four-arm2bend"/>
     </vehicle>
     <vehicle id="119" depart="119.00">
@@ -457,7 +463,7 @@
     <vehicle id="191" depart="191.00">
         <route edges="T-intersection2incoming_LTL incoming2four-arm_LTL"/>
     </vehicle>
-    <vehicle id="192" depart="192.00">
+    <vehicle id="192" depart="192.00" type="FireTruck">
         <route edges="NEB2incoming_LTL incoming2four-arm_LTL"/>
     </vehicle>
     <vehicle id="194" depart="194.00">
@@ -664,7 +670,7 @@
     <vehicle id="282" depart="282.00">
         <route edges="bend2T-intersection_LTL T-intersection2incoming_LTL incoming2four-arm_LTL four-arm2WB"/>
     </vehicle>
-    <vehicle id="283" depart="283.00">
+    <vehicle id="283" depart="283.00" type="PoliceCar">
         <route edges="incoming2four-arm_LTL four-arm2NWB"/>
     </vehicle>
     <vehicle id="284" depart="284.00">
