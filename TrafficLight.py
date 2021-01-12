@@ -35,6 +35,7 @@ class TrafficLight:
         self.maxRedPhaseTime = 0
         self.phaseTimeSpentInRed = []
         self.EVSpeed = None
+        self.EVTrafficDensity = None
 
     def __str__(self) -> str:
         return self.getName()
@@ -282,3 +283,9 @@ class TrafficLight:
 
     def setEVSpeed(self, EVSpeed):
         self.EVSpeed = EVSpeed
+
+    def getEVTrafficDensity(self):
+        return self.EVTrafficDensity
+
+    def setEVTrafficDensity(self, EVTrafficDensity):
+        self.EVTrafficDensity = EVTrafficDensity
