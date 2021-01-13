@@ -50,7 +50,7 @@ class DriverEV(Driver):
                 # if no valid rule applicable, apply the Do Nothing rule.
                 if rule == -1:
                     tl.doNothing()  # Update traffic light's Do Nothing counter
-                    tl.getAssignedIndividual().updateFitnessPenalty(False, 0)   # Update fitness penalty for individual
+                    tl.getAssignedIndividual().updateFitnessPenalty(False, 0)  # Update fitness penalty for individual
 
                 else:
                     # If rule conditions are satisfied, apply its action. Otherwise, do nothing.
@@ -270,7 +270,7 @@ class DriverEV(Driver):
 
         return state
 
-#------------------------------------ EV PREDICATES ------------------------------------#
+#----------------------- EV PREDICATES AND REINFORCEMENT LEARNING ----------------------#
 
     # DETERMINE WHETHER OR NOT AN EMERGENCY VEHICLE IS APPROACHING
     def getIsEVApproaching(self, trafficLight) -> bool:
