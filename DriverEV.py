@@ -514,4 +514,56 @@ class DriverEV(Driver):
 
             return traci.vehicle.getLaneID(vehID)
 
+        # TODO: Might have to change this is to individual action sets rather than just horizontal or veritcal.
+        #       However, that's hard because the possible actions is unique for each traffic light.
+        elif "EVApproachingHorizontal" == predicate:
+            parameters = []
+
+            # get the lane of the leading EV
+            leadingEV = self.getLeadingEV(trafficLight)
+            if leadingEV is not None:
+                vehID = leadingEV["ID"].split("_")[0]
+                EVLane = traci.vehicle.getLaneID(vehID)
+                parameters.append(EVLane)
+            else:
+                parameters.append(None)
+
+            # find the horizontal lanes based on the traffic light
+            horizontalLanes = []
+            tlName = trafficLight.getName()
+            if tlName == "four-arm":
+                horizontalLanes = ["WB2four-arm_LTL_0", "incoming2four-arm_LTL_0", "WB2four-arm_LTL_1", "incoming2four-arm_LTL_1"]
+            elif tlName == "incoming":
+                horizontalLanes = ["four-arm2incoming_0", "four-arm2incoming_1", "EB2incoming_0", "EB2incoming_1"]
+            elif tlName == "T-intersection":
+                horizontalLanes = ["SEB2T-intersection_0", "SEB2T-intersection_1", "bend2T-intersection_LTL_0"]
+            parameters.append(horizontalLanes)
+
+            return parameters
+
+        elif "EVApproachingVertical" == predicate:
+            parameters = []
+
+            # get the lane of the leading EV
+            leadingEV = self.getLeadingEV(trafficLight)
+            if leadingEV is not None:
+                vehID = leadingEV["ID"].split("_")[0]
+                EVLane = traci.vehicle.getLaneID(vehID)
+                parameters.append(EVLane)
+            else:
+                parameters.append(None)
+
+            # find the vertical lanes based on the traffic light
+            verticalLanes = []
+            tlName = trafficLight.getName()
+            if tlName == "four-arm":
+                verticalLanes = ["NWB2four-arm_LTL_0", "bend2four-arm_LTL_0", "NWB2four-arm_LTL_1", "bend2four-arm_LTL_1"]
+            elif tlName == "incoming":
+                verticalLanes = ["T-intersection2incoming_LTL_0", "T-intersection2incoming_LTL_1", "NEB2incoming_LTL_0", "NEB2incoming_LTL_1"]
+            elif tlName == "T-intersection":
+                verticalLanes = []
+            parameters.append(verticalLanes)
+
+            return parameters
+
 #---------------------------------- EV PREDICATES END ----------------------------------#
