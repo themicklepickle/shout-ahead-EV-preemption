@@ -50,7 +50,7 @@ class DriverEV(Driver):
                 # if no valid rule applicable, apply the Do Nothing rule.
                 if rule == -1:
                     tl.doNothing()  # Update traffic light's Do Nothing counter
-                    tl.getAssignedIndividual().updateFitnessPenalty(False, 0)   # Update fitness penalty for individual
+                    tl.getAssignedIndividual().updateFitnessPenalty(False, 0)  # Update fitness penalty for individual
 
                 else:
                     # If rule conditions are satisfied, apply its action. Otherwise, do nothing.
@@ -69,6 +69,11 @@ class DriverEV(Driver):
         # Variables for rule rewards
         carsWaitingBefore = {}
         carsWaitingAfter = {}
+        EVSpeedBefore = None
+        EVSpeedAfter = None
+        EVTrafficDensityBefore = None
+        EVTrafficDensityAfter = None
+
         while traci.simulation.getMinExpectedNumber() > 0 and traci.simulation.getTime() < self.maxSimulationTime:
 
             tl.removeOldIntentions(traci.simulation.getTime())
@@ -103,6 +108,16 @@ class DriverEV(Driver):
 
                     carsWaitingBefore = tl.getCarsWaiting()
                     carsWaitingAfter = self.carsWaiting(tl)
+
+                    leadingEV = self.getLeadingEV(tl)
+
+                    EVSpeedBefore = tl.getEVSpeed()
+                    EVSpeedAfter = leadingEV["speed"]
+
+                    EVTrafficDensityBefore = tl.getEVTrafficDensity()
+                    EVTrafficDensityAfter = self.EVTrafficDensity(leadingEV["queue"], leadingEV["distance"])
+
+                    EVIsStopped = traci.vehicle.isStopped(leadingEV["ID"].split("_")[0])
 
                     # Check if a user-defined rule can be applied
                     nextRule = self.applicableUserDefinedRule(tl, userDefinedRules)
@@ -142,7 +157,10 @@ class DriverEV(Driver):
                                                 self.getThroughputWaitingTime(tl, carsWaitingBefore, carsWaitingAfter),
                                                 self.getTotalWaitingTime(carsWaitingBefore)
                                             ),
-                                            len(carsWaitingAfter) - len(carsWaitingBefore)
+                                            len(carsWaitingAfter) - len(carsWaitingBefore),
+                                            EVSpeedAfter - EVSpeedBefore,
+                                            EVTrafficDensityAfter - EVTrafficDensityBefore,
+                                            EVIsStopped
                                         )
                                     )
                                     tl.getAssignedIndividual().updateFitnessPenalty(True, oldRule.getWeight() > ruleWeightBefore)
@@ -182,6 +200,10 @@ class DriverEV(Driver):
                     tl.setCurrentRule(nextRule)
                     # Set the number of cars waiting count within the TL itself
                     tl.updateCarsWaiting(carsWaitingAfter)
+                    # Update EV details within the TL itself
+                    tl.setEVSpeed(EVSpeedAfter)
+                    tl.setEVTrafficDensity(EVTrafficDensityAfter)
+                    # NOTE: The TL doesn't need to store whether or not an EV is stopped because a change in that does not affect the reward function. This might change.
 
             step += 1  # Increment step in line with simulator
 
@@ -248,7 +270,7 @@ class DriverEV(Driver):
 
         return state
 
-#------------------------------------ EV PREDICATES ------------------------------------#
+#----------------------- EV PREDICATES AND REINFORCEMENT LEARNING ----------------------#
 
     # DETERMINE WHETHER OR NOT AN EMERGENCY VEHICLE IS APPROACHING
     def getIsEVApproaching(self, trafficLight) -> bool:
@@ -260,7 +282,7 @@ class DriverEV(Driver):
 
         return False  # Return False if no EVs were found
 
-    # GET A LIST OF THE DISTANCE AND QUEUE FOR ALL VEHICLES
+    # GET A LIST OF THE SPEED, DISTANCE, AND QUEUE FOR ALL VEHICLES
     def getVehicleList(self, trafficLight) -> dict:
         state = self.getState(trafficLight)
         vehicleList = {}
@@ -271,8 +293,10 @@ class DriverEV(Driver):
             # Populate vehicleDistancesList
             for veh in state[lane]:
                 vehID = veh.split("_")[0]
+                speed = traci.vehicle.getSpeed(vehID)
                 distanceToIntersection = traci.lane.getLength(lane) - traci.vehicle.getLanePosition(vehID)
                 vehicleDistancesList.append({"ID": veh,
+                                             "speed": speed,
                                              "distance": distanceToIntersection})
 
             # Sort vehicles based on their distance to the intersection
@@ -283,6 +307,7 @@ class DriverEV(Driver):
 
             for i, veh in enumerate(vehicleDistancesList):
                 vehicleList[lane].append({"ID": veh["ID"],
+                                          "speed": veh["speed"],
                                           "distance": veh["distance"],
                                           "queue": i})
 
@@ -293,10 +318,11 @@ class DriverEV(Driver):
         vehicleList = self.getVehicleList(trafficLight)
         vehicleDict = {}
 
-        # Loop through vehicle list to map each vehicle's ID to to a dict of distance and queue
+        # Loop through vehicle list to map each vehicle's ID to to a dict of speed, distance, and queue
         for lane in vehicleList:
             for veh in vehicleList[lane]:
                 vehicleDict[veh["ID"]] = {"distance": veh["distance"],
+                                          "speed": veh["speed"],
                                           "queue": veh["queue"],
                                           "lane": lane}
 
@@ -307,17 +333,18 @@ class DriverEV(Driver):
         vehicleList = self.getVehicleList(trafficLight)
         vehicleDict = {}
 
-        # Loop through vehicle list to map each vehicle's ID to to a dict of distance and queue
+        # Loop through vehicle list to map each vehicle's ID to to a dict of speed, distance, and queue
         for lane in vehicleList:
             vehicleDict[lane] = {}
             for veh in vehicleList[lane]:
                 vehicleDict[lane][veh["ID"]] = {"distance": veh["distance"],
+                                                "speed": veh["speed"],
                                                 "queue": veh["queue"],
                                                 "lane": lane}
 
         return vehicleDict
 
-    # GET A LIST OF ALL EMERGENCY VEHICLES AND THEIR DISTANCE TO INTERSECTION AND QUEUE LENGTH AHEAD
+    # GET A LIST OF ALL EMERGENCY VEHICLES AND THEIR SPEED, DISTANCE TO INTERSECTION, AND QUEUE LENGTH AHEAD
     def getEVs(self, trafficLight) -> dict:
         vehicleList = self.getVehicleList(trafficLight)
         EVs = {}

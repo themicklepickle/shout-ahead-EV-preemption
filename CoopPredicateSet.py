@@ -190,7 +190,6 @@ from random import randrange
 #         return True
 #     else:
 #         return False
-
 # def intendedActionIs_WE_L_Y(action):
 #     if action == "WE_L_Y":
 #         return True
@@ -198,9 +197,8 @@ from random import randrange
 #         return False
 #---------------------------------- end ---------------------------------------#
 
+
 #------------------- timeSinceLastCommunication predicates --------------------#
-
-
 def timeSinceCommunication_0(timeSinceCommunication):
     if timeSinceCommunication == 0:
         return True
@@ -243,9 +241,8 @@ def timeSinceCommunication_20_25(timeSinceCommunication):
         return False
 #---------------------------------- end ----------------------------------#
 
-    # EVALUATES VALIDITY OF A CUSTOM PREDICATE RELATIVE TO A COMMUNICATED INTENTION
 
-
+# EVALUATES VALIDITY OF A CUSTOM PREDICATE RELATIVE TO A COMMUNICATED INTENTION
 def customPredicate(predicate, intention):
     predicate = predicate.split("_", 1)
 
@@ -254,9 +251,8 @@ def customPredicate(predicate, intention):
     else:
         return False
 
-    # RETURN LIST OF PREDICATE FUNCTIONS AS DEFINED ABOVE
 
-
+# RETURN LIST OF PREDICATE FUNCTIONS AS DEFINED ABOVE
 def getPredicateSet(agentPool):
     thisModule = sys.modules[__name__]  # Get reference to this module for next operation
     methodsDict = dict(inspect.getmembers(thisModule, predicate=inspect.isfunction))  # Get a dictionary with all methods (predicates) in this module
@@ -276,12 +272,11 @@ def getPredicateSet(agentPool):
 
     return predicateList
 
-    # RETURN LIST OF PREDICATE FUNCTIONS FROM AN INPUT FILE
 
-
+# RETURN LIST OF PREDICATE FUNCTIONS FROM AN INPUT FILE
 def getPredicateSetFromFile(file):
     predicateList = []
-    f = open(file, "r")                                     # Open desired file
+    f = open(file, "r")  # Open desired file
     for x in f:
         if "//" in x:
             continue
@@ -293,9 +288,8 @@ def getPredicateSetFromFile(file):
 
     return predicateList
 
-    # RETURN RANDOM PREDICATE FROM LIST OF PREDICATE FUNCTIONS
 
-
+# RETURN RANDOM PREDICATE FROM LIST OF PREDICATE FUNCTIONS
 def getRandomPredicate(agentPool):
     # Add some ap specific stuff here
     predicateList = getPredicateSet(agentPool)

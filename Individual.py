@@ -4,7 +4,7 @@ from numpy.random import choice
 
 
 class Individual:
-    global epsilon          # paramater between 0 and 1 used to determine importance of doing exploration (higher epsilon = more exploration)
+    global epsilon  # paramater between 0 and 1 used to determine importance of doing exploration (higher epsilon = more exploration)
     epsilon = 0.5
     global fitness
     global defaultFitness
