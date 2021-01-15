@@ -105,6 +105,14 @@ class AgentPool:
         bestIndivAggregateVehWaitTimeList = sorted(self.individuals, key=lambda x: x.getAggregateVehicleWaitTime())
         return bestIndivAggregateVehWaitTimeList[0].getAggregateVehicleWaitTime()
 
+    def getBestIndividualMeanEVSpeed(self):
+        bestMeanEVSpeedList = sorted(self.individuals, key=lambda x: x.getMeanEVSpeed(), reverse=True)
+        return bestMeanEVSpeedList[0].getMeanEVSpeed()
+
+    def getBestIndividualEVStops(self):
+        bestEVStopsList = sorted(self.individuals, key=lambda x: x.getEVStops())
+        return bestEVStopsList[0].getEVStops()
+
     def normalizeIndividualsFitnesses(self):
         self.individuals.sort(key=lambda x: x.getNegatedFitness(), reverse=True)  # Sort individuals by fitness
 
