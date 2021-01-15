@@ -110,6 +110,8 @@ class Individual:
         return self.meanEVSpeed
 
     def updateMeanEVSpeed(self, EVSpeedsList):
+        if EVSpeedsList == []:
+            return
         self.meanEVSpeedsList.append(statistics.mean(EVSpeedsList))
         self.meanEVSpeed = statistics.mean(self.meanEVSpeedsList)
 
