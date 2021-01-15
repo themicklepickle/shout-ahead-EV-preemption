@@ -51,23 +51,50 @@ def rFit(individual, simTime):
         return simTime - bestSUMORuntime
     else:
         bestIndivAggregateVehWaitTime = individual.getAgentPool().getBestIndividualAggregateVehWaitTime()
+        bestIndivMeanEVSpeed = individual.getAgentPool().getBestIndividualMeanEVSpeed()
+        bestIndivEVStops = individual.getAgentPool().getBestIndividualEVStops()
         indivAggrVehWaitTime = individual.getAggregateVehicleWaitTime()
+        indivMeanEVSpeed = individual.getMeanEVSpeed()
+        indivEVStops = individual.getEVStops()
+
+        fitness = 0
 
         # If Individual's simulation time is more than the best time, multiply it relative to how much worse it is
         if indivAggrVehWaitTime == bestIndivAggregateVehWaitTime:
-            return bestIndivAggregateVehWaitTime
-
+            fitness += bestIndivAggregateVehWaitTime
         elif indivAggrVehWaitTime - bestIndivAggregateVehWaitTime < bestIndivAggregateVehWaitTime*.1:
-            return indivAggrVehWaitTime*10
-
+            fitness += indivAggrVehWaitTime*10
         elif indivAggrVehWaitTime - bestIndivAggregateVehWaitTime < bestIndivAggregateVehWaitTime*.2:
-            return indivAggrVehWaitTime*20
-
+            fitness += indivAggrVehWaitTime*20
         elif indivAggrVehWaitTime - bestIndivAggregateVehWaitTime < bestIndivAggregateVehWaitTime*.3:
-            return indivAggrVehWaitTime*30
-
+            fitness += indivAggrVehWaitTime*30
         else:
-            return indivAggrVehWaitTime*40
+            fitness += indivAggrVehWaitTime*40
+
+        # TODO: explore the values here and check to make sure that finding the sum works
+        if indivMeanEVSpeed == bestIndivMeanEVSpeed:
+            fitness += bestIndivMeanEVSpeed
+        elif indivMeanEVSpeed - bestIndivMeanEVSpeed < bestIndivMeanEVSpeed*.1:
+            fitness += indivMeanEVSpeed*10
+        elif indivMeanEVSpeed - bestIndivMeanEVSpeed < bestIndivMeanEVSpeed*.2:
+            fitness += indivMeanEVSpeed*20
+        elif indivMeanEVSpeed - bestIndivMeanEVSpeed < bestIndivMeanEVSpeed*.3:
+            fitness += indivMeanEVSpeed*30
+        else:
+            fitness += indivMeanEVSpeed*40
+
+        if indivEVStops == bestIndivEVStops:
+            fitness += bestIndivEVStops
+        elif indivEVStops - bestIndivEVStops < bestIndivEVStops*.1:
+            fitness += indivEVStops*10
+        elif indivEVStops - bestIndivEVStops < bestIndivEVStops*.2:
+            fitness += indivEVStops*20
+        elif indivEVStops - bestIndivEVStops < bestIndivEVStops*.3:
+            fitness += indivEVStops*30
+        else:
+            fitness += indivEVStops*40
+
+        return fitness
 
 
 # FITNESS FUNCTION FOR ONE GENERATION
