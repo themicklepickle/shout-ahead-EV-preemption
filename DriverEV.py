@@ -465,23 +465,21 @@ class DriverEV(Driver):
 
         elif "maxGreenPhaseTimeReached" == predicate:
             parameters = []
-            parameters.append(
-                traci.trafficlight.getPhaseName(trafficLight.getName()))
+            parameters.append(traci.trafficlight.getPhaseName(trafficLight.getName()))
 
             # Get phase (G or Y) from phase name
             getPhase = parameters[0].split("_")
             parameters[0] = getPhase[2]
 
-            parameters.append(traci.trafficlight.getPhaseDuration(trafficLight.getName(
-            )) - (traci.trafficlight.getNextSwitch(trafficLight.getName()) - traci.simulation.getTime()))
+            parameters.append(traci.trafficlight.getPhaseDuration(trafficLight.getName()) -
+                              (traci.trafficlight.getNextSwitch(trafficLight.getName()) - traci.simulation.getTime()))
             parameters.append(self.maxGreenPhaseTime)
 
             return parameters
 
         elif "maxYellowPhaseTimeReached" == predicate:
             parameters = []
-            parameters.append(traci.trafficlight.getPhaseName(
-                trafficLight.getName()))  # Get traffic light phase name
+            parameters.append(traci.trafficlight.getPhaseName(trafficLight.getName()))  # Get traffic light phase name
 
             # Get phase (G or Y) from phase name
             getPhase = parameters[0].split("_")
