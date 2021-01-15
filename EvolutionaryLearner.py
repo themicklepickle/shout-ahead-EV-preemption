@@ -45,7 +45,7 @@ ruleWeightFactor = 1
 
 
 # FITNESS FUNCTION FOR AN INDIVIDUAL AFTER ONE SIMULATION RUN/EPISODE
-def rFit(individual, simTime, aggregateVehicleWaitTime):
+def rFit(individual, simTime):
     # If Individual's simulation time is less than the best time, its fitness is the difference between those two values
     if simTime < bestSUMORuntime:
         return simTime - bestSUMORuntime
