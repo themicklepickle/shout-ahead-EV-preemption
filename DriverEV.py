@@ -174,6 +174,8 @@ class DriverEV(Driver):
                                         )
                                     )
                                     tl.getAssignedIndividual().updateFitnessPenalty(True, oldRule.getWeight() > ruleWeightBefore)
+                                    tl.getAssignedIndividual().updateMeanEVSpeed(self.getEVSpeedsList(tl))
+                                    tl.getAssignedIndividual().updateEVStops(self.getNumEVStops(tl))
 
                                 # Apply the next rule; if action is -1 then action is do nothing
                                 if not nextRule.hasDoNothingAction():
@@ -229,7 +231,7 @@ class DriverEV(Driver):
             print(tl.getName(), "'s coop rules were invalid", tl.getCoopRuleValidRate(), "percent of the time.")
             print(tl.getName(), "'s RS rules were invalid", tl.getRSRuleValidRate(), "percent of the time.")
             print("\n\nA total of", numOfRSRulesApplied, "rules from RS were applied and", numofRSintRulesApplied, "rules from RSint were applied.")
-        traci.close()       # End simulation
+        traci.close()  # End simulation
 
         # Returns all the agent pools to the main module
         return self.setUpTuple[2]
@@ -394,6 +396,26 @@ class DriverEV(Driver):
         return trafficDensity * 1000  # multiply by 1000 to give a better range
 
 #---------------------------------- EV PREDICATES END ----------------------------------#
+
+#------------------------------ EV EVOLUTIONARY LEARNING -------------------------------#
+    def getEVSpeedsList(self, trafficLight):
+        EVs = self.getEVs(trafficLight)
+        EVSpeedsList = []
+        for lane in EVs:
+            for EV in EVs[lane]:
+                EVSpeedsList.append(EV["speed"])
+        return EVSpeedsList
+
+    def getNumEVStops(self, trafficLight):
+        EVs = self.getEVs(trafficLight)
+        numEVStops = 0
+        for lane in EVs:
+            for EV in EVs[lane]:
+                if traci.vehicle.isStopped(EV["ID"].split("_")[0]):
+                    numEVStops += 1
+
+        return numEVStops
+#---------------------------- EV EVOLUTIONARY LEARNING END -----------------------------#
 
     def getPredicateParameters(self, trafficLight, predicate):
         if "longestTimeWaitedToProceedStraight" == predicate:
