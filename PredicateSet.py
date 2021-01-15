@@ -730,6 +730,25 @@ def EVDistanceToIntersection_800(distanceToIntersection):
 #----------------------------- end -----------------------------#
 
 
+#-------------------- EV Approach Direction --------------------#
+def EVApproachingHorizontal(EVLane, horizontalLanes):
+    if EVLane is None:
+        return False
+    elif EVLane in horizontalLanes:
+        return True
+    else:
+        return False
+
+
+def EVApproachingVertical(EVLane, verticalLanes):
+    if EVLane is None:
+        return False
+    elif EVLane in verticalLanes:
+        return True
+    else:
+        return False
+#----------------------------- end -----------------------------#
+
 #------------------- User-defined predicates --------------------#
 # def emergencyVehicleApproachingVertical(tlPhaseArray, vehTypeIDs):
 #     for vt in vehTypeIDs:
