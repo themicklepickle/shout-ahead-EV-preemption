@@ -130,6 +130,8 @@ if __name__ == "__main__":
                     for i in ap.getIndividualsSet():
                         i.resetSelectedCount()
                         i.resetAggregateVehicleWaitTime()
+                        i.resetMeanEVSpeed()
+                        i.resetEVStops()
                 sys.stdout.flush()
             else:
                 OutputManager.run(setUpTuple[2], sum(
