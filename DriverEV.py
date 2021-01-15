@@ -108,16 +108,25 @@ class DriverEV(Driver):
 
                     carsWaitingBefore = tl.getCarsWaiting()
                     carsWaitingAfter = self.carsWaiting(tl)
-
+                    # Get EV reinforcement learning parameters
                     leadingEV = self.getLeadingEV(tl)
 
                     EVSpeedBefore = tl.getEVSpeed()
-                    EVSpeedAfter = leadingEV["speed"]
-
                     EVTrafficDensityBefore = tl.getEVTrafficDensity()
-                    EVTrafficDensityAfter = self.EVTrafficDensity(leadingEV["queue"], leadingEV["distance"])
 
-                    EVIsStopped = traci.vehicle.isStopped(leadingEV["ID"].split("_")[0])
+                    # Only evaluate EV parameters for the reinforcement learning if there is an EV this step and an EV the previous step
+                    if leadingEV is not None and EVSpeedBefore is not None and EVTrafficDensityBefore is not None:
+                        EVSpeedAfter = leadingEV["speed"]
+                        EVChangeInSpeed = EVSpeedAfter - EVSpeedBefore
+
+                        EVTrafficDensityAfter = self.EVTrafficDensity(leadingEV["queue"], leadingEV["distance"])
+                        EVChangeInTrafficDensity = EVTrafficDensityAfter - EVTrafficDensityBefore
+
+                        EVIsStopped = traci.vehicle.isStopped(leadingEV["ID"].split("_")[0])
+                    else:
+                        EVChangeInSpeed = None
+                        EVChangeInTrafficDensity = None
+                        EVIsStopped = False
 
                     # Check if a user-defined rule can be applied
                     nextRule = self.applicableUserDefinedRule(tl, userDefinedRules)
@@ -145,6 +154,7 @@ class DriverEV(Driver):
                                 if oldRule != -1:
                                     # Used to calculate fitness penalty to individual
                                     ruleWeightBefore = oldRule.getWeight()
+                                    # Update the weight with EV parameters is there is an EV present and there was an EV present the previous step
                                     oldRule.updateWeight(
                                         ReinforcementLearner.updatedWeight(
                                             oldRule,
@@ -158,8 +168,8 @@ class DriverEV(Driver):
                                                 self.getTotalWaitingTime(carsWaitingBefore)
                                             ),
                                             len(carsWaitingAfter) - len(carsWaitingBefore),
-                                            EVSpeedAfter - EVSpeedBefore,
-                                            EVTrafficDensityAfter - EVTrafficDensityBefore,
+                                            EVChangeInSpeed,
+                                            EVChangeInTrafficDensity,
                                             EVIsStopped
                                         )
                                     )

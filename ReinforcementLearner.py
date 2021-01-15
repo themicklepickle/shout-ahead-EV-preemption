@@ -31,8 +31,17 @@ def updatedWeight(rule, nextRule, throughputRatio, waitTimeReducedRatio, interse
 
 # Function to determine the reward
 def determineReward(throughputRatio, waitTimeReducedRatio, EVChangeInSpeed, EVChangeInTrafficDensity):
-    return (throughputFactor * throughputRatio) + (waitTimeReducedFactor * waitTimeReducedRatio) + \
-        (EVSpeedFactor * EVChangeInSpeed) + (EVTrafficDensityFactor * EVChangeInTrafficDensity)
+    reward = 0
+
+    reward += throughputFactor * throughputRatio
+    reward += waitTimeReducedFactor * waitTimeReducedRatio
+
+    if EVChangeInSpeed is not None:
+        reward += EVSpeedFactor * EVChangeInSpeed
+    if EVChangeInTrafficDensity is not None:
+        reward += EVTrafficDensityFactor * EVChangeInTrafficDensity
+
+    return reward
 
 
 def determinePenalty(intersectionQueueDifference, EVIsStopped):
