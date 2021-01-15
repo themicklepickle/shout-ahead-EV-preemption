@@ -731,7 +731,8 @@ def EVDistanceToIntersection_800(distanceToIntersection):
 
 
 #-------------------- EV Approach Direction --------------------#
-def EVApproachingHorizontal(EVLane, horizontalLanes):
+def EVApproachingHorizontal(laneInfo):
+    EVLane, horizontalLanes = laneInfo
     if EVLane is None:
         return False
     elif EVLane in horizontalLanes:
@@ -740,7 +741,8 @@ def EVApproachingHorizontal(EVLane, horizontalLanes):
         return False
 
 
-def EVApproachingVertical(EVLane, verticalLanes):
+def EVApproachingVertical(laneInfo):
+    EVLane, verticalLanes = laneInfo
     if EVLane is None:
         return False
     elif EVLane in verticalLanes:
