@@ -136,8 +136,7 @@ if __name__ == "__main__":
                         i.resetEVStops()
                 sys.stdout.flush()
             else:
-                OutputManager.run(setUpTuple[2], sum(
-                    generationRuntimes)/50, (sum(generationRuntimes)/50)*50)
+                OutputManager.run(setUpTuple[2], sum(generationRuntimes)/50, (sum(generationRuntimes)/50)*50)
                 print("Output file created.")
 
             print("Generation start time:", genStart,
