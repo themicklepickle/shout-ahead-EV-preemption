@@ -23,6 +23,7 @@ from sumolib import checkBinary  # Checks for the binary in environ vars
 import traci
 
 if __name__ == "__main__":
+    sys.stdout = open("log/" + str(datetime.datetime.now()), "w")
 
     for _ in range(10):
         # --- TRAINING OPTIONS ---
@@ -102,6 +103,7 @@ if __name__ == "__main__":
                 stop = timeit.default_timer()
                 print('Time: ', round(stop - start, 1))
                 episode += 1
+                sys.stdout.flush()
 
                 needsTesting = []
                 for ap in resultingAgentPools:

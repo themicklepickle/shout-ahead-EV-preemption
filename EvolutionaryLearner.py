@@ -117,6 +117,7 @@ def createNewGeneration(agentPools):
         numOfSurvivingIndividuals = len(newGeneration)
 
         # Create however many children possible to also leave room for max number of mutations
+        print("Float error before:", (maxIndividuals-numOfSurvivingIndividuals)-numOfIndividualsToMutate)
         for x in range(int((maxIndividuals-numOfSurvivingIndividuals)-numOfIndividualsToMutate)):
             parent1 = chooseFirstParent(newGeneration)
             parent2 = chooseSecondParent(newGeneration, parent1)
