@@ -10,6 +10,7 @@ import time
 from DriverEV import DriverEV
 import EvolutionaryLearner
 
+from Notifier import Notifier
 
 # Importing needed python modules from the $SUMO_HOME/tools directory
 if 'SUMO_HOME' in os.environ:
@@ -23,6 +24,16 @@ from sumolib import checkBinary  # Checks for the binary in environ vars
 import traci
 
 if __name__ == "__main__":
+    with open("email login.txt", "r") as f:
+        emailLogin = [line.strip() for line in f.readlines()]
+    notifier = Notifier(
+        email=emailLogin[0],
+        password=emailLogin[1],
+        recipients=[
+            "michael.xu1816@gmail.com"
+        ]
+    )
+
     sys.stdout = open(f"log/out.txt", "w")
 
     # for _ in range(10):
@@ -142,8 +153,10 @@ if __name__ == "__main__":
               "----- End time:", datetime.datetime.now())
         generationRuntimes.append(time.time() - startTime)
         generations += 1
+        notifier.sendEmail(f"Gen {generations} of {totalGenerations} complete!", f"Start: {genStart}\nEnd: {datetime.datetime.now()}")
 
     print("Start time:", simulationStartTime,
           "----- End time:", datetime.datetime.now())
     print("This simulation began at:", simulationStartTime)
+    notifier.sendEmail(f"COMPLETE!", f"All {totalGenerations} have been completed.")
     # Do something to save session stats here

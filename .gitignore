@@ -1,0 +1,8 @@
+*.pyc
+__pycache__
+**/testing
+.DS_Store
+test.py
+trafficDensity.txt
+TODO.txt
+email login.txt
