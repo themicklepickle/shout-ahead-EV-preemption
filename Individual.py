@@ -32,10 +32,10 @@ class Individual:
         self.stepCounter = 0
 
     def __str__(self) -> str:
-        return self.id
+        return str(self.id)
 
     def __repr__(self) -> str:
-        return self.id
+        return str(self.id)
 
     # RETURN INDIVIDUAL IDENTIFIER
     def getID(self):
