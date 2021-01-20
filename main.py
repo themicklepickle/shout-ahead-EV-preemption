@@ -12,6 +12,8 @@ import EvolutionaryLearner
 
 from Notifier import Notifier
 
+from Logger import Logger
+
 # Importing needed python modules from the $SUMO_HOME/tools directory
 if 'SUMO_HOME' in os.environ:
     tools = os.path.join(os.environ['SUMO_HOME'], 'tools')
@@ -34,7 +36,7 @@ if __name__ == "__main__":
         ]
     )
 
-    sys.stdout = open(f"log/out.txt", "w")
+    sys.stdout = Logger()
 
     # for _ in range(10):
     # --- TRAINING OPTIONS ---
@@ -82,6 +84,7 @@ if __name__ == "__main__":
         print('----- GENERATION {} of {}'.format(generations, totalGenerations))
         print("This simulation began at:", simulationStartTime)
         print("The average generation runtime is", sum(generationRuntimes)/generations)
+        sys.stdout.flush()
         genStart = datetime.datetime.now()
         startTime = time.time()
 
@@ -154,9 +157,12 @@ if __name__ == "__main__":
         generationRuntimes.append(time.time() - startTime)
         generations += 1
         notifier.sendEmail(f"Gen {generations} of {totalGenerations} complete!", f"Start: {genStart}\nEnd: {datetime.datetime.now()}")
+        sys.stdout.flush()
 
     print("Start time:", simulationStartTime,
           "----- End time:", datetime.datetime.now())
     print("This simulation began at:", simulationStartTime)
     notifier.sendEmail(f"COMPLETE!", f"All {totalGenerations} have been completed.")
+    sys.stdout.flush()
+
     # Do something to save session stats here
