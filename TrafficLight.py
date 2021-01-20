@@ -226,7 +226,7 @@ class TrafficLight:
     def getNextRule(self, validRulesRS, validRulesRSint, time):
         self.numOfRulesSelected += 1
         # First, select a rule from RS and communicate it
-        intendedRule = self.getAssignedIndividual().selectRule(validRulesRS)    # Get intended rule to apply
+        intendedRule = self.getAssignedIndividual().selectRule(validRulesRS)  # Get intended rule to apply
         if intendedRule == -1:
             self.numOfTimesNoRSRuleWasValid += 1
             if self.currentRule is None or self.currentRule == -1:

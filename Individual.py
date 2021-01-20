@@ -1,5 +1,6 @@
 import os
 import sys
+import statistics
 from numpy.random import choice
 
 
@@ -25,6 +26,10 @@ class Individual:
         self.ruleWeightSum = 0
         self.aggregateVehicleWaitTime = 0
         self.fitnessRuleApplicationPenalty = 0      # A penalty applied to the fitness of an Individual when its rule aren't applied, or result in negative outcomes, in a simulation
+        self.meanEVSpeedsList = []
+        self.meanEVSpeed = 0
+        self.EVStops = 0
+        self.stepCounter = 0
 
     # RETURN INDIVIDUAL IDENTIFIER
     def getID(self):
@@ -99,6 +104,29 @@ class Individual:
 
     def resetAggregateVehicleWaitTime(self):
         self.aggregateVehicleWaitTime = 0
+
+    # ----------- EVs ----------- #
+    def getMeanEVSpeed(self):
+        return self.meanEVSpeed
+
+    def updateMeanEVSpeed(self, EVSpeedsList):
+        if EVSpeedsList == []:
+            return
+        self.meanEVSpeedsList.append(statistics.mean(EVSpeedsList))
+        self.meanEVSpeed = statistics.mean(self.meanEVSpeedsList)
+
+    def resetMeanEVSpeed(self):
+        self.meanEVSpeedsList = []
+        self.meanEVSpeed = 0
+
+    def getEVStops(self):
+        return self.EVStops
+
+    def updateEVStops(self, numEVStops):
+        self.EVStops += numEVStops
+
+    def resetEVStops(self):
+        self.EVStops = 0
 
     # RETURN SUM OF ALL WEIGHTS IN A RULE SET
     def getSumRuleWeights(self):
