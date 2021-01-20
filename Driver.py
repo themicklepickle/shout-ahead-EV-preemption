@@ -605,8 +605,8 @@ class Driver:
                             if lanesWithWaitingVehicles[i] in possibleLanes0:
                                 posLanesWaiting.append(
                                     lanesWithWaitingVehicles[i])
-                print("posLanesWaiting is", posLanesWaiting,
-                      "and lanesWithWaitingVeh is", lanesWithWaitingVehicles)
+                # print("posLanesWaiting is", posLanesWaiting,
+                #       "and lanesWithWaitingVeh is", lanesWithWaitingVehicles)
                 if len(posLanesWaiting) > 0 and posLanesWaiting == lanesWithWaitingVehicles:
                     traci.trafficlight.setPhase(tl.getName(), 0)
                     return True

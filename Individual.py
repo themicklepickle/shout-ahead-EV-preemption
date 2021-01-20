@@ -31,6 +31,12 @@ class Individual:
         self.EVStops = 0
         self.stepCounter = 0
 
+    def __str__(self) -> str:
+        return self.id
+
+    def __repr__(self) -> str:
+        return self.id
+
     # RETURN INDIVIDUAL IDENTIFIER
     def getID(self):
         return self.id
