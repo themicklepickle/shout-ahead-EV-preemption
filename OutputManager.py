@@ -12,7 +12,7 @@ def run(agentPools, avgGenTime, totalGenTime):
     finalGenRuntime = totalGenTime
 
     # Create new output file and add generation runtime information
-    f = open("simOutputData", "w")
+    f = open("log/simOutputData", "w")
     f.write("Final Generation Stats\n\nGeneration runtime:" + str(finalGenRuntime) + "\nAverage Generation runtime:" +
             str(avgGenRuntime) + "\n---------------------------\n\n Best Individuals per Agent Pool\n")
 
