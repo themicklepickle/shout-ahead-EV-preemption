@@ -1,5 +1,6 @@
 import os
 import sys
+from pathlib import Path
 import InitSetUp
 import OutputManager
 
@@ -27,7 +28,10 @@ from sumolib import checkBinary  # Checks for the binary in environ vars
 import traci
 
 if __name__ == "__main__":
-    with open("email login.txt", "r") as f:
+    folderName = datetime.datetime.now(pytz.timezone('America/Denver')).strftime('%a %b %d %I:%M:%S %p %Y')
+    Path(f"log/{folderName}").mkdir(parents=True, exist_ok=True)
+
+    with open("email.txt", "r") as f:
         emailLogin = [line.strip() for line in f.readlines()]
     notifier = Notifier(
         email=emailLogin[0],
@@ -37,7 +41,7 @@ if __name__ == "__main__":
         ]
     )
 
-    sys.stdout = Logger()
+    sys.stdout = Logger(folderName)
 
     # for _ in range(10):
     # --- TRAINING OPTIONS ---
@@ -88,6 +92,7 @@ if __name__ == "__main__":
         sys.stdout.flush()
         genStart = datetime.datetime.now(pytz.timezone('America/Denver')).strftime('%a %b %d %I:%M:%S %p %Y')
         startTime = time.time()
+        Path(f"log/{folderName}/gen_{generations}").mkdir(parents=True, exist_ok=True)
 
         # Prepare for next simulation run
         allIndividualsTested = False
@@ -139,7 +144,7 @@ if __name__ == "__main__":
 
         if generations + 1 < totalGenerations:
             # Update agent pools with a new generation of individuals
-            EvolutionaryLearner.createNewGeneration(setUpTuple[2])
+            EvolutionaryLearner.createNewGeneration(setUpTuple[2], folderName, generations)
             for ap in setUpTuple[2]:
                 for i in ap.getIndividualsSet():
                     i.resetSelectedCount()
@@ -148,12 +153,14 @@ if __name__ == "__main__":
                     i.resetEVStops()
             sys.stdout.flush()
         else:
-            OutputManager.run(setUpTuple[2], sum(generationRuntimes)/50, (sum(generationRuntimes)/50)*50)
+            OutputManager.run(setUpTuple[2], sum(generationRuntimes)/50, (sum(generationRuntimes)/50)*50, generations, totalGenerations, folderName)
             print("Output file created.")
+
+        OutputManager.run(setUpTuple[2], sum(generationRuntimes)/50, (sum(generationRuntimes)/50)*50, generations, totalGenerations, folderName)
+        notifier.run(setUpTuple[2], sum(generationRuntimes)/50, (sum(generationRuntimes)/50)*50, generations, totalGenerations)
 
         print(f"Generation start time: {genStart} ----- End time: {datetime.datetime.now(pytz.timezone('America/Denver')).strftime('%a %b %d %I:%M:%S %p %Y')}")
         generationRuntimes.append(time.time() - startTime)
-        notifier.run(setUpTuple[2], sum(generationRuntimes)/50, (sum(generationRuntimes)/50)*50, generations, totalGenerations)
         generations += 1
         sys.stdout.flush()
 

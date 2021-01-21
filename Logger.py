@@ -2,9 +2,9 @@ import sys
 
 
 class Logger(object):
-    def __init__(self):
+    def __init__(self, folderName):
         self.terminal = sys.stdout
-        self.log = open("log/out.txt", "w")
+        self.log = open(f"log/{folderName}/stdout.txt", "w")
 
     def write(self, message):
         self.terminal.write(message)

@@ -106,7 +106,7 @@ def fit(simTime, agentPools):
 
 
 # CREATES NEW GENERATION AFTER A SIMULATION RUN AND UPDATES AGENT POOLS' INDIVIDUAL SET WITH NEW GEN
-def createNewGeneration(agentPools):
+def createNewGeneration(agentPools, folderName, generations):
     print("Creating a new Generation.")
     for ap in agentPools:
         individuals = ap.getIndividualsSet()
@@ -131,7 +131,8 @@ def createNewGeneration(agentPools):
 
         # Add first
         # Lines 100 - 130 are file writing lines just for mid-simulation validation
-        fileName = f"log/{ap.getID()}"
+
+        fileName = f"log/{folderName}/gen_{generations}/{ap.getID()}.txt"
         f = open(fileName, "w")
         f.write("New Generation includes these individuals and their rules.\n\n\n")
 

@@ -7,13 +7,18 @@ import traci
 from operator import attrgetter
 
 
-def run(agentPools, avgGenTime, totalGenTime):
+def run(agentPools, avgGenTime, totalGenTime, generations, totalGenerations, folderName):
     avgGenRuntime = avgGenTime
     finalGenRuntime = totalGenTime
 
     # Create new output file and add generation runtime information
-    f = open("log/simOutputData.txt", "w")
-    f.write("Final Generation Stats\n\n")
+    if generations + 1 < totalGenerations:
+        f = open(f"log/{folderName}/gen_{generations}/simOutputData.txt", "w")
+        f.write(f"Generation {generations} Stats\n\n")
+    else:
+        f = open(f"log/{folderName}/simOutputData.txt", "w")
+        f.write("Final Generation Stats\n\n")
+
     f.write(f"Generation runtime: {finalGenRuntime}\n")
     f.write(f"Average Generation runtime: {avgGenRuntime}")
     f.write("\n---------------------------\n\n")
