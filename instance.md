@@ -80,7 +80,7 @@
 
 ## 4. Run Simulation
 
-### Create ew tmux session
+### Create new tmux session
 - `tmux new -s l`
 
 ### Run simulation
