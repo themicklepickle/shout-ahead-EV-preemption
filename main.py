@@ -6,6 +6,7 @@ import OutputManager
 import datetime
 import timeit
 import time
+import pytz
 
 from DriverEV import DriverEV
 import EvolutionaryLearner
@@ -69,14 +70,14 @@ if __name__ == "__main__":
     # sumoCmd = [sumoBinary, "-c", "intersection/tlcs_config_train.sumocfg", "--no-step-log", "true", "--waiting-time-memory", str(max_steps)]
     sumoCmd = [sumoBinary, "-c", "config_file.sumocfg", "--waiting-time-memory", "5", "--time-to-teleport", "-1"]
 
-    print(f"----- Start time: {datetime.datetime.now()}")
+    print(f"----- Start time: {datetime.datetime.now(pytz.timezone('America/Denver')).strftime('%a %b %d %I:%M:%S %p %Y')}")
     setUpTuple = InitSetUp.run(sumoNetworkName, individualRunsPerGen)
     simRunner = DriverEV(sumoCmd, setUpTuple, maxGreenPhaseTime, maxYellowPhaseTime, maxSimulationTime,
                          maxGreenAndYellowPhaseTime_UDRule, maxRedPhaseTime_UDRule, assignGreenPhaseToSingleWaitingPhase_UDRule)
     generations = 1
     episode = 0
     allIndividualsTested = False
-    simulationStartTime = datetime.datetime.now()
+    simulationStartTime = datetime.datetime.now(pytz.timezone('America/Denver')).strftime('%a %b %d %I:%M:%S %p %Y')
     generationRuntimes = []
 
     # Evolutionary learning loop
@@ -85,7 +86,7 @@ if __name__ == "__main__":
         print(f"This simulation began at: {simulationStartTime}")
         print(f"The average generation runtime is {sum(generationRuntimes)/generations}")
         sys.stdout.flush()
-        genStart = datetime.datetime.now()
+        genStart = datetime.datetime.now(pytz.timezone('America/Denver')).strftime('%a %b %d %I:%M:%S %p %Y')
         startTime = time.time()
 
         # Prepare for next simulation run
@@ -150,13 +151,13 @@ if __name__ == "__main__":
             OutputManager.run(setUpTuple[2], sum(generationRuntimes)/50, (sum(generationRuntimes)/50)*50)
             print("Output file created.")
 
-        print(f"Generation start time: {genStart} ----- End time: {datetime.datetime.now()}")
+        print(f"Generation start time: {genStart} ----- End time: {datetime.datetime.now(pytz.timezone('America/Denver')).strftime('%a %b %d %I:%M:%S %p %Y')}")
         generationRuntimes.append(time.time() - startTime)
         notifier.run(setUpTuple[2], sum(generationRuntimes)/50, (sum(generationRuntimes)/50)*50, generations, totalGenerations)
         generations += 1
         sys.stdout.flush()
 
-    print(f"Generation start time: {simulationStartTime} ----- End time: {datetime.datetime.now()}")
+    print(f"Generation start time: {simulationStartTime} ----- End time: {datetime.datetime.now(pytz.timezone('America/Denver')).strftime('%a %b %d %I:%M:%S %p %Y')}")
     print(f"This simulation began at: {simulationStartTime}")
     notifier.sendEmail(f"COMPLETE!", f"All {totalGenerations} have been completed.")
     sys.stdout.flush()
