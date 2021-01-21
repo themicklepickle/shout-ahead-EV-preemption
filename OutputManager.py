@@ -21,8 +21,9 @@ def run(agentPools, avgGenTime, totalGenTime):
 
     for ap in agentPools:
         actionSet = ""
-        for a in ap.getActionSet():
-            actionSet += "," + a + " "
+        for a in ap.getActionSet()[:-1]:
+            actionSet += f"{a}, "
+        actionSet += ap.getActionSet()[-1]
 
         f.write(f"Agent Pool {ap.getID()}\n")
         f.write(f"This agent pool has an action set of: {actionSet}\n")
@@ -36,8 +37,9 @@ def run(agentPools, avgGenTime, totalGenTime):
         ruleCount = 1
         for rule in topIndividual.getRS():
             cond = ""
-            for c in rule.getConditions():
-                cond += "," + c + " "
+            for c in rule.getConditions()[:-1]:
+                cond += f"{c}, "
+            cond += rule.getConditions()[-1]
 
             f.write(f"RS Rule {ruleCount}: <{cond}> , <{rule.getAction()}> and rule has a weight of {rule.getWeight()}\n\n")
             ruleCount += 1
@@ -46,8 +48,9 @@ def run(agentPools, avgGenTime, totalGenTime):
         ruleCount = 1
         for rule in topIndividual.getRSint():
             cond = ""
-            for c in rule.getConditions():
-                cond += "," + c + " "
+            for c in rule.getConditions()[:-1]:
+                cond += f"{c}, "
+            cond += rule.getConditions()[-1]
 
             f.write(f"RSint Rule {ruleCount}: <{cond}> , <{rule.getAction()}> and rule has a weight of {rule.getWeight()}\n\n")
             ruleCount += 1
