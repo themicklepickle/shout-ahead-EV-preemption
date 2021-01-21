@@ -23,7 +23,7 @@ global maxNumOfMutations
 
 numOfIndividualsToMutate = 0.1667
 percentOfLastGenerationBred = .3
-maxNumOfMutations = 1                   # maximum number of mutations to a rule
+maxNumOfMutations = 1  # maximum number of mutations to a rule
 
 # Specifications for making Individuals and Rules
 global maxRulePredicates

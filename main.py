@@ -155,8 +155,8 @@ if __name__ == "__main__":
         print("Generation start time:", genStart,
               "----- End time:", datetime.datetime.now())
         generationRuntimes.append(time.time() - startTime)
-        generations += 1
         notifier.sendEmail(f"Gen {generations} of {totalGenerations} complete!", f"Start: {genStart}\nEnd: {datetime.datetime.now()}")
+        generations += 1
         sys.stdout.flush()
 
     print("Start time:", simulationStartTime,
