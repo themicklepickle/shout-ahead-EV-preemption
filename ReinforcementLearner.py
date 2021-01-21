@@ -18,7 +18,7 @@ waitTimeReducedFactor = 1
 EVSpeedFactor = 5
 EVTrafficDensityFactor = 5
 penaltyMultiplier = -0.05
-EVIsStoppedPenalty = -100
+EVIsStoppedPenalty = -20
 
 
 def updatedWeight(rule, nextRule, throughputRatio, waitTimeReducedRatio, intersectionQueueDifference, EVChangeInSpeed, EVChangeInTrafficDensity, EVIsStopped):
@@ -50,5 +50,4 @@ def determinePenalty(intersectionQueueDifference, EVIsStopped):
         penalty += intersectionQueueDifference * penaltyMultiplier
     if EVIsStopped is True:
         penalty += EVIsStoppedPenalty
-    print(penalty)
     return penalty
