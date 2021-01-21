@@ -15,23 +15,23 @@ class Rule:
         self.doNothingAction = False    # Flag to keep track of an action being "do nothing"
         self.setDoNothingFlag()         # Used by Driver to determine if action is "Do nothing", which cannot be applied in the simulator
 
-        # GET RULE TYPE
+    # GET RULE TYPE
     def getType(self):
         return self.type
 
-        # GET RULE CONDITIONS
+    # GET RULE CONDITIONS
     def getConditions(self):
         return self.conditions
 
-        # UPDATE RULE CONDITIONS
+    # UPDATE RULE CONDITIONS
     def setConditions(self, conditions):
         self._conditions = conditions
 
-        # GET RULE ACTION
+    # GET RULE ACTION
     def getAction(self):
         return self.action
 
-        # UPDATE RULE ACTION
+    # UPDATE RULE ACTION
     def setAction(self, action):
         if action == -1:
             print("Setting action to -1")
@@ -40,30 +40,30 @@ class Rule:
         else:
             self._action = action
 
-        # GET CORRESPONDING AGENT POOL
+    # GET CORRESPONDING AGENT POOL
     def getAgentPool(self):
         return self.agentPool
 
-        # UPDATE AGENT POOL RULE ORIGINATED FROM
+    # UPDATE AGENT POOL RULE ORIGINATED FROM
     def setAgentPool(self, agentPool):
         self.agentPool = agentPool
 
-        # GET RULE WEIGHT
+    # GET RULE WEIGHT
     def getWeight(self):
         return self.weight
 
     def setWeight(self, weight):
         self.weight = weight
 
-        # UPDATE WEIGHT OF RULE AFTER SIMULATION RUN
+    # UPDATE WEIGHT OF RULE AFTER SIMULATION RUN
     def updateWeight(self, weight):
         self.weight += weight
 
-        # UPDATE NUMBER OF TIMES A RULE HAS BEEN APPLIED
+    # UPDATE NUMBER OF TIMES A RULE HAS BEEN APPLIED
     def selected(self):
         self.timesSelected += 1
 
-        # GET NUMBER OF TIMES A RULE HAS BEEN SELECTED
+    # GET NUMBER OF TIMES A RULE HAS BEEN SELECTED
     def getTimesSelected(self):
         return self.timesSelected
 
