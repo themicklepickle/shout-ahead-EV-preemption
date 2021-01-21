@@ -8,8 +8,8 @@
 ## 2. Setup SSH from iTerm to GCP instance
 
 ### Create new SSH key
-- run `ssh-keygen -t rsa -f ~/.ssh/[INSTANCE NAME] -C michael`
-- run `chmod 400 ~/.ssh/[INSTANCE NAME]`
+- `ssh-keygen -t rsa -f ~/.ssh/[INSTANCE NAME] -C michael`
+- `chmod 400 ~/.ssh/[INSTANCE NAME]`
 
 ### Add SSH key to GCP instance
 - open the public SSH key file located at `~/.ssh/[INSTANCE NAME].pub`
