@@ -232,11 +232,11 @@ class DriverEV(Driver):
             tl.resetRecievedIntentions()
             i = tl.getAssignedIndividual()
             i.updateLastRunTime(simRunTime)
-            print("Individual", i, "has a last runtime of", i.getLastRunTime())
+            print(f"Individual {i} has a last runtime of {i.getLastRunTime()}")
             i.updateFitness(EvolutionaryLearner.rFit(i, simRunTime))
-            print(tl.getName(), "'s coop rules were invalid", tl.getCoopRuleValidRate(), "percent of the time.")
-            print(tl.getName(), "'s RS rules were invalid", tl.getRSRuleValidRate(), "percent of the time.")
-            print("\n\nA total of", numOfRSRulesApplied, "rules from RS were applied and", numofRSintRulesApplied, "rules from RSint were applied.")
+            print(f"{tl.getName()}'s RS rules were invalid {round(tl.getRSRuleValidRate(), 2)}% of the time.")
+            print(f"{tl.getName()}'s RSint rules were invalid {round(tl.getCoopRuleValidRate(), 2)}% of the time.")
+            print(f"\n\nA total of {numOfRSRulesApplied} rules from RS were applied and {numofRSintRulesApplied} rules from RSint were applied.")
         traci.close()  # End simulation
 
         # Returns all the agent pools to the main module
