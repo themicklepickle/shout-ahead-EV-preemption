@@ -66,10 +66,10 @@ if __name__ == "__main__":
         sumoBinary = checkBinary('sumo-gui')
 
     # initializations
-    #sumoCmd = [sumoBinary, "-c", "intersection/tlcs_config_train.sumocfg", "--no-step-log", "true", "--waiting-time-memory", str(max_steps)]
+    # sumoCmd = [sumoBinary, "-c", "intersection/tlcs_config_train.sumocfg", "--no-step-log", "true", "--waiting-time-memory", str(max_steps)]
     sumoCmd = [sumoBinary, "-c", "config_file.sumocfg", "--waiting-time-memory", "5", "--time-to-teleport", "-1"]
 
-    print("----- Start time:", datetime.datetime.now())
+    print(f"----- Start time: {datetime.datetime.now()}")
     setUpTuple = InitSetUp.run(sumoNetworkName, individualRunsPerGen)
     simRunner = DriverEV(sumoCmd, setUpTuple, maxGreenPhaseTime, maxYellowPhaseTime, maxSimulationTime,
                          maxGreenAndYellowPhaseTime_UDRule, maxRedPhaseTime_UDRule, assignGreenPhaseToSingleWaitingPhase_UDRule)
@@ -81,9 +81,9 @@ if __name__ == "__main__":
 
     # Evolutionary learning loop
     while generations <= totalGenerations:
-        print('----- GENERATION {} of {}'.format(generations, totalGenerations))
-        print("This simulation began at:", simulationStartTime)
-        print("The average generation runtime is", sum(generationRuntimes)/generations)
+        print(f"----- GENERATION {generations} of {totalGenerations}")
+        print(f"This simulation began at: {simulationStartTime}")
+        print(f"The average generation runtime is {sum(generationRuntimes)/generations}")
         sys.stdout.flush()
         genStart = datetime.datetime.now()
         startTime = time.time()
@@ -106,15 +106,13 @@ if __name__ == "__main__":
             simRunner = DriverEV(sumoCmd, setUpTuple, maxGreenPhaseTime, maxYellowPhaseTime, maxSimulationTime,
                                  maxGreenAndYellowPhaseTime_UDRule, maxRedPhaseTime_UDRule, assignGreenPhaseToSingleWaitingPhase_UDRule)
 
-            print('----- Episode {}'.format(episode+1),
-                  "of GENERATION {} of {}".format(generations, totalGenerations))
-            print("Generation start time:", genStart)
-            print("The average generation runtime is",
-                  sum(generationRuntimes)/generations)
+            print(f"----- Episode {episode+1} of GENERATION {generations} of {totalGenerations}")
+            print(f"Generation start time: {genStart}")
+            print(f"The average generation runtime is {sum(generationRuntimes)/generations}")
             start = timeit.default_timer()
             resultingAgentPools = simRunner.run()  # run the simulation
             stop = timeit.default_timer()
-            print('Time: ', round(stop - start, 1))
+            print(f"Time: {round(stop - start, 1)}")
             episode += 1
             sys.stdout.flush()
 
@@ -152,16 +150,14 @@ if __name__ == "__main__":
             OutputManager.run(setUpTuple[2], sum(generationRuntimes)/50, (sum(generationRuntimes)/50)*50)
             print("Output file created.")
 
-        print("Generation start time:", genStart,
-              "----- End time:", datetime.datetime.now())
+        print(f"Generation start time: {genStart} ----- End time: {datetime.datetime.now()}")
         generationRuntimes.append(time.time() - startTime)
-        notifier.sendEmail(f"Gen {generations} of {totalGenerations} complete!", f"Start: {genStart}\nEnd: {datetime.datetime.now()}")
+        notifier.run(setUpTuple[2], sum(generationRuntimes)/50, (sum(generationRuntimes)/50)*50, generations, totalGenerations)
         generations += 1
         sys.stdout.flush()
 
-    print("Start time:", simulationStartTime,
-          "----- End time:", datetime.datetime.now())
-    print("This simulation began at:", simulationStartTime)
+    print(f"Generation start time: {simulationStartTime} ----- End time: {datetime.datetime.now()}")
+    print(f"This simulation began at: {simulationStartTime}")
     notifier.sendEmail(f"COMPLETE!", f"All {totalGenerations} have been completed.")
     sys.stdout.flush()
 
