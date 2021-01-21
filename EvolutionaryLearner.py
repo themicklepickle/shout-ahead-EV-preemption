@@ -51,10 +51,10 @@ def rFit(individual, simTime):
         return simTime - bestSUMORuntime
     else:
         bestIndivAggregateVehWaitTime = individual.getAgentPool().getBestIndividualAggregateVehWaitTime()
-        bestIndivMeanEVSpeed = individual.getAgentPool().getBestIndividualMeanEVSpeed()
-        bestIndivEVStops = individual.getAgentPool().getBestIndividualEVStops()
         indivAggrVehWaitTime = individual.getAggregateVehicleWaitTime()
+        bestIndivMeanEVSpeed = individual.getAgentPool().getBestIndividualMeanEVSpeed()
         indivMeanEVSpeed = individual.getMeanEVSpeed()
+        bestIndivEVStops = individual.getAgentPool().getBestIndividualEVStops()
         indivEVStops = individual.getEVStops()
 
         fitness = 0
@@ -74,14 +74,14 @@ def rFit(individual, simTime):
         # TODO: explore the values here and check to make sure that finding the sum works
         if indivMeanEVSpeed == bestIndivMeanEVSpeed:
             fitness += bestIndivMeanEVSpeed
-        elif indivMeanEVSpeed - bestIndivMeanEVSpeed < bestIndivMeanEVSpeed*.1:
-            fitness += indivMeanEVSpeed*10
-        elif indivMeanEVSpeed - bestIndivMeanEVSpeed < bestIndivMeanEVSpeed*.2:
-            fitness += indivMeanEVSpeed*20
-        elif indivMeanEVSpeed - bestIndivMeanEVSpeed < bestIndivMeanEVSpeed*.3:
-            fitness += indivMeanEVSpeed*30
+        elif bestIndivMeanEVSpeed - indivMeanEVSpeed < bestIndivMeanEVSpeed*.1:
+            fitness += (bestIndivMeanEVSpeed - indivMeanEVSpeed)*10
+        elif bestIndivMeanEVSpeed - indivMeanEVSpeed < bestIndivMeanEVSpeed*.2:
+            fitness += (bestIndivMeanEVSpeed - indivMeanEVSpeed)*20
+        elif bestIndivMeanEVSpeed - indivMeanEVSpeed < bestIndivMeanEVSpeed*.3:
+            fitness += (bestIndivMeanEVSpeed - indivMeanEVSpeed)*30
         else:
-            fitness += indivMeanEVSpeed*40
+            fitness += (bestIndivMeanEVSpeed - indivMeanEVSpeed)*40
 
         if indivEVStops == bestIndivEVStops:
             fitness += bestIndivEVStops
@@ -94,7 +94,7 @@ def rFit(individual, simTime):
         else:
             fitness += indivEVStops*40
 
-        return fitness
+        return fitness / 3
 
 
 # FITNESS FUNCTION FOR ONE GENERATION
