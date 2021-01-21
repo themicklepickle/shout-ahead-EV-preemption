@@ -76,4 +76,4 @@ class Notifier:
 
             message += "*******\n"
 
-        self.sendEmail(f"Gen {generations} of {totalGenerations} complete!")
+        self.sendEmail(f"Gen {generations} of {totalGenerations} complete!", message)
