@@ -115,14 +115,20 @@ class DriverEV(Driver):
                     EVTrafficDensityBefore = tl.getEVTrafficDensity()
 
                     # Only evaluate EV parameters for the reinforcement learning if there is an EV this step and an EV the previous step
-                    if leadingEV is not None and EVSpeedBefore is not None and EVTrafficDensityBefore is not None:
+                    if leadingEV is not None:
                         EVSpeedAfter = leadingEV["speed"]
-                        EVChangeInSpeed = EVSpeedAfter - EVSpeedBefore
-
                         EVTrafficDensityAfter = self.EVTrafficDensity(leadingEV["queue"], leadingEV["distance"])
-                        EVChangeInTrafficDensity = EVTrafficDensityAfter - EVTrafficDensityBefore
+                        EVIsStopped = traci.vehicle.getWaitingTime(leadingEV["ID"].split("_")[0]) > 0
 
-                        EVIsStopped = traci.vehicle.isStopped(leadingEV["ID"].split("_")[0])
+                        if EVSpeedBefore is not None:
+                            EVChangeInSpeed = EVSpeedAfter - EVSpeedBefore
+                        else:
+                            EVChangeInSpeed = None
+
+                        if EVTrafficDensityBefore is not None:
+                            EVChangeInTrafficDensity = EVTrafficDensityAfter - EVTrafficDensityBefore
+                        else:
+                            EVChangeInTrafficDensity = None
                     else:
                         EVChangeInSpeed = None
                         EVChangeInTrafficDensity = None
