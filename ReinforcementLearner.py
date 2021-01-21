@@ -15,8 +15,8 @@ learningFactor = 0.5
 discountRate = 0.5
 throughputFactor = 1
 waitTimeReducedFactor = 1
-EVSpeedFactor = 1
-EVTrafficDensityFactor = 1
+EVSpeedFactor = 5
+EVTrafficDensityFactor = 5
 penaltyMultiplier = -0.05
 EVIsStoppedPenalty = -100
 
@@ -50,4 +50,5 @@ def determinePenalty(intersectionQueueDifference, EVIsStopped):
         penalty += intersectionQueueDifference * penaltyMultiplier
     if EVIsStopped is True:
         penalty += EVIsStoppedPenalty
+    print(penalty)
     return penalty
