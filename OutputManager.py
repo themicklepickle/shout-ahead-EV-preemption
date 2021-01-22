@@ -46,7 +46,7 @@ def run(agentPools, avgGenTime, totalGenTime, generations, totalGenerations, fol
                 cond += f"{c}, "
             cond += rule.getConditions()[-1]
 
-            f.write(f"RS Rule {ruleCount}: <{cond}> , <{rule.getAction()}> and rule has a weight of {rule.getWeight()}\n\n")
+            f.write(f"RS Rule {ruleCount}: <{cond}>, <{rule.getAction()}> and rule has a weight of {rule.getWeight()}\n\n")
             ruleCount += 1
 
         f.write("RSint:\n")
@@ -57,7 +57,7 @@ def run(agentPools, avgGenTime, totalGenTime, generations, totalGenerations, fol
                 cond += f"{c}, "
             cond += rule.getConditions()[-1]
 
-            f.write(f"RSint Rule {ruleCount}: <{cond}> , <{rule.getAction()}> and rule has a weight of {rule.getWeight()}\n\n")
+            f.write(f"RSint Rule {ruleCount}: <{cond}>, <{rule.getAction()}> and rule has a weight of {rule.getWeight()}\n\n")
             ruleCount += 1
 
         f.write("*******\n")
