@@ -156,11 +156,12 @@ if __name__ == "__main__":
             OutputManager.run(setUpTuple[2], sum(generationRuntimes)/50, (sum(generationRuntimes)/50)*50, generations, totalGenerations, folderName)
             print("Output file created.")
 
+        print(f"Generation start time: {genStart} ----- End time: {datetime.datetime.now(pytz.timezone('America/Denver')).strftime('%a %b %d %I:%M:%S %p %Y')}")
+        generationRuntimes.append(time.time() - startTime)
+
         OutputManager.run(setUpTuple[2], sum(generationRuntimes)/50, (sum(generationRuntimes)/50)*50, generations, totalGenerations, folderName)
         notifier.run(setUpTuple[2], sum(generationRuntimes)/50, (sum(generationRuntimes)/50)*50, generations, totalGenerations)
 
-        print(f"Generation start time: {genStart} ----- End time: {datetime.datetime.now(pytz.timezone('America/Denver')).strftime('%a %b %d %I:%M:%S %p %Y')}")
-        generationRuntimes.append(time.time() - startTime)
         generations += 1
         sys.stdout.flush()
 
