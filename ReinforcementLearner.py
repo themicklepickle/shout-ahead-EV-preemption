@@ -15,10 +15,10 @@ learningFactor = 0.5
 discountRate = 0.5
 throughputFactor = 1
 waitTimeReducedFactor = 1
-EVSpeedFactor = 1
-EVTrafficDensityFactor = 1
+EVSpeedFactor = 5
+EVTrafficDensityFactor = 5
 penaltyMultiplier = -0.05
-EVIsStoppedPenalty = -100
+EVIsStoppedPenalty = -20
 
 
 def updatedWeight(rule, nextRule, throughputRatio, waitTimeReducedRatio, intersectionQueueDifference, EVChangeInSpeed, EVChangeInTrafficDensity, EVIsStopped):

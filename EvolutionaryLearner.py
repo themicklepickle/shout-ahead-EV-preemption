@@ -23,7 +23,7 @@ global maxNumOfMutations
 
 numOfIndividualsToMutate = 0.1667
 percentOfLastGenerationBred = .3
-maxNumOfMutations = 1                   # maximum number of mutations to a rule
+maxNumOfMutations = 1  # maximum number of mutations to a rule
 
 # Specifications for making Individuals and Rules
 global maxRulePredicates
@@ -51,10 +51,10 @@ def rFit(individual, simTime):
         return simTime - bestSUMORuntime
     else:
         bestIndivAggregateVehWaitTime = individual.getAgentPool().getBestIndividualAggregateVehWaitTime()
-        bestIndivMeanEVSpeed = individual.getAgentPool().getBestIndividualMeanEVSpeed()
-        bestIndivEVStops = individual.getAgentPool().getBestIndividualEVStops()
         indivAggrVehWaitTime = individual.getAggregateVehicleWaitTime()
+        bestIndivMeanEVSpeed = individual.getAgentPool().getBestIndividualMeanEVSpeed()
         indivMeanEVSpeed = individual.getMeanEVSpeed()
+        bestIndivEVStops = individual.getAgentPool().getBestIndividualEVStops()
         indivEVStops = individual.getEVStops()
 
         fitness = 0
@@ -74,14 +74,14 @@ def rFit(individual, simTime):
         # TODO: explore the values here and check to make sure that finding the sum works
         if indivMeanEVSpeed == bestIndivMeanEVSpeed:
             fitness += bestIndivMeanEVSpeed
-        elif indivMeanEVSpeed - bestIndivMeanEVSpeed < bestIndivMeanEVSpeed*.1:
-            fitness += indivMeanEVSpeed*10
-        elif indivMeanEVSpeed - bestIndivMeanEVSpeed < bestIndivMeanEVSpeed*.2:
-            fitness += indivMeanEVSpeed*20
-        elif indivMeanEVSpeed - bestIndivMeanEVSpeed < bestIndivMeanEVSpeed*.3:
-            fitness += indivMeanEVSpeed*30
+        elif bestIndivMeanEVSpeed - indivMeanEVSpeed < bestIndivMeanEVSpeed*.1:
+            fitness += (bestIndivMeanEVSpeed - indivMeanEVSpeed)*10
+        elif bestIndivMeanEVSpeed - indivMeanEVSpeed < bestIndivMeanEVSpeed*.2:
+            fitness += (bestIndivMeanEVSpeed - indivMeanEVSpeed)*20
+        elif bestIndivMeanEVSpeed - indivMeanEVSpeed < bestIndivMeanEVSpeed*.3:
+            fitness += (bestIndivMeanEVSpeed - indivMeanEVSpeed)*30
         else:
-            fitness += indivMeanEVSpeed*40
+            fitness += (bestIndivMeanEVSpeed - indivMeanEVSpeed)*40
 
         if indivEVStops == bestIndivEVStops:
             fitness += bestIndivEVStops
@@ -94,7 +94,7 @@ def rFit(individual, simTime):
         else:
             fitness += indivEVStops*40
 
-        return fitness
+        return fitness / 3
 
 
 # FITNESS FUNCTION FOR ONE GENERATION
@@ -106,7 +106,7 @@ def fit(simTime, agentPools):
 
 
 # CREATES NEW GENERATION AFTER A SIMULATION RUN AND UPDATES AGENT POOLS' INDIVIDUAL SET WITH NEW GEN
-def createNewGeneration(agentPools):
+def createNewGeneration(agentPools, folderName, generations):
     print("Creating a new Generation.")
     for ap in agentPools:
         individuals = ap.getIndividualsSet()
@@ -131,21 +131,22 @@ def createNewGeneration(agentPools):
 
         # Add first
         # Lines 100 - 130 are file writing lines just for mid-simulation validation
-        fileName = str(ap.getID())
+
+        fileName = f"log/{folderName}/gen_{generations}/{ap.getID()}.txt"
         f = open(fileName, "w")
         f.write("New Generation includes these individuals and their rules.\n\n\n")
 
         individualCount = 1
         for i in newGeneration:
             ruleCount = 1
-            f.write("Individual" + str(individualCount) + "has a fitness of " + str(i.getFitness()) + " and a last runtime of " + str(i.getLastRunTime()) + " and contains the following rules:\n\n")
+            f.write(f"Individual {individualCount}) has a fitness of {i.getFitness()} and a last runtime of {i.getLastRunTime()} and contains the following rules:\n\n")
             f.write("Rules in RS:\n")
             for rule in i.getRS():
                 cond = ""
                 for c in rule.getConditions():
                     cond += "," + c + " "
 
-                f.write("\nRule" + str(ruleCount) + ": (" + str(rule) + ") <" + cond + ">, <" + str(rule.getAction()) + "> and rule has a weight of" + str(rule.getWeight()) + "\n\n")
+                f.write(f"\nRule {ruleCount}: ({rule}) <{cond}>, <{rule.getAction()}> and rule has a weight of {rule.getWeight()}\n\n")
                 ruleCount += 1
 
             ruleCount = 1
@@ -155,7 +156,7 @@ def createNewGeneration(agentPools):
                 for c in rule.getConditions():
                     cond += "," + c + " "
 
-                f.write("\nRule" + str(ruleCount) + ": <" + cond + ">, <" + str(rule.getAction()) + "> and rule has a weight of" + str(rule.getWeight()) + "\n\n")
+                f.write(f"\nRule {ruleCount}: ({rule}) <{cond}>, <{rule.getAction()}> and rule has a weight of {rule.getWeight()}\n\n")
                 ruleCount += 1
 
             f.write("-------------------\n\n")
@@ -200,7 +201,7 @@ def createRandomRule(agentPool, ruleType):
             newCond = agentPool.getRandomRSintPredicate()
             if checkValidCond(newCond, conditions):
                 conditions.append(newCond)
-                #print("Conditions set now contains", conditions, "\n\n")
+                # print("Conditions set now contains", conditions, "\n\n")
 
     # Get index of possible action. SUMO changes phases on indexes
     action = randrange(0, len(agentPool.getActionSet()))     # Set rule action to a random action from ActionSet pertaining to Agent Pool being serviced

@@ -115,14 +115,20 @@ class DriverEV(Driver):
                     EVTrafficDensityBefore = tl.getEVTrafficDensity()
 
                     # Only evaluate EV parameters for the reinforcement learning if there is an EV this step and an EV the previous step
-                    if leadingEV is not None and EVSpeedBefore is not None and EVTrafficDensityBefore is not None:
+                    if leadingEV is not None:
                         EVSpeedAfter = leadingEV["speed"]
-                        EVChangeInSpeed = EVSpeedAfter - EVSpeedBefore
-
                         EVTrafficDensityAfter = self.EVTrafficDensity(leadingEV["queue"], leadingEV["distance"])
-                        EVChangeInTrafficDensity = EVTrafficDensityAfter - EVTrafficDensityBefore
+                        EVIsStopped = traci.vehicle.getWaitingTime(leadingEV["ID"].split("_")[0]) > 0
 
-                        EVIsStopped = traci.vehicle.isStopped(leadingEV["ID"].split("_")[0])
+                        if EVSpeedBefore is not None:
+                            EVChangeInSpeed = EVSpeedAfter - EVSpeedBefore
+                        else:
+                            EVChangeInSpeed = None
+
+                        if EVTrafficDensityBefore is not None:
+                            EVChangeInTrafficDensity = EVTrafficDensityAfter - EVTrafficDensityBefore
+                        else:
+                            EVChangeInTrafficDensity = None
                     else:
                         EVChangeInSpeed = None
                         EVChangeInTrafficDensity = None
@@ -226,11 +232,11 @@ class DriverEV(Driver):
             tl.resetRecievedIntentions()
             i = tl.getAssignedIndividual()
             i.updateLastRunTime(simRunTime)
-            print("Individual", i, "has a last runtime of", i.getLastRunTime())
+            print(f"Individual {i} has a last runtime of {i.getLastRunTime()}")
             i.updateFitness(EvolutionaryLearner.rFit(i, simRunTime))
-            print(tl.getName(), "'s coop rules were invalid", tl.getCoopRuleValidRate(), "percent of the time.")
-            print(tl.getName(), "'s RS rules were invalid", tl.getRSRuleValidRate(), "percent of the time.")
-            print("\n\nA total of", numOfRSRulesApplied, "rules from RS were applied and", numofRSintRulesApplied, "rules from RSint were applied.")
+            print(f"{tl.getName()}'s RS rules were invalid {round(tl.getRSRuleValidRate(), 2)}% of the time.")
+            print(f"{tl.getName()}'s RSint rules were invalid {round(tl.getCoopRuleValidRate(), 2)}% of the time.")
+            print(f"\n\nA total of {numOfRSRulesApplied} rules from RS were applied and {numofRSintRulesApplied} rules from RSint were applied.")
         traci.close()  # End simulation
 
         # Returns all the agent pools to the main module
