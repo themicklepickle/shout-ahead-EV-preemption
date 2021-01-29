@@ -224,12 +224,18 @@ class TrafficLight:
         return False
 
     # DECIDE WHICH RULE TO APPLY AT CURRENT ACTION STEP
-    def getNextRule(self, validRulesRS, validRulesRSint, time):
+    def getNextRule(self, validRulesRS, validRulesRSint, validRulesRSev, isEVApproaching, time):
         self.numOfRulesSelected += 1
-        # First, select a rule from RS and communicate it
-        intendedRule = self.getAssignedIndividual().selectRule(validRulesRS)  # Get intended rule to apply
+        # First, select a rule from RS (or RSev if applicable) and communicate it
+        if isEVApproaching:
+            intendedRule = self.getAssignedIndividual().selectRule(validRulesRSev)  # Get intended rule to apply
+        else:
+            intendedRule = self.getAssignedIndividual().selectRule(validRulesRS)  # Get intended rule to apply
         if intendedRule == -1:
-            self.numOfTimesNoRSRuleWasValid += 1
+            if isEVApproaching:
+                self.numOfTimesNoRSevRuleWasValid += 1
+            else:
+                self.numOfTimesNoRSRuleWasValid += 1
             if self.currentRule is None or self.currentRule == -1:
                 # Return the Do Nothing action
                 self.setIntention(Intention(self, len(self.getAgentPool().getActionSet())-1, time))
