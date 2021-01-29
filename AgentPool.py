@@ -89,6 +89,9 @@ class AgentPool:
     def getRandomRSintPredicate(self):
         return self.coopPredicates[randrange(len(self.coopPredicates))]
 
+    def getRandomRSevPredicate(self):
+        return self.EVPredicates[randrange(len(self.EVPredicates))]
+
     def initCoopPredicates(self):
         return CoopPredicateSet.getPredicateSet(self)
 
