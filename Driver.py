@@ -7,6 +7,7 @@ import traci
 
 import PredicateSet
 import CoopPredicateSet
+import EVPredicateSet
 import EvolutionaryLearner
 import ReinforcementLearner
 from Rule import Rule
@@ -335,40 +336,41 @@ class Driver:
         else:
             return throughputWaitTime/totalWaitTime
 
-        # RETURNS RULES THAT ARE APPLICABLE AT A GIVEN TIME AND STATE
-    def getValidRules(self, trafficLight, individual):
-        validRS = []
-        validRSint = []
+    #     # RETURNS RULES THAT ARE APPLICABLE AT A GIVEN TIME AND STATE
+    # def getValidRules(self, trafficLight, individual):
+    #     validRS = []
+    #     validRSint = []
 
-        # Find valid RS rules
-        for rule in individual.getRS():
-            if self.evaluateRule(trafficLight, rule):
-                validRS.append(rule)
+    #     # Find valid RS rules
+    #     for rule in individual.getRS():
+    #         if self.evaluateRule(trafficLight, rule):
+    #             validRS.append(rule)
 
-            # Find valid RSint rules
-        for rule in individual.getRSint():
-            if self.evaluateCoopRule(trafficLight, rule):
-                validRSint.append(rule)
+    #         # Find valid RSint rules
+    #     for rule in individual.getRSint():
+    #         if self.evaluateCoopRule(trafficLight, rule):
+    #             validRSint.append(rule)
 
-        return (validRS, validRSint)
+    #     return (validRS, validRSint)
 
-        # EVALUATE RULE VALIDITY (fEval)
-    def evaluateRule(self, trafficLight, rule):
-        if rule.getType() == 1:
-            return self.evaluateCoopRule(trafficLight, rule)
+    #     # EVALUATE RULE VALIDITY (fEval)
+    # def evaluateRule(self, trafficLight, rule):
+    #     if rule.getType() == 1:
+    #         return self.evaluateCoopRule(trafficLight, rule)
 
-            # For each condition, its parameters are acquired and the condition predicate is evaluated
-        for cond in rule.getConditions():
-            predicateSplit = cond.split("_")
-            predicate = predicateSplit[0]
+    #         # For each condition, its parameters are acquired and the condition predicate is evaluated
+    #     for cond in rule.getConditions():
+    #         predicateSplit = cond.split("_")
+    #         predicate = predicateSplit[0]
 
-            # Construct predicate fuction call
-            predCall = getattr(PredicateSet, cond)(self.getPredicateParameters(trafficLight, predicate))
-            # Determine validity of predicate
-            if predCall == False:
-                return False
+    #         # Construct predicate fuction call
+    #          predCall = getattr(PredicateSet, cond)(self.getPredicateParameters(trafficLight, predicate))
 
-        return True  # if all predicates return true, evaluate rule as True
+    #         # Determine validity of predicate
+    #         if predCall == False:
+    #             return False
+
+    #     return True  # if all predicates return true, evaluate rule as True
 
         # EVALUATE RULE VALIDITY (fEval)
     def evaluateCoopRule(self, trafficLight, rule):

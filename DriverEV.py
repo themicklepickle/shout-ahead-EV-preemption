@@ -7,6 +7,7 @@ import traci
 
 import PredicateSet
 import CoopPredicateSet
+import EVPredicateSet
 import EvolutionaryLearner
 import ReinforcementLearner
 from Rule import Rule
@@ -603,3 +604,52 @@ class DriverEV(Driver):
             return parameters
 
 #---------------------------------- EV PREDICATES END ----------------------------------#
+
+    # RETURNS RULES THAT ARE APPLICABLE AT A GIVEN TIME AND STATE
+    def getValidRules(self, trafficLight, individual):
+        validRS = []
+        validRSint = []
+        validRSev = []
+
+        # Find valid RS rules
+        for rule in individual.getRS():
+            if self.evaluateRule(trafficLight, rule):
+                validRS.append(rule)
+
+        # Find valid RSint rules
+        for rule in individual.getRSint():
+            if self.evaluateCoopRule(trafficLight, rule):
+                validRSint.append(rule)
+
+        # Find valid RSev rules
+        for rule in individual.getRSev():
+            if self.evaluateRule(trafficLight, rule):
+                validRSev.append(rule)
+
+        return (validRS, validRSint, validRSev)
+
+    # EVALUATE RULE VALIDITY (fEval)
+
+    def evaluateRule(self, trafficLight, rule):
+        if rule.getType() == 1:
+            return self.evaluateCoopRule(trafficLight, rule)
+
+        # For each condition, its parameters are acquired and the condition predicate is evaluated
+        for cond in rule.getConditions():
+            predicateSplit = cond.split("_")
+            predicate = predicateSplit[0]
+
+            # print(rule.getType(), cond, self.getPredicateParameters(trafficLight, predicate))
+            # Construct predicate fuction call
+            if cond in PredicateSet.getPredicateList():
+                predCall = getattr(PredicateSet, cond)(self.getPredicateParameters(trafficLight, predicate))
+            elif cond in EVPredicateSet.getPredicateList():
+                predCall = getattr(EVPredicateSet, cond)(self.getPredicateParameters(trafficLight, predicate))
+            else:
+                raise Exception("undefined condition:", cond)
+
+            # Determine validity of predicate
+            if predCall == False:
+                return False
+
+        return True  # if all predicates return true, evaluate rule as True
