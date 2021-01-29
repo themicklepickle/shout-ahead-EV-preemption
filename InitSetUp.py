@@ -102,7 +102,6 @@ def run(sumoNetworkName, minIndividualRunsPerGen):
                 for otherTL in trafficLights:
                     if edgeSplit[0] == otherTL.getName() and otherTL not in tl.getCommunicationPartners():
                         tl.addCommunicationPartner(otherTL)
-        print("Current light:", tl.getName(), "\nEdge goes to:", endPoint[0], "\nEdge comes from:", edgeSplit[0], "\n\n")
 
         apAssigned = False
         # If agent pool(s) already exist, check to see its ability to host the traffic light
@@ -126,8 +125,6 @@ def run(sumoNetworkName, minIndividualRunsPerGen):
     for ap in agentPools:
         ap.finishSetUp()
 
-    for tl in trafficLights:
-        print(tl.getName(), "communicates with:", tl.getCommunicationPartners())
     return (userDefinedRules, trafficLights, agentPools)
 
 
