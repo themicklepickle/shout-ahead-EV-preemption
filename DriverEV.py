@@ -258,8 +258,6 @@ class DriverEV(Driver):
                 tl.setEVs(EVs)
                 tl.setLeadingEV(leadingEV)
 
-            step += 1  # Increment step in line with simulator
-
         # Update the fitnesses of the individuals involved in the simulation based on their fitnesses
         simRunTime = traci.simulation.getTime()
         print("***SIMULATION TIME:", simRunTime, "\n\n")
