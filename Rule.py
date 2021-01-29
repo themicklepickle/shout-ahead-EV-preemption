@@ -5,7 +5,7 @@ import sys
 class Rule:
 
     def __init__(self, ruleType, conditions, action, agentPool):
-        self.type = ruleType            # Either -1, 0 or 1: -1 indicates a userDefinedRule, 0 indicates a rule for RS, and 1 indicates a rule for RSint
+        self.type = ruleType            # Either -1, 0, 1, or 2: -1 indicates a userDefinedRule, 0 indicates a rule for RS, 1 indicates a rule for RSint, and 2 indicates a rule for RSev
         self.conditions = conditions    # Set of predicates that determine if rule is true
         self.action = action            # Action to carry out if all conditions are true
         self.agentPool = agentPool      # Agent pool rule rule originated from (used for updating actions of rule)
@@ -14,6 +14,12 @@ class Rule:
         self.normalizedWeight = 0
         self.doNothingAction = False    # Flag to keep track of an action being "do nothing"
         self.setDoNothingFlag()         # Used by Driver to determine if action is "Do nothing", which cannot be applied in the simulator
+
+    def __str__(self):
+        return f"\n{', '.join(self.getConditions())}\n  type: {self.getType()}\n  action: {self.getAction()}\n  weight: {self.getWeight()}"
+
+    def __repr__(self):
+        return f"\n{', '.join(self.getConditions())}\n  type: {self.getType()}\n  action: {self.getAction()}\n  weight: {self.getWeight()}"
 
     # GET RULE TYPE
     def getType(self):
