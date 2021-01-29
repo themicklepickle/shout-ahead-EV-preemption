@@ -30,12 +30,13 @@ class TrafficLight:
         self.numOfTimesNoCoopRuleWasValid = 0
         self.numOfRulesSelected = 0
         self.numOfTimesNoRSRuleWasValid = 0
+        self.numOfTimesNoRSevRuleWasValid = 0
         self.timeInCurrentPhase = 0
         self.currentPhase = None
         self.maxRedPhaseTime = 0
         self.phaseTimeSpentInRed = []
-        self.EVSpeed = None
-        self.EVTrafficDensity = None
+        self.EVs = []
+        self.leadingEV = None
 
     def __str__(self) -> str:
         return self.getName()
@@ -72,7 +73,7 @@ class TrafficLight:
                 self.edges.append(edge[0])
 
             else:
-                print("Edge already exists or is unprocessable:", edge)
+                pass
 
     # RETURNS THE PHASES AVAILBLE TO THE TRAFFIC LIGHT
     def getPhases(self):
