@@ -374,7 +374,7 @@ class Driver:
 
         # EVALUATE RULE VALIDITY (fEval)
     def evaluateCoopRule(self, trafficLight, rule):
-        if rule.getType() == 0:
+        if rule.getType() == 0 or rule.getType() == 2:
             return self.evaluateRule(trafficLight, rule)
 
         intentions = trafficLight.getCommunicatedIntentions()
