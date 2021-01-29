@@ -138,26 +138,19 @@ def createNewGeneration(agentPools, folderName, generations):
 
         individualCount = 1
         for i in newGeneration:
-            ruleCount = 1
             f.write(f"Individual {individualCount}) has a fitness of {i.getFitness()} and a last runtime of {i.getLastRunTime()} and contains the following rules:\n\n")
+
             f.write("Rules in RS:\n")
             for rule in i.getRS():
-                cond = ""
-                for c in rule.getConditions():
-                    cond += "," + c + " "
+                f.write(rule)
 
-                f.write(f"\nRule {ruleCount}: ({rule}) <{cond}>, <{rule.getAction()}> and rule has a weight of {rule.getWeight()}\n\n")
-                ruleCount += 1
-
-            ruleCount = 1
             f.write("Rules in RSint:\n")
             for rule in i.getRSint():
-                cond = ""
-                for c in rule.getConditions():
-                    cond += "," + c + " "
+                f.write(rule)
 
-                f.write(f"\nRule {ruleCount}: ({rule}) <{cond}>, <{rule.getAction()}> and rule has a weight of {rule.getWeight()}\n\n")
-                ruleCount += 1
+            f.write("Rules in RSint:\n")
+            for rule in i.getRSev():
+                f.write(rule)
 
             f.write("-------------------\n\n")
             individualCount += 1
