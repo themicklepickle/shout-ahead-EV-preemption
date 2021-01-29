@@ -124,9 +124,11 @@ class AgentPool:
                 i.setNormalizedFitness(0.0001)  # Set normalized fitness to an arbitrary, small value
         else:
             # Calculate normalized fitness value for each individual in the agent pool
+            lastIndividual = self.individuals[len(self.individuals)-1]
+            firstIndividual = self.individuals[0]
             for i in self.individuals:
-                i.setNormalizedFitness((i.getNegatedFitness()-self.individuals[len(self.individuals)-1].getNegatedFitness()) /
-                                       (self.individuals[0].getNegatedFitness()-self.individuals[len(self.individuals)-1].getNegatedFitness()))
+                i.setNormalizedFitness((i.getNegatedFitness() - lastIndividual.getNegatedFitness()) /
+                                       (firstIndividual.getNegatedFitness() - lastIndividual.getNegatedFitness()))
 
 # def run():
 #     ap = AgentPool("ap1", ["H_S_G", "H_S_Y", "H_L_G", "H_L_Y"])
