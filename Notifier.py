@@ -45,34 +45,24 @@ class Notifier:
             actionSet += ap.getActionSet()[-1]
 
             message += f"Agent Pool {ap.getID()}\n"
-            message += f"This agent pool has an action set of: {actionSet}\n"
+            message += f"This agent pool has an action set of: {', '.join(ap.getActionSet())}\n"
 
             individuals = ap.getIndividualsSet()
             individuals.sort
             topIndividual = min(individuals, key=attrgetter('fitness'))
-            message += f"The top individual has a fitness of {topIndividual.getFitness()} and its RS and RSint sets contain the following rules (formatted as \"<conditions>, <action>\"):\n\n"
+            message += f"The top individual has a fitness of {topIndividual.getFitness()}"
 
             message += "RS:\n"
-            ruleCount = 1
             for rule in topIndividual.getRS():
-                cond = ""
-                for c in rule.getConditions()[:-1]:
-                    cond += f"{c}, "
-                cond += rule.getConditions()[-1]
-
-                message += f"RS Rule {ruleCount}: <{cond}> , <{rule.getAction()}> and rule has a weight of {rule.getWeight()}\n\n"
-                ruleCount += 1
+                message += str(rule)
 
             message += "RSint:\n"
-            ruleCount = 1
             for rule in topIndividual.getRSint():
-                cond = ""
-                for c in rule.getConditions()[:-1]:
-                    cond += f"{c}, "
-                cond += rule.getConditions()[-1]
+                message += str(rule)
 
-                message += f"RSint Rule {ruleCount}: <{cond}> , <{rule.getAction()}> and rule has a weight of {rule.getWeight()}\n\n"
-                ruleCount += 1
+            message += "RSev:\n"
+            for rule in topIndividual.getRSev():
+                message += str(rule)
 
             message += "*******\n"
 
