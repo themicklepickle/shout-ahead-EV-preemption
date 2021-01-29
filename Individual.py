@@ -2,6 +2,7 @@ import os
 import sys
 import statistics
 from numpy.random import choice
+from random import randrange
 
 
 class Individual:
@@ -12,10 +13,11 @@ class Individual:
     defaultFitness = 10000
 
     # INTIALIZE OBJECT VARIABLES
-    def __init__(self, identifier, agentPool, RS, RSint):
+    def __init__(self, identifier, agentPool, RS, RSint, RSev):
         self.id = identifier
         self.RS = RS                                # Set of rules without observations of communicated intentions
         self.RSint = RSint                          # Set of rules with observations of communicated intentions
+        self.RSev = RSev
         self.selectedCount = 0                      # Number of times individual has been chosen during a generation
         self.totalSelectedCount = 0                 # Total number of times individual has been chosen during a training period
         self.agentPool = agentPool                  # AgentPool name
@@ -45,9 +47,13 @@ class Individual:
     def getRS(self):
         return self.RS
 
-    # RETURN INDIVIDUAL'S RULE SET
+    # RETURN INDIVIDUAL'S COOP RULE SET
     def getRSint(self):
         return self.RSint
+
+    # RETURN INDIVIDUAL'S EV RULE SET
+    def getRSev(self):
+        return self.RSev
 
     # INCREMENT selectedCount BY ONE FOR EVOLUTIONARY LEARNING PURPOSES
     def selected(self):
@@ -136,8 +142,7 @@ class Individual:
 
     # RETURN SUM OF ALL WEIGHTS IN A RULE SET
     def getSumRuleWeights(self):
-        ruleSet = self.getRS()
-        self.ruleWeightSum = sum(rule.getWeight() for rule in ruleSet)
+        self.ruleWeightSum = (sum(rule.getWeight() for rule in self.getRS()) + sum(rule.getWeight() for rule in self.getRSev())) / 2  # TODO: do something better than just average
 
         return self.ruleWeightSum
 
@@ -196,15 +201,14 @@ class Individual:
     def selectCoopRule(self, validRules):
         if len(validRules) == 0:
             return -1
-
         elif len(validRules) == 1:
             return validRules[0]
 
         ruleSets = self.subDivideValidRules(validRules)
 
+        rules = []
+        probabilities = []
         if len(ruleSets[0]) > 0:
-            rules = []
-            probabilities = []
             # Add a number of max weight rules to selection set relative to their probabilities
             for rule in ruleSets[0]:
                 probability = int(self.getRuleProbabilityMax(rule, ruleSets[0], ruleSets[1]))
