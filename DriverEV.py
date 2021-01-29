@@ -87,11 +87,6 @@ class DriverEV(Driver):
             if (step - 1) % 5 != 0:
                 continue
 
-            # print("\n")
-            # print("—"*77)
-            # print("\n")
-            # For every traffic light in simulation, select and evaluate new rule from its agent pool
-            # x = 0
             for tl in trafficLights:
 
                 # USER DEFINED RULE CHECK
@@ -180,7 +175,6 @@ class DriverEV(Driver):
 
                 # Determine if the rule should be chosen from RS or RSev
                 validRules = self.getValidRules(tl, tl.getAssignedIndividual())
-                        # print("Valid rules for RS are", validRules[0], "and valid rules for RSint are", validRules[1], "\n\n")
 
                 if len(validRules[0]) == 0 and len(validRules[1]) == 0 and not isEVApproaching:
                     nextRule = -1  # -1 is used to represent "no valid next rule"
@@ -610,7 +604,6 @@ class DriverEV(Driver):
             predicateSplit = cond.split("_")
             predicate = predicateSplit[0]
 
-            # print(rule.getType(), cond, self.getPredicateParameters(trafficLight, predicate))
             # Construct predicate fuction call
             if cond in PredicateSet.getPredicateList():
                 predCall = getattr(PredicateSet, cond)(self.getPredicateParameters(trafficLight, predicate))
