@@ -277,7 +277,7 @@ def getPredicateSet(agentPool):
 def getPredicateSetFromFile(file):
     predicateList = []
     f = open(file, "r")  # Open desired file
-    for _ in f:
+    for x in f:
         if "//" in x:
             continue
         elif x.strip() == "":
