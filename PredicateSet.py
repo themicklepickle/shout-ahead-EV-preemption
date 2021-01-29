@@ -1,16 +1,12 @@
-# TODO: add other predicates besides traffic density
-
 import os
 import sys
 import optparse
 import inspect
 from random import randrange
 from pprint import pprint
-# class PredicateSet:
+
 
 #---------- longestTimeWaitedToProceedStaight predicate set ----------#
-
-
 def longestTimeWaitedToProceedStraight_0(time):
     if time == 0:
         return True
@@ -591,182 +587,7 @@ def westEastPhaseIsLeftTurn_Yellow(tlPhaseArray):
 #----------------------------- end -----------------------------#
 
 
-#---------------------- EV is Appoaching -----------------------#
-# def EVApproachingVertical(isEVApproaching):
-#     return isEVApporaching
-
-# def EVApproachingHorizontal(isEVApproaching):
-# TODO: add the functionality to check for which lane the EV is in to check if it is approaching hoizontally or vertically
-#----------------------------- end -----------------------------#
-
-
-#--------------------- EV Traffic Density ----------------------#
-def EVTrafficDensity_0(trafficDensity):
-    if trafficDensity == 0:
-        return True
-    else:
-        return False
-
-
-def EVTrafficDensity_0_15(trafficDensity):
-    if 0 < trafficDensity <= 15:
-        return True
-    else:
-        return False
-
-
-def EVTrafficDensity_15_30(trafficDensity):
-    if 15 < trafficDensity <= 30:
-        return True
-    else:
-        return False
-
-
-def EVTrafficDensity_30_45(trafficDensity):
-    if 30 < trafficDensity <= 45:
-        return True
-    else:
-        return False
-
-
-def EVTrafficDensity_45_60(trafficDensity):
-    if 45 < trafficDensity <= 60:
-        return True
-    else:
-        return False
-
-
-def EVTrafficDensity_60_90(trafficDensity):
-    if 60 < trafficDensity <= 90:
-        return True
-    else:
-        return False
-
-
-def EVTrafficDensity_90_120(trafficDensity):
-    if 90 < trafficDensity <= 120:
-        return True
-    else:
-        return False
-
-
-def EVTrafficDensity_120_150(trafficDensity):
-    if 120 < trafficDensity <= 150:
-        return True
-    else:
-        return False
-
-
-def EVTrafficDensity_150(trafficDensity):
-    if trafficDensity > 150:
-        return True
-    else:
-        return False
-#----------------------------- end -----------------------------#
-
-
-#----------------- EV distance to intersection ------------------#
-def EVDistanceToIntersection_0(distanceToIntersection):
-    if distanceToIntersection == 0:
-        return True
-    else:
-        return False
-
-
-def EVDistanceToIntersection_0_50(distanceToIntersection):
-    if 0 < distanceToIntersection <= 50:
-        return True
-    else:
-        return False
-
-
-def EVDistanceToIntersection_50_100(distanceToIntersection):
-    if 50 < distanceToIntersection <= 100:
-        return True
-    else:
-        return False
-
-
-def EVDistanceToIntersection_100_200(distanceToIntersection):
-    if 100 < distanceToIntersection <= 200:
-        return True
-    else:
-        return False
-
-
-def EVDistanceToIntersection_200_300(distanceToIntersection):
-    if 200 < distanceToIntersection <= 300:
-        return True
-    else:
-        return False
-
-
-def EVDistanceToIntersection_400_500(distanceToIntersection):
-    if 400 < distanceToIntersection <= 500:
-        return True
-    else:
-        return False
-
-
-def EVDistanceToIntersection_500_600(distanceToIntersection):
-    if 500 < distanceToIntersection <= 600:
-        return True
-    else:
-        return False
-
-
-def EVDistanceToIntersection_600_700(distanceToIntersection):
-    if 600 < distanceToIntersection <= 700:
-        return True
-    else:
-        return False
-
-
-def EVDistanceToIntersection_800(distanceToIntersection):
-    if distanceToIntersection > 800:
-        return True
-    else:
-        return False
-#----------------------------- end -----------------------------#
-
-
-#-------------------- EV Approach Direction --------------------#
-def EVApproachingHorizontal(laneInfo):
-    EVLane, horizontalLanes = laneInfo
-    if EVLane is None:
-        return False
-    elif EVLane in horizontalLanes:
-        return True
-    else:
-        return False
-
-
-def EVApproachingVertical(laneInfo):
-    EVLane, verticalLanes = laneInfo
-    if EVLane is None:
-        return False
-    elif EVLane in verticalLanes:
-        return True
-    else:
-        return False
-#----------------------------- end -----------------------------#
-
 #------------------- User-defined predicates --------------------#
-# def emergencyVehicleApproachingVertical(tlPhaseArray, vehTypeIDs):
-#     for vt in vehTypeIDs:
-#         if vt == "emergency":
-#             return True
-#     return False
-
-
-# def emergencyVehicleApproachingHorizontal(tlPhaseArray, vehTypeIDs):
-#     # if in Vertical phase
-#     for vt in vehTypeIDs:
-#         if vt == "emergency":
-#             return True
-#     return False
-
-
 def maxGreenPhaseTimeReached(phase, timeInPhase, maxTime):
     if phase == "G":
         if timeInPhase >= maxTime:
