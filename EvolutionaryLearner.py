@@ -118,7 +118,7 @@ def createNewGeneration(agentPools, folderName, generations):
 
         # Create however many children possible to also leave room for max number of mutations
         print("Float error before:", (maxIndividuals-numOfSurvivingIndividuals)-numOfIndividualsToMutate)
-        for x in range(int((maxIndividuals-numOfSurvivingIndividuals)-numOfIndividualsToMutate)):
+        for _ in range(int((maxIndividuals-numOfSurvivingIndividuals)-numOfIndividualsToMutate)):
             parent1 = chooseFirstParent(newGeneration)
             parent2 = chooseSecondParent(newGeneration, parent1)
             newGeneration.append(crossover(parent1, parent2))
@@ -173,7 +173,7 @@ def initIndividuals(agentPool):
         RS = []  # RS is a rule set with no shout-ahead predicates
         RSint = []  # RSint is a rule set with shout-ahead predicates
         # Populate a rule set
-        for i in range(maxRules):
+        for _ in range(maxRules):
             RS.append(createRandomRule(agentPool, 0))
             RSint.append(createRandomRule(agentPool, 1))
 
@@ -189,7 +189,7 @@ def createRandomRule(agentPool, ruleType):
     # RS rule
     if ruleType == 0:
         # Set conditions of rules as a random amount of random predicates
-        for i in range(randint(1, maxRulePredicates)):
+        for _ in range(randint(1, maxRulePredicates)):
             newCond = PredicateSet.getRandomPredicate()
             if checkValidCond(newCond, conditions):
                 conditions.append(newCond)
@@ -197,8 +197,7 @@ def createRandomRule(agentPool, ruleType):
     # RSint rule
     elif ruleType == 1:
         # Set conditions of rules as a random amount of random predicates
-        for i in range(randint(1, maxRulePredicates)):
-            newCond = agentPool.getRandomRSintPredicate()
+        for _ in range(randint(1, maxRulePredicates)):
             if checkValidCond(newCond, conditions):
                 conditions.append(newCond)
                 # print("Conditions set now contains", conditions, "\n\n")
@@ -300,20 +299,20 @@ def mutate(individual):
 def mutateRule(rule):
     ruleCond = rule.getConditions()
     # Remove a random number of conditions and add a random number of random conditions
-    for x in range(randint(1, maxNumOfMutations)):
+    for _ in range(randint(1, maxNumOfMutations)):
 
         if len(ruleCond) == 1:
             numCondToRemove = 1
         else:
             numCondToRemove = randrange(1, len(ruleCond))
 
-        for i in range(numCondToRemove):
+        for _ in range(numCondToRemove):
             ruleCond.remove(ruleCond[randrange(len(ruleCond))])
 
         numCondToAdd = randint(1, maxRulePredicates - len(ruleCond))
         # If rule is from RS
         if rule.getType() == 0:
-            for i in range(numCondToAdd):
+            for _ in range(numCondToAdd):
                 newPredicate = PredicateSet.getRandomPredicate()
                 # If new random predicate is valid, append it to the conditions list
                 if checkValidCond(newPredicate, ruleCond):
@@ -321,7 +320,7 @@ def mutateRule(rule):
 
         # If rule is from RSint
         elif rule.getType() == 1:
-            for i in range(numCondToAdd):
+            for _ in range(numCondToAdd):
                 newPredicate = CoopPredicateSet.getRandomPredicate(rule.getAgentPool())
                 # If new random predicate is valid, append it to the conditions list
                 if checkValidCond(newPredicate, ruleCond):
