@@ -285,14 +285,30 @@ class TrafficLight:
     def getRSRuleValidRate(self):
         return (self.numOfTimesNoRSRuleWasValid/self.numOfRulesSelected)*100
 
-    def getEVSpeed(self):
-        return self.EVSpeed
+    def getRSevRuleValidRate(self):
+        return (self.numOfTimesNoRSevRuleWasValid/self.numOfRulesSelected)*100
 
-    def setEVSpeed(self, EVSpeed):
-        self.EVSpeed = EVSpeed
+    def getEVs(self):
+        return self.EVs
 
-    def getEVTrafficDensity(self):
-        return self.EVTrafficDensity
+    def setEVs(self, EVs):
+        self.EVs = EVs
 
-    def setEVTrafficDensity(self, EVTrafficDensity):
-        self.EVTrafficDensity = EVTrafficDensity
+    def getLeadingEV(self):
+        return self.leadingEV
+
+    def setLeadingEV(self, leadingEV):
+        self.leadingEV = leadingEV
+
+    def existedBefore(self, ID):
+        for lane in self.EVs:
+            for EV in self.EVs[lane]:
+                if EV.ID == ID:
+                    return True
+        return False
+
+    def getEV(self, ID):
+        for lane in self.EVs:
+            for EV in self.EVs[lane]:
+                if EV.ID == ID:
+                    return EV
