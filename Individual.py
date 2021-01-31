@@ -1,19 +1,24 @@
-import os
-import sys
+from __future__ import annotations
+
 import statistics
 from numpy.random import choice
 from random import randrange
+
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from typing import List, Union, Literal, Tuple
+    from AgentPool import AgentPool
+    from Rule import Rule
 
 
 class Individual:
     global epsilon  # paramater between 0 and 1 used to determine importance of doing exploration (higher epsilon = more exploration)
     epsilon = 0.5
-    global fitness
     global defaultFitness
-    defaultFitness = 10000
+    defaultFitness: float = 10000
 
     # INTIALIZE OBJECT VARIABLES
-    def __init__(self, identifier, agentPool, RS, RSint, RSev):
+    def __init__(self, identifier: str, agentPool: AgentPool, RS: List[Rule], RSint: List[Rule], RSev: List[Rule]) -> None:
         self.id = identifier
         self.RS = RS                                # Set of rules without observations of communicated intentions
         self.RSint = RSint                          # Set of rules with observations of communicated intentions
@@ -23,15 +28,14 @@ class Individual:
         self.agentPool = agentPool                  # AgentPool name
         self.fitness = defaultFitness               # Default fitness value is large
         self.normalizedFitness = defaultFitness     # Normalized fitness value is equal to the regular fitness value
-        self.runFitnessResults = []
-        self.lastRunTime = 2.2250738585072014e-308
-        self.ruleWeightSum = 0
-        self.aggregateVehicleWaitTime = 0
-        self.fitnessRuleApplicationPenalty = 0      # A penalty applied to the fitness of an Individual when its rule aren't applied, or result in negative outcomes, in a simulation
-        self.meanEVSpeedsList = []
-        self.meanEVSpeed = 0
-        self.EVStops = 0
-        self.stepCounter = 0
+        self.runFitnessResults: List[float] = []
+        self.lastRunTime: float = 2.2250738585072014e-308
+        self.ruleWeightSum: float = 0
+        self.aggregateVehicleWaitTime: float = 0
+        self.fitnessRuleApplicationPenalty: float = 0      # A penalty applied to the fitness of an Individual when its rule aren't applied, or result in negative outcomes, in a simulation
+        self.meanEVSpeedsList: List[float] = []
+        self.meanEVSpeed: float = 0
+        self.EVStops: int = 0
 
     def __str__(self) -> str:
         return str(self.id)
@@ -79,7 +83,7 @@ class Individual:
         return self.fitness*-1
 
     # UPDATE INDIVIDUAL'S FITNESS SCORE
-    def updateFitness(self, fitness):
+    def updateFitness(self, fitness: float):
         self.runFitnessResults.append(fitness + self.fitnessRuleApplicationPenalty)  # Add run fitness plus rule application penalty to master rFit list
         self.fitnessRuleApplicationPenalty = 0  # Reset penalty value for next sim run
 
@@ -94,7 +98,7 @@ class Individual:
     def getNormalizedFitness(self):
         return self.normalizedFitness
 
-    def setNormalizedFitness(self, fitnessValue):
+    def setNormalizedFitness(self, fitnessValue: float):
         self.normalizedFitness = fitnessValue
 
     # RETURN THE LENGTH OF THE LAST RUN THE INDIVIDUAL PARTICIPATED IN
@@ -102,7 +106,7 @@ class Individual:
         return self.lastRunTime
 
     # UPDATE THE LENGTH OF THE LAST RUN THE INDIVIDUAL PARTICIPATED IN
-    def updateLastRunTime(self, runtime):
+    def updateLastRunTime(self, runtime: float):
         self.lastRunTime = runtime
 
     def resetLastRunTime(self):
@@ -111,7 +115,7 @@ class Individual:
     def getAggregateVehicleWaitTime(self):
         return self.aggregateVehicleWaitTime
 
-    def updateAggregateVehicleWaitTime(self, waitTime):
+    def updateAggregateVehicleWaitTime(self, waitTime: float):
         self.aggregateVehicleWaitTime += waitTime
 
     def resetAggregateVehicleWaitTime(self):
@@ -121,7 +125,7 @@ class Individual:
     def getMeanEVSpeed(self):
         return self.meanEVSpeed
 
-    def updateMeanEVSpeed(self, EVSpeedsList):
+    def updateMeanEVSpeed(self, EVSpeedsList: List[float]):
         if EVSpeedsList == []:
             return
         self.meanEVSpeedsList.append(statistics.mean(EVSpeedsList))
@@ -134,20 +138,20 @@ class Individual:
     def getEVStops(self):
         return self.EVStops
 
-    def updateEVStops(self, numEVStops):
+    def updateEVStops(self, numEVStops: int):
         self.EVStops += numEVStops
 
     def resetEVStops(self):
         self.EVStops = 0
 
     # RETURN SUM OF ALL WEIGHTS IN A RULE SET
-    def getSumRuleWeights(self):
+    def getSumRuleWeights(self) -> float:
         self.ruleWeightSum = (sum(rule.getWeight() for rule in self.getRS()) + sum(rule.getWeight() for rule in self.getRSev())) / 2  # TODO: do something better than just average
 
         return self.ruleWeightSum
 
     # RETURN A RULE FROM RS BASED ON THEIR PROBABILITIES
-    def selectRule(self, validRules):
+    def selectRule(self, validRules: List[Rule]) -> Union[Rule, Literal[-1]]:
         if len(validRules) == 0:
             return -1
         elif len(validRules) == 1:
@@ -185,7 +189,7 @@ class Individual:
 
                 # Individually calculate probabilities
                 for rule in ruleSets[1]:
-                    probability = self.getRuleProbabilityRest(rule, probabilities, sumOfWeights, ruleSets[1])
+                    probability = self.getRuleProbabilityRest(rule, sumOfWeights)
                     rules.append(rule)
                     probabilities.append(probability)
 
@@ -198,7 +202,7 @@ class Individual:
         return rule[0]  # Choice function returns an array, so we take the only element in it
 
     # RETURN A RULE FROM RSint BASED ON THEIR PROBABILITIES
-    def selectCoopRule(self, validRules):
+    def selectCoopRule(self, validRules: List[Rule]) -> Union[Rule, Literal[-1]]:
         if len(validRules) == 0:
             return -1
         elif len(validRules) == 1:
@@ -236,7 +240,7 @@ class Individual:
 
                 # Individually calculate probabilities
                 for rule in ruleSets[1]:
-                    probability = self.getRuleProbabilityRest(rule, probabilities, sumOfWeights, ruleSets[1])
+                    probability = self.getRuleProbabilityRest(rule, sumOfWeights)
                     rules.append(rule)
                     probabilities.append(probability)
 
@@ -248,16 +252,12 @@ class Individual:
 
         return rule[0]  # Choice function returns an array, so we take the only element in it
 
-    # RETURN A RANDOM RULE FROM RS
-    def selectRandomRule(self, validRules):
-        return self.RS[randrange(0, len(self.ruleSet))]    # Return a random rule
-
     # RETURN AGENT POOL THE INDIVIDUAL BELONGS TO
     def getAgentPool(self):
         return self.agentPool
 
     # RETURN PROBABILITY OF SELECTION FOR A RULE IN rsMax
-    def getRuleProbabilityMax(self, rule, rsMax, rsRest):
+    def getRuleProbabilityMax(self, rule: Rule, rsMax: List[Rule], rsRest: List[Rule]) -> float:
         weight = rule.getWeight()
 
         if len(rsRest) == 0:
@@ -270,18 +270,18 @@ class Individual:
         return ((1-epsilon)*(weight/(weight*len(rsMax))))
 
     # RETURN PROBABILITY OF SELECTION FOR A RULE IN rsRest
-    def getRuleProbabilityRest(self, rule, probabilities, sumOfWeights, rsRest):
+    def getRuleProbabilityRest(self, rule: Rule, sumOfWeights):
         weight = rule.getNormalizedWeight()
 
         # print("Rule with weight", rule.getNormalizedWeight(), "has a probability of", epsilon*(weight/sumOfWeights))
         return epsilon*(weight/sumOfWeights)
 
     # RETURN SUM OF ALL WEIGHTS IN A RULE SET
-    def getSumOfWeights(self, setOfRules):
+    def getSumOfWeights(self, setOfRules: List[Rule]) -> float:
         return sum(rule.getNormalizedWeight() for rule in setOfRules)
 
     # RETURN A LIST OF ALL WEIGHTS IN A LIST OF RULES
-    def getWeightsList(self, setOfRules):
+    def getWeightsList(self, setOfRules: List[Rule]) -> List[float]:
         weightsList = []
         for r in setOfRules:
             weightsList.append(r.getWeight())
@@ -289,7 +289,7 @@ class Individual:
         return weightsList
 
     # RETURN A LIST OF WEIGHTS NORMALIZED BETWEEN 0.1 AND 1.1
-    def getNormalizedWeightsList(self, setOfRules):
+    def getNormalizedWeightsList(self, setOfRules: List[Rule]) -> List[float]:
         weightsList = []
         for r in setOfRules:
             weightsList.append(r.getNormalizedWeight())
@@ -297,12 +297,12 @@ class Individual:
         return weightsList
 
     # NORMALIZE WEIGHTS BETWEEN 0.1 AND 1.1 (WEIGHTS ARE NORMALIZED BETWEEN 0 AND 1, AND 0.1 IS ADDED TO AVOID WEIGHTS OF 0)
-    def normalizeWeights(self, setOfRules, weightsList):
+    def normalizeWeights(self, setOfRules: List[Rule], weightsList: List[float]):
         for r in setOfRules:
             r.setNormalizedWeight(((r.getWeight()-min(weightsList))/(max(weightsList)-min(weightsList))) + 0.1)
 
     # SEPERATE RULES INTO rsMax AND rsRest
-    def subDivideValidRules(self, validRules):
+    def subDivideValidRules(self, validRules: List[Rule]) -> Tuple[List[Rule], List[Rule]]:
         rsMax = []
         ruleWeights = []
 
@@ -321,7 +321,7 @@ class Individual:
         # print("RSMax contains:", rsMax, "\nRSRest contains:", validRules)
         return (rsMax, validRules)  # Return the two rule sets (validRules now serves as rsRest)
 
-    def updateFitnessPenalty(self, ruleApplied, positiveRuleReward):
+    def updateFitnessPenalty(self, ruleApplied: bool, positiveRuleReward: float):
         # If no rule is applied, add a big penalty to the fitness
         if not ruleApplied:
             self.fitnessRuleApplicationPenalty += 30
