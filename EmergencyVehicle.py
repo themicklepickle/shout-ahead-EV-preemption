@@ -1,11 +1,11 @@
 class EmergencyVehicle:
-    def __init__(self, ID=None, speed=None, distance=None, lane=None, queue=None, trafficDensity=None):
-        self.ID = ID
-        self.speed = speed
-        self.distance = distance
-        self.lane = lane
-        self.queue = queue
-        self.trafficDensity = trafficDensity
+    def __init__(self, ID: str = None, speed: float = None, distance: float = None, lane: str = None, queue: int = None, trafficDensity: float = None):
+        self.ID: str = ID
+        self.speed: float = speed
+        self.distance: float = distance
+        self.lane: str = lane
+        self.queue: int = queue
+        self.trafficDensity: float = trafficDensity
 
     def getID(self):
         return self.ID
@@ -47,3 +47,5 @@ class EmergencyVehicle:
             self.trafficDensity = self.queue / self.distance
 
         self.trafficDensity *= 1000  # multiply by 1000 to give a better range
+
+        return self.trafficDensity
