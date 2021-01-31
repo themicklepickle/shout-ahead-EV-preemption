@@ -383,7 +383,7 @@ class DriverEV(Driver):
         numEVStops = 0
         for lane in EVs:
             for EV in EVs[lane]:
-                if traci.vehicle.isStopped(EV.getID().split("_")[0]):
+                if traci.vehicle.getWaitingTime(EV.getID().split("_")[0]) > 0:
                     numEVStops += 1
 
         return numEVStops
