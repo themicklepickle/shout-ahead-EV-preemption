@@ -205,22 +205,20 @@ class TrafficLight:
         return self.maxRedPhaseTime
 
     def initPhaseTimeSpentInRedArray(self):
-        for i in range(len(self.agentPool.getActionSet())-1):
+        for _ in range(len(self.agentPool.getActionSet())-1):
             self.phaseTimeSpentInRed.append(0)
         #print('Array initialized!', self.phaseTimeSpentInRed)
 
     def updateTimePhaseSpentInRed(self, currentPhase, time):
         for x in range(len(self.phaseTimeSpentInRed)):
-            if x != currentPhase:
+            if self.phases[x] != currentPhase:  # Ummm Christian?
                 self.phaseTimeSpentInRed[x] += time
-        self.phaseTimeSpentInRed[currentPhase] = 0
+        self.phaseTimeSpentInRed[self.phases.index(currentPhase)] = 0
 
     def maxRedPhaseTimeReached(self):
-        index = 0
-        for x in self.phaseTimeSpentInRed:
-            if x >= self.maxRedPhaseTime:
-                return index
-            index += 1
+        for i, time in enumerate(self.phaseTimeSpentInRed):
+            if time >= self.maxRedPhaseTime:
+                return self.phases[i]
         return False
 
     # DECIDE WHICH RULE TO APPLY AT CURRENT ACTION STEP
