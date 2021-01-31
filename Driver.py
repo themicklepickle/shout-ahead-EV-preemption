@@ -415,10 +415,10 @@ class Driver:
                 if "emergencyVehicleApproaching" in cond:
                     continue
                 else:
-                    parameters = self.getPredicateParameters(
-                        trafficLight, cond)
-                    predCall = getattr(PredicateSet, cond)(
-                        parameters[0], parameters[1], parameters[2])  # Construct predicate fuction call
+                parameters = self.getPredicateParameters(
+                    trafficLight, cond)
+                predCall = getattr(PredicateSet, cond)(
+                    parameters[0], parameters[1], parameters[2])  # Construct predicate fuction call
 
                     # Determine validity of predicate
                 if predCall == True:
