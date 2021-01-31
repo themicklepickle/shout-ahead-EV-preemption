@@ -15,7 +15,7 @@ class Individual:
     global epsilon  # paramater between 0 and 1 used to determine importance of doing exploration (higher epsilon = more exploration)
     epsilon = 0.5
     global defaultFitness
-    defaultFitness: float = 10000
+    defaultFitness = 10000.0
 
     # INTIALIZE OBJECT VARIABLES
     def __init__(self, identifier: str, agentPool: AgentPool, RS: List[Rule], RSint: List[Rule], RSev: List[Rule]) -> None:
