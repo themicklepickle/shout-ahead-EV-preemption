@@ -1,19 +1,23 @@
-import os
-import sys
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from typing import List, Literal
+    from AgentPool import AgentPool
 
 
 class Rule:
 
-    def __init__(self, ruleType, conditions, action, agentPool):
-        self.type = ruleType            # Either -1, 0, 1, or 2: -1 indicates a userDefinedRule, 0 indicates a rule for RS, 1 indicates a rule for RSint, and 2 indicates a rule for RSev
-        self.conditions = conditions    # Set of predicates that determine if rule is true
-        self.action = action            # Action to carry out if all conditions are true
-        self.agentPool = agentPool      # Agent pool rule rule originated from (used for updating actions of rule)
-        self.weight = 0                 # Weight of rule (used during a TL agent's process of selecting a rule)
-        self.timesSelected = 0          # Keep track of how many times a rule was selected
-        self.normalizedWeight = 0
-        self.doNothingAction = False    # Flag to keep track of an action being "do nothing"
-        self.setDoNothingFlag()         # Used by Driver to determine if action is "Do nothing", which cannot be applied in the simulator
+    def __init__(self, ruleType: Literal[-1, 0, 1, 2], conditions: List[str], action: int, agentPool: AgentPool):
+        self.type = ruleType                # Either -1, 0, 1, or 2: -1 indicates a userDefinedRule, 0 indicates a rule for RS, 1 indicates a rule for RSint, and 2 indicates a rule for RSev
+        self.conditions = conditions        # Set of predicates that determine if rule is true
+        self.action = action                # Action to carry out if all conditions are true
+        self.agentPool = agentPool          # Agent pool rule rule originated from (used for updating actions of rule)
+        self.weight: float = 0              # Weight of rule (used during a TL agent's process of selecting a rule)
+        self.timesSelected: int = 0         # Keep track of how many times a rule was selected
+        self.normalizedWeight: float = 0
+        self.doNothingAction: bool = False  # Flag to keep track of an action being "do nothing"
+        self.setDoNothingFlag()             # Used by Driver to determine if action is "Do nothing", which cannot be applied in the simulator
 
     def __str__(self):
         return f"\n{', '.join(self.getConditions())}\n  type: {self.getType()}\n  action: {self.getAction()}\n  weight: {self.getWeight()}"
@@ -30,7 +34,7 @@ class Rule:
         return self.conditions
 
     # UPDATE RULE CONDITIONS
-    def setConditions(self, conditions):
+    def setConditions(self, conditions: List[str]):
         self._conditions = conditions
 
     # GET RULE ACTION
@@ -41,7 +45,6 @@ class Rule:
     def setAction(self, action):
         if action == -1:
             print("Setting action to -1")
-            print(x)
             self.action = 1
         else:
             self._action = action
