@@ -297,7 +297,7 @@ class TrafficLight:
     def getEVs(self):
         return self.EVs
 
-    def setEVs(self, EVs):
+    def setEVs(self, EVs: List[EmergencyVehicle]):
         self.EVs = EVs
 
     def getLeadingEV(self):
