@@ -215,13 +215,13 @@ class TrafficLight:
     def initPhaseTimeSpentInRedArray(self):
         for _ in range(len(self.agentPool.getActionSet())-1):
             self.phaseTimeSpentInRed.append(0)
-        #print('Array initialized!', self.phaseTimeSpentInRed)
+        # print('Array initialized!', self.phaseTimeSpentInRed)
 
-    def updateTimePhaseSpentInRed(self, currentPhase: str, time: float):
+    def updateTimePhaseSpentInRed(self, currentPhase: int, time: float):
         for x in range(len(self.phaseTimeSpentInRed)):
-            if self.phases[x] != currentPhase:  # Ummm Christian?
+            if x != currentPhase:
                 self.phaseTimeSpentInRed[x] += time
-        self.phaseTimeSpentInRed[self.phases.index(currentPhase)] = 0
+        self.phaseTimeSpentInRed[currentPhase] = 0
 
     def maxRedPhaseTimeReached(self):
         for i, time in enumerate(self.phaseTimeSpentInRed):
