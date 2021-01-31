@@ -1,18 +1,24 @@
+from __future__ import annotations
+
 import smtplib
 import ssl
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-
 from operator import attrgetter
+
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from typing import List
+    from AgentPool import AgentPool
 
 
 class Notifier:
-    def __init__(self, email, password, recipients) -> None:
+    def __init__(self, email: str, password: str, recipients: List[str]) -> None:
         self.email = email
         self.password = password
         self.recipients = recipients
 
-    def sendEmail(self, subject, content) -> None:
+    def sendEmail(self, subject: str, content: str) -> None:
         port = 465
         context = ssl.create_default_context()
         message = MIMEMultipart("alternative")
@@ -26,7 +32,7 @@ class Notifier:
                 message['To'] = recipient
                 server.sendmail(self.email, recipient, message.as_string())
 
-    def run(self, agentPools, avgGenTime, totalGenTime, generations, totalGenerations):
+    def run(self, agentPools: List[AgentPool], avgGenTime: float, totalGenTime: float, generations: int, totalGenerations: int):
         avgGenRuntime = avgGenTime
         finalGenRuntime = totalGenTime
 
