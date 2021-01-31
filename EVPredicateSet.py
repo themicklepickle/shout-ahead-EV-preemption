@@ -101,9 +101,8 @@ def EVDistanceToIntersection_800(distanceToIntersection: float):
     return distanceToIntersection > 800
     #----------------------------- end -----------------------------#
 
-    # EVALUATES VALIDITY OF LEADING EV LANE PREDICATE
 
-
+# EVALUATES VALIDITY OF LEADING EV LANE PREDICATE
 def lanePredicate(predicate: str, leadingEVLane: str):
     return predicate.split("_", 1)[1] == leadingEVLane
 
@@ -120,7 +119,6 @@ def getPredicateSet(agentPool: AgentPool, includeLanePredicates: bool = True):
     methodsDict.pop("getAgentSpecificPredicates")
     methodsDict.pop("lanePredicate")
     methodsDict.pop("getRandomLanePredicate")
-    # methodsDict.pop("run")
 
     # Seperate methods/predicates from rest of data in dictionary into a list
     predicateList: List[str] = []
@@ -151,12 +149,3 @@ def getAgentSpecificPredicates(agentPool: AgentPool):
 def getRandomLanePredicate(agentPool):
     lanePredicates = getAgentSpecificPredicates(agentPool)
     return lanePredicates[randrange(len(lanePredicates))]
-
-
-# def run():
-#     print("The predicate list is:")
-#     pprint(getPredicateSet(False))
-
-
-# if __name__ == "__main__":
-#     run()
