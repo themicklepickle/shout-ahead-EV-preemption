@@ -1,30 +1,33 @@
-import os
-import sys
-import inspect
+from __future__ import annotations
 
-import PredicateSet
-import CoopPredicateSet
-
-import EvolutionaryLearner as EvolutionaryLearner
-from TrafficLight import TrafficLight
-from Rule import Rule
 from random import randrange
-from operator import attrgetter
+
+import CoopPredicateSet
+import EVPredicateSet
+import EvolutionaryLearner as EvolutionaryLearner
+
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from typing import List
+    from Individual import Individual
+    from TrafficLight import TrafficLight
 
 
 class AgentPool:
 
     # INTIALIZE AGENT POOL VARIABLES
-    def __init__(self, identifier, actionSet, minIndividualRunsPerGen, trafficLightsAssigned):
+    def __init__(self, identifier: str, actionSet: List[str], minIndividualRunsPerGen: int, trafficLightsAssigned: List[TrafficLight]):
         self.id = identifier                                            # AgentPool name
         self.actionSet = actionSet                                      # A list of action names that can be applied by assigned TL's of the pool
         self.addDoNothingAction()                                       # Add "do nothing" action to action set
-        self.trafficLightsAssigned = []                                 # List of traffic lights using Agent Pool
+        self.trafficLightsAssigned: List[TrafficLight] = []                                 # List of traffic lights using Agent Pool
         self.setTrafficLightsAssigned(trafficLightsAssigned)
         self.individuals = []
-        self.userDefinedRuleSet = [Rule(-1, ["emergencyVehicleApproachingVertical"], -1, self), Rule(-1, ["emergencyVehicleApproachingHorizontal"], -1, self),
-                                   Rule(-1, ["maxGreenPhaseTimeReached"], -1, self), Rule(-1, ["maxYellowPhaseTimeReached"], -1, self)]
         self.minIndividualRunsPerGen = minIndividualRunsPerGen
+        self.individuals: List[Individual]
+        self.individualsNeedingRuns: List[Individual]
+        self.coopPredicates: List[str]
+        self.EVPredicates: List[str]
 
     def getID(self):
         return self.id
@@ -35,10 +38,13 @@ class AgentPool:
     def getCoopPredicates(self):
         return self.coopPredicates
 
+    def getEVPredicates(self):
+        return self.EVPredicates
+
     def getIndividualsSet(self):
         return self.individuals
 
-    def updateIndividualsSet(self, individuals):
+    def updateIndividualsSet(self, individuals: List[Individual]):
         self.individuals = individuals
 
     def initIndividuals(self):
@@ -47,7 +53,7 @@ class AgentPool:
     def getAssignedTrafficLights(self):
         return self.trafficLightsAssigned
 
-    def setTrafficLightsAssigned(self, trafficLightsAssigned):
+    def setTrafficLightsAssigned(self, trafficLightsAssigned: List[TrafficLight]):
         if isinstance(trafficLightsAssigned, list):
             for tl in trafficLightsAssigned:
                 self.trafficLightsAssigned.append(tl)
@@ -56,7 +62,7 @@ class AgentPool:
         else:
             trafficLightsAssigned.assignToAgentPool(self)
 
-    def addNewTrafficLight(self, trafficLight):
+    def addNewTrafficLight(self, trafficLight: TrafficLight):
         self.trafficLightsAssigned.append(trafficLight)
         trafficLight.assignToAgentPool(self)
 
@@ -66,6 +72,7 @@ class AgentPool:
     # COMPLETES THE INITIALIZATION OF AGENT POOL COMPONENTS THAT REQUIRE ALL AGENT POOLS TO BE INITIALIZED FIRST
     def finishSetUp(self):
         self.coopPredicates = self.initCoopPredicates()  # Store Observations of communicated intentions here since they are agent specific
+        self.EVPredicates = self.initEVPredicates()
         self.initIndividuals()  # Populate Agent Pool's own rule set with random rules
         for tl in self.trafficLightsAssigned:
             tl.initPhaseTimeSpentInRedArray()
@@ -94,6 +101,9 @@ class AgentPool:
 
     def initCoopPredicates(self):
         return CoopPredicateSet.getPredicateSet(self)
+
+    def initEVPredicates(self):
+        return EVPredicateSet.getPredicateSet(self)
 
     def getBestIndividual(self):
         bestIndivList = sorted(self.individuals, key=lambda x: x.getFitness())
