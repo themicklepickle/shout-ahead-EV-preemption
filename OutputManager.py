@@ -1,13 +1,14 @@
-import os
-import sys
-import optparse
-import traci
-
+from __future__ import annotations
 
 from operator import attrgetter
 
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from typing import List
+    from AgentPool import AgentPool
 
-def run(agentPools, avgGenTime, totalGenTime, generations, totalGenerations, folderName):
+
+def run(agentPools: List[AgentPool], avgGenTime: float, totalGenTime: float, generations: int, totalGenerations: int, folderName: str):
     avgGenRuntime = avgGenTime
     finalGenRuntime = totalGenTime
 
