@@ -1,19 +1,16 @@
 import os
 import sys
 from pathlib import Path
-import InitSetUp
-import OutputManager
-
 import datetime
 import timeit
 import time
 import pytz
 
+import InitSetUp
+import OutputManager
 from DriverEV import DriverEV
 import EvolutionaryLearner
-
 from Notifier import Notifier
-
 from Logger import Logger
 
 # Importing needed python modules from the $SUMO_HOME/tools directory
@@ -21,7 +18,7 @@ if 'SUMO_HOME' in os.environ:
     tools = os.path.join(os.environ['SUMO_HOME'], 'tools')
     sys.path.append(tools)
 else:
-    sys.exit("please declare environment variable 'SUMO_HOME'")
+    sys.exit("Please declare environment variable 'SUMO_HOME'")
 
 
 from sumolib import checkBinary  # Checks for the binary in environ vars
@@ -145,6 +142,7 @@ if __name__ == "__main__":
         if generations + 1 < totalGenerations:
             # Update agent pools with a new generation of individuals
             EvolutionaryLearner.createNewGeneration(setUpTuple[2], folderName, generations)
+            # EvolutionaryLearner.createNewGeneration(setUpTuple[2], 1, generations)
             for ap in setUpTuple[2]:
                 for i in ap.getIndividualsSet():
                     i.resetSelectedCount()
