@@ -1,11 +1,14 @@
-import os
-import sys
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from TrafficLight import TrafficLight
 
 
 class Intention:
 
     # INITIALIZE INTENTION WITH THE TRAFFIC LIGHT IT COMES FROM, THE INTENDED ACTION AND TIME CREATED
-    def __init__(self, trafficLight, action, timeWhenCreated):
+    def __init__(self, trafficLight: TrafficLight, action: int, timeWhenCreated: float):
         self.trafficLight = trafficLight
         self.action = action
         self.time = timeWhenCreated
