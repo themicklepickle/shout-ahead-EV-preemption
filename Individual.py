@@ -158,8 +158,8 @@ class Individual:
             return validRules[0]
 
         ruleSets = self.subDivideValidRules(validRules)
-        rules = []
-        probabilities = []
+        rules: List[Rule] = []
+        probabilities: List[float] = []
 
         # Add a number of max weight rules to selection set relative to their probabilities
         for rule in ruleSets[0]:
@@ -197,7 +197,7 @@ class Individual:
         if sum(probabilities) == 0:
             for i in range(len(probabilities)):
                 probabilities[i] = 1/len(probabilities)
-        rule = choice(rules, 1, p=probabilities)  # Returns a list (of size 1) of rules based on their probabilities
+        rule: List[Rule] = choice(rules, 1, p=probabilities)  # Returns a list (of size 1) of rules based on their probabilities
 
         return rule[0]  # Choice function returns an array, so we take the only element in it
 
@@ -210,8 +210,8 @@ class Individual:
 
         ruleSets = self.subDivideValidRules(validRules)
 
-        rules = []
-        probabilities = []
+        rules: List[Rule] = []
+        probabilities: List[float] = []
         if len(ruleSets[0]) > 0:
             # Add a number of max weight rules to selection set relative to their probabilities
             for rule in ruleSets[0]:
@@ -248,7 +248,7 @@ class Individual:
         if sum(probabilities) == 0:
             for i in range(len(probabilities)):
                 probabilities[i] = 1/len(probabilities)
-        rule = choice(rules, 1, p=probabilities)  # Returns a list (of size 1) of rules based on their probabilities
+        rule: List[Rule] = choice(rules, 1, p=probabilities)  # Returns a list (of size 1) of rules based on their probabilities
 
         return rule[0]  # Choice function returns an array, so we take the only element in it
 
@@ -282,7 +282,7 @@ class Individual:
 
     # RETURN A LIST OF ALL WEIGHTS IN A LIST OF RULES
     def getWeightsList(self, setOfRules: List[Rule]) -> List[float]:
-        weightsList = []
+        weightsList: List[float] = []
         for r in setOfRules:
             weightsList.append(r.getWeight())
 
@@ -290,7 +290,7 @@ class Individual:
 
     # RETURN A LIST OF WEIGHTS NORMALIZED BETWEEN 0.1 AND 1.1
     def getNormalizedWeightsList(self, setOfRules: List[Rule]) -> List[float]:
-        weightsList = []
+        weightsList: List[float] = []
         for r in setOfRules:
             weightsList.append(r.getNormalizedWeight())
 
@@ -303,8 +303,8 @@ class Individual:
 
     # SEPERATE RULES INTO rsMax AND rsRest
     def subDivideValidRules(self, validRules: List[Rule]) -> Tuple[List[Rule], List[Rule]]:
-        rsMax = []
-        ruleWeights = []
+        rsMax: List[Rule] = []
+        ruleWeights: List[float] = []
 
         # Add all the valid rule weights into a list to sort
         for rule in validRules:
