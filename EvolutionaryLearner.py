@@ -46,10 +46,16 @@ global ruleWeightFactor
 runtimeFactor = 1
 ruleWeightFactor = 1
 
-# The probability of choosing an EV predicate vs another one for RSev
+# Specifications for making RSev
 global EVPredicateProbability
+global maxEVRules
+global maxEVRulePredicates
+global maxEVRulesInNewGenerationSet
 
-EVPredicateProbability = 0.5
+EVPredicateProbability = 0.5  # The probability of choosing an EV predicate vs another one for RSev
+maxEVRulePredicates = 6
+maxEVRules = 30
+maxEVRulesInNewGenerationSet = 60
 
 
 # FITNESS FUNCTION FOR AN INDIVIDUAL AFTER ONE SIMULATION RUN/EPISODE
@@ -174,10 +180,11 @@ def initIndividuals(agentPool: AgentPool):
         RS: List[Rule] = []  # RS is a rule set with no shout-ahead predicates
         RSint: List[Rule] = []  # RSint is a rule set with shout-ahead predicates
         RSev: List[Rule] = []
-        # Populate a rule set
+        # Populate rule sets
         for _ in range(maxRules):
             RS.append(createRandomRule(agentPool, 0))
             RSint.append(createRandomRule(agentPool, 1))
+        for _ in range(maxEVRules):
             RSev.append(createRandomRule(agentPool, 2))
 
         individuals.append(Individual(x+1, agentPool, RS, RSint, RSev))
@@ -210,7 +217,7 @@ def createRandomRule(agentPool: AgentPool, ruleType: Literal[-1, 0, 1, 2]):
     elif ruleType == 2:
         EVCondPicked: bool = False
         # Set conditions of rules as a random amount of random predicates
-        for _ in range(randint(1, maxRulePredicates)):
+        for _ in range(randint(1, maxEVRulePredicates)):
             if random() < EVPredicateProbability:
                 newCond = EVPredicateSet.getRandomPredicate(agentPool)
             else:
@@ -222,7 +229,7 @@ def createRandomRule(agentPool: AgentPool, ruleType: Literal[-1, 0, 1, 2]):
 
         # Ensure that at least one of the conditions is relating to an EV
         if not EVCondPicked:
-            if len(conditions) == maxRulePredicates:
+            if len(conditions) == maxEVRulePredicates:
                 del conditions[randrange(len(conditions))]  # Remove an element if the max number of rule predicates has already been reached
             while True:
                 newCond = EVPredicateSet.getRandomPredicate(agentPool)  # Pick a new predicate from the EV predicate set
@@ -266,13 +273,13 @@ def crossover(indiv1: Individual, indiv2: Individual):
     # RSev
     superRSev = indiv1.getRSev() + indiv2.getRSev()
     superRSev = removeDuplicateRules(superRSev)
-    while len(superRSev) < maxRulesInNewGenerationSet:
+    while len(superRSev) < maxEVRulesInNewGenerationSet:
         superRSev.append(createRandomRule(agentPool, 1))
     superRSev.sort(key=lambda x: x.getWeight(), reverse=True)
 
     newRS = superRS[0:maxRules]
     newRSint = superRSint[0:maxRules]
-    newRSev = superRSev[0:maxRules]
+    newRSev = superRSev[0:maxEVRules]
 
     # Ensure duplicate rules (with or without different weights) haven't been added to rule set. If they have, keep the one with the higher weight and mutate the other
     for rule in newRS:
@@ -372,9 +379,9 @@ def mutateRule(rule: Rule, agentPool: AgentPool):
         for _ in range(numCondToRemove):
             ruleCond.remove(ruleCond[randrange(len(ruleCond))])
 
-        numCondToAdd = randint(1, maxRulePredicates - len(ruleCond))
         # If rule is from RS
         if rule.getType() == 0:
+            numCondToAdd = randint(1, maxRulePredicates - len(ruleCond))
             for _ in range(numCondToAdd):
                 newPredicate = PredicateSet.getRandomPredicate()
                 # If new random predicate is valid, append it to the conditions list
@@ -383,6 +390,7 @@ def mutateRule(rule: Rule, agentPool: AgentPool):
 
         # If rule is from RSint
         elif rule.getType() == 1:
+            numCondToAdd = randint(1, maxRulePredicates - len(ruleCond))
             for _ in range(numCondToAdd):
                 newPredicate = CoopPredicateSet.getRandomPredicate(rule.getAgentPool())
                 # If new random predicate is valid, append it to the conditions list
@@ -391,6 +399,7 @@ def mutateRule(rule: Rule, agentPool: AgentPool):
 
         # If rule is from RSev
         elif rule.getType() == 2:
+            numCondToAdd = randint(1, maxEVRulePredicates - len(ruleCond))
             EVCondPicked = False
             for _ in range(numCondToAdd):
                 if random() < EVPredicateProbability:
@@ -405,7 +414,7 @@ def mutateRule(rule: Rule, agentPool: AgentPool):
 
             # Ensure that at least one of the conditions is relating to an EV
             if not EVCondPicked:
-                if len(ruleCond) == maxRulePredicates:
+                if len(ruleCond) == maxEVRulePredicates:
                     del ruleCond[randrange(len(ruleCond))]  # Remove an element if the max number of rule predicates has already been reached
                 while True:
                     newPredicate = EVPredicateSet.getRandomPredicate(rule.getAgentPool())  # Pick a new predicate from the EV predicate set
