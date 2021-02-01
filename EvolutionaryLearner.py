@@ -394,13 +394,13 @@ def mutateRule(rule: Rule, agentPool: AgentPool):
             EVCondPicked = False
             for _ in range(numCondToAdd):
                 if random() < EVPredicateProbability:
-                    newPredicate = EVPredicateSet.getRandomPredicate()
+                    newPredicate = EVPredicateSet.getRandomPredicate(rule.getAgentPool())
                 else:
                     newPredicate = PredicateSet.getRandomPredicate()
                 # If new random predicate is valid, append it to the conditions list
                 if checkValidCond(newPredicate, ruleCond):
                     ruleCond.append(newPredicate)
-                    if newPredicate in EVPredicateSet.getPredicateSet():
+                    if newPredicate in EVPredicateSet.getPredicateSet(rule.getAgentPool()):
                         EVCondPicked = True
 
             # Ensure that at least one of the conditions is relating to an EV
@@ -408,7 +408,7 @@ def mutateRule(rule: Rule, agentPool: AgentPool):
                 if len(ruleCond) == maxRulePredicates:
                     del ruleCond[randrange(len(ruleCond))]  # Remove an element if the max number of rule predicates has already been reached
                 while True:
-                    newPredicate = EVPredicateSet.getRandomPredicate()  # Pick a new predicate from the EV predicate set
+                    newPredicate = EVPredicateSet.getRandomPredicate(rule.getAgentPool())  # Pick a new predicate from the EV predicate set
                     if checkValidCond(newPredicate, ruleCond):
                         ruleCond.append(newPredicate)  # Append the new condition and break out of the loop when a valid condition has been chosen
                         break
