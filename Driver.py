@@ -16,12 +16,6 @@ if TYPE_CHECKING:
 
 class Driver:
 
-    global userDefinedRules
-    global trafficLights
-    global rule
-    global nextRule
-    global maxSimulationTime
-
     def __init__(self,
                  sumoCmd: str,
                  setUpTuple: Tuple[List[Rule], List[TrafficLight], List[AgentPool]],
