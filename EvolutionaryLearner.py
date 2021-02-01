@@ -57,8 +57,16 @@ maxEVRulePredicates = 6
 maxEVRules = 30
 maxEVRulesInNewGenerationSet = 60
 
+# EV fitness parameters
+global EVStopFitnessPenalty
+global EVStopsFactor
+global meanEVSpeedFactor
 
-# FITNESS FUNCTION FOR AN INDIVIDUAL AFTER ONE SIMULATION RUN/EPISODE
+EVStopFitnessPenalty = -1  # Penalty applied to fitness for every EV stop
+EVStopsFactor = 1
+meanEVSpeedFactor = 2
+
+
 def rFit(individual: Individual, simTime: int) -> float:
     # If Individual's simulation time is less than the best time, its fitness is the difference between those two values
     if simTime < bestSUMORuntime:
