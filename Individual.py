@@ -80,13 +80,23 @@ class Individual:
         return self.fitness
 
     def getNegatedFitness(self):
-        return self.fitness*-1
+        return self.fitness * -1
 
     # UPDATE INDIVIDUAL'S FITNESS SCORE
-    def updateFitness(self, fitness: float):
-        self.runFitnessResults.append(fitness + self.fitnessRuleApplicationPenalty)  # Add run fitness plus rule application penalty to master rFit list
-        self.fitnessRuleApplicationPenalty = 0  # Reset penalty value for next sim run
+    def updateFitness(self, fitness: float, EVFitness: float):
+        print("no EV:", fitness + self.fitnessRuleApplicationPenalty)
+        print("EV:", EVFitness)
+        print("with EV:", fitness + self.fitnessRuleApplicationPenalty - EVFitness)
 
+        # Add run fitness plus rule application penalty minus EV fitness to master rFit list
+        self.runFitnessResults.append(fitness + self.fitnessRuleApplicationPenalty - EVFitness)  # minus cause it's weird
+
+        # Reset values for next simulation run
+        self.fitnessRuleApplicationPenalty = 0
+        self.resetEVStops()
+        self.resetMeanEVSpeed()
+
+        # Calculate fitness
         if sum(self.runFitnessResults) == 0:
             self.fitness = defaultFitness
         elif self.totalSelectedCount == 0:
@@ -142,6 +152,7 @@ class Individual:
 
     def resetEVStops(self):
         self.EVStops = 0
+    # ----------- END ----------- #
 
     # RETURN SUM OF ALL WEIGHTS IN A RULE SET
     def getSumRuleWeights(self) -> float:
