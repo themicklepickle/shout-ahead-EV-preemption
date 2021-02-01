@@ -68,16 +68,15 @@ meanEVSpeedFactor = 2
 
 
 def rFit(individual: Individual, simTime: int) -> float:
+    """FITNESS FUNCTION FOR AN INDIVIDUAL AFTER ONE SIMULATION RUN/EPISODE"""
     # If Individual's simulation time is less than the best time, its fitness is the difference between those two values
     if simTime < bestSUMORuntime:
-        return simTime - bestSUMORuntime
+        fitness = simTime - bestSUMORuntime
+
+        return fitness
     else:
         bestIndivAggregateVehWaitTime = individual.getAgentPool().getBestIndividualAggregateVehWaitTime()
         indivAggrVehWaitTime = individual.getAggregateVehicleWaitTime()
-        bestIndivMeanEVSpeed = individual.getAgentPool().getBestIndividualMeanEVSpeed()
-        indivMeanEVSpeed = individual.getMeanEVSpeed()
-        bestIndivEVStops = individual.getAgentPool().getBestIndividualEVStops()
-        indivEVStops = individual.getEVStops()
 
         fitness = 0
 
@@ -93,42 +92,23 @@ def rFit(individual: Individual, simTime: int) -> float:
         else:
             fitness += indivAggrVehWaitTime*40
 
-        # TODO: explore the values here and check to make sure that finding the sum works
-        if indivMeanEVSpeed == bestIndivMeanEVSpeed:
-            fitness += bestIndivMeanEVSpeed
-        elif bestIndivMeanEVSpeed - indivMeanEVSpeed < bestIndivMeanEVSpeed*.1:
-            fitness += (bestIndivMeanEVSpeed - indivMeanEVSpeed)*10
-        elif bestIndivMeanEVSpeed - indivMeanEVSpeed < bestIndivMeanEVSpeed*.2:
-            fitness += (bestIndivMeanEVSpeed - indivMeanEVSpeed)*20
-        elif bestIndivMeanEVSpeed - indivMeanEVSpeed < bestIndivMeanEVSpeed*.3:
-            fitness += (bestIndivMeanEVSpeed - indivMeanEVSpeed)*30
-        else:
-            fitness += (bestIndivMeanEVSpeed - indivMeanEVSpeed)*40
-
-        if indivEVStops == bestIndivEVStops:
-            fitness += bestIndivEVStops
-        elif indivEVStops - bestIndivEVStops < bestIndivEVStops*.1:
-            fitness += indivEVStops*10
-        elif indivEVStops - bestIndivEVStops < bestIndivEVStops*.2:
-            fitness += indivEVStops*20
-        elif indivEVStops - bestIndivEVStops < bestIndivEVStops*.3:
-            fitness += indivEVStops*30
-        else:
-            fitness += indivEVStops*40
-
-        return fitness / 3
+        return fitness
 
 
-# FITNESS FUNCTION FOR ONE GENERATION
-def fit(simTime: int, agentPools: List[AgentPool]):
-    ruleWeights = getSumRuleWeights(agentPools)
-    fit = runtimeFactor * (1 / simTime) + ruleWeightFactor * (1 - (1 / ruleWeights))
+def EVrFit(individual: Individual) -> float:
+    """FITNESS FUNCTION FOR AN INDIVIDUAL AFTER ONE SIMULATION RUN/EPISODE FOR EV PARAMETERS"""
+    fitness = 0
 
-    return fit
+    print("mean EV speed:", individual.getMeanEVSpeed())
+    print("EV stops:", individual.getEVStops())
+    fitness += meanEVSpeedFactor * individual.getMeanEVSpeed()
+    fitness += EVStopsFactor * (EVStopFitnessPenalty * individual.getEVStops())
+
+    return fitness
 
 
-# CREATES NEW GENERATION AFTER A SIMULATION RUN AND UPDATES AGENT POOLS' INDIVIDUAL SET WITH NEW GEN
 def createNewGeneration(agentPools: List[AgentPool], folderName: str, generations: int):
+    """CREATES NEW GENERATION AFTER A SIMULATION RUN AND UPDATES AGENT POOLS' INDIVIDUAL SET WITH NEW GEN"""
     print("Creating a new Generation.")
     for ap in agentPools:
         individuals = ap.getIndividualsSet()
@@ -139,7 +119,6 @@ def createNewGeneration(agentPools: List[AgentPool], folderName: str, generation
         numOfSurvivingIndividuals = len(newGeneration)
 
         # Create however many children possible to also leave room for max number of mutations
-        print("Float error before:", (maxIndividuals-numOfSurvivingIndividuals)-numOfIndividualsToMutate)
         for _ in range(int((maxIndividuals-numOfSurvivingIndividuals)-numOfIndividualsToMutate)):
             parent1 = chooseFirstParent(newGeneration)
             parent2 = chooseSecondParent(newGeneration, parent1)
