@@ -64,7 +64,7 @@ global meanEVSpeedFactor
 
 EVStopFitnessPenalty = -1  # Penalty applied to fitness for every EV stop
 EVStopsFactor = 1
-meanEVSpeedFactor = 2
+meanEVSpeedFactor = 10
 
 
 def rFit(individual: Individual, simTime: int) -> float:
