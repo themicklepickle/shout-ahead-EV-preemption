@@ -253,16 +253,21 @@ class DriverEV(Driver):
 
         # Update the fitnesses of the individuals involved in the simulation based on their fitnesses
         simRunTime = traci.simulation.getTime()
-        print("***SIMULATION TIME:", simRunTime, "\n\n")
+        print(f"*** SIMULATION TIME: {simRunTime} ***\n")
+        print("Total applied rules")
+        print(f"  RS: {numOfRSRulesApplied}")
+        print(f"  RSint: {numOfRSintRulesApplied}")
+        print(f"  RSev: {numOfRSevRulesApplied}\n")
         for tl in trafficLights:
             tl.resetRecievedIntentions()
             i = tl.getAssignedIndividual()
             i.updateLastRunTime(simRunTime)
-            print(f"Individual {i} has a last runtime of {i.getLastRunTime()}")
             i.updateFitness(EvolutionaryLearner.rFit(i, simRunTime))
-            print(f"{tl.getName()}'s RS rules were invalid {round(tl.getRSRuleValidRate(), 2)}% of the time.")
-            print(f"{tl.getName()}'s RSint rules were invalid {round(tl.getCoopRuleValidRate(), 2)}% of the time.")
-            print(f"\n\nA total of {numOfRSRulesApplied} rules from RS were applied and {numofRSintRulesApplied} rules from RSint were applied.")
+            print(f"Individual {i} ({tl.getName()}) has a last runtime of {i.getLastRunTime()}")
+            print("  Invalid rates")
+            print(f"    RS: {round(tl.getRSRuleValidRate(), 2)}%")
+            print(f"    RSint: {round(tl.getCoopRuleValidRate(), 2)}%")
+            print(f"    RSev: {round(tl.getRSevRuleValidRate(), 2)}%\n")
         traci.close()  # End simulation
 
         # Returns all the agent pools to the main module
