@@ -252,7 +252,7 @@ class DriverEV(Driver):
                 tl.setLeadingEV(leadingEV)
 
         # Update the fitnesses of the individuals involved in the simulation based on their fitnesses
-        simRunTime = traci.simulation.getTime()
+        simRunTime: float = traci.simulation.getTime()
         print(f"*** SIMULATION TIME: {simRunTime} ***\n")
         print("Total applied rules")
         print(f"  RS: {numOfRSRulesApplied}")
