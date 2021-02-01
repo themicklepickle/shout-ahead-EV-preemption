@@ -143,15 +143,15 @@ def createNewGeneration(agentPools: List[AgentPool], folderName: str, generation
 
             f.write("Rules in RS:\n")
             for rule in i.getRS():
-                f.write(rule)
+                f.write(str(rule))
 
             f.write("Rules in RSint:\n")
             for rule in i.getRSint():
-                f.write(rule)
+                f.write(str(rule))
 
             f.write("Rules in RSint:\n")
             for rule in i.getRSev():
-                f.write(rule)
+                f.write(str(rule))
 
             f.write("-------------------\n\n")
             individualCount += 1

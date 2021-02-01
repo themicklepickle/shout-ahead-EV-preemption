@@ -36,15 +36,15 @@ def run(agentPools: List[AgentPool], avgGenTime: float, totalGenTime: float, gen
 
         f.write("RS:\n")
         for rule in topIndividual.getRS():
-            f.write(rule)
+            f.write(str(rule))
 
         f.write("RSint:\n")
         for rule in topIndividual.getRSint():
-            f.write(rule)
+            f.write(str(rule))
 
         f.write("RSev:\n")
         for rule in topIndividual.getRSev():
-            f.write(rule)
+            f.write(str(rule))
 
         f.write("*******\n")
 
