@@ -1,41 +1,40 @@
-#!/usr/bin/env python
+from __future__ import annotations
 
-import os
-import sys
-import optparse
 import traci
 
+from Driver import Driver
 import PredicateSet
-import CoopPredicateSet
 import EVPredicateSet
 import EvolutionaryLearner
 import ReinforcementLearner
-from Rule import Rule
-from Intention import Intention
-from Driver import Driver
-import time
-from pprint import pprint
 from EmergencyVehicle import EmergencyVehicle
 
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from typing import List, Dict, Union, Tuple, Literal
+    from Individual import Individual
+    from TrafficLight import TrafficLight
+    from Rule import Rule
 
-# NOTE: vehID in DriverEV.py refers to only the first element of the split,
-#       whereas in Driver.py vehID was the split tuple
+# NOTE: vehID in DriverEV.py refers to only the first element of the split, in Driver.py vehID was the split tuple
+
 
 class DriverEV(Driver):
 
     # CONTAINS MAIN TRACI SIMULATION LOOP
-    def run(self):
-        numOfRSRulesApplied = 0
-        numOfRSintRulesApplied = 0
-        numOfRSevRulesApplied = 0
+    def run(self) -> None:
+        numOfRSRulesApplied: int = 0
+        numOfRSintRulesApplied: int = 0
+        numOfRSevRulesApplied: int = 0
+
         # Start SUMO. Comment out if running Driver as standalone module.
         traci.start(self.sumoCmd)
 
         # Run set-up script and acquire list of user defined rules and traffic light agents in simulation
         userDefinedRules = self.setUpTuple[0]
         trafficLights = self.setUpTuple[1]
-        rule = -1
-        nextRule = -1
+        rule: Union[Rule, Literal[-1]] = -1
+        nextRule: Union[Rule, Literal[-1]] = -1
 
         # Assign each traffic light an individual from their agent pool for this simulation run, and a starting rule
         for tl in trafficLights:
@@ -150,7 +149,7 @@ class DriverEV(Driver):
 
                     leadingEV = self.getLeadingEV(tl)
                     EVs = self.getEVs(tl)
-                    EVIsStopped = traci.vehicle.getWaitingTime(leadingEV.getID().split("_")[0]) > 0  # TODO: maybe do this with speed instead
+                    EVIsStopped: bool = traci.vehicle.getWaitingTime(leadingEV.getID().split("_")[0]) > 0  # TODO: maybe do this with speed instead
 
                     # Only evaluate EV parameters for the reinforcement learning if there is an EV this step and an EV the previous step
                     if leadingEVBefore is None:
@@ -268,9 +267,8 @@ class DriverEV(Driver):
 
         # Returns all the agent pools to the main module
         return self.setUpTuple[2]
-        sys.stdout.flush()
 
-    def getState(self, trafficLight):
+    def getState(self, trafficLight: TrafficLight) -> Dict[str, List[str]]:
         state = {}
         leftTurnLane = ""
         for lane in trafficLight.getLanes():
@@ -318,7 +316,7 @@ class DriverEV(Driver):
 #----------------------- EV PREDICATES AND REINFORCEMENT LEARNING ----------------------#
 
     # DETERMINE WHETHER OR NOT AN EMERGENCY VEHICLE IS APPROACHING
-    def getIsEVApproaching(self, trafficLight) -> bool:
+    def getIsEVApproaching(self, trafficLight: TrafficLight) -> bool:
         state = self.getState(trafficLight)
         for lane in state:
             for veh in state[lane]:
@@ -327,72 +325,67 @@ class DriverEV(Driver):
 
         return False  # Return False if no EVs were found
 
-    # GET A LIST OF ALL EMERGENCY VEHICLES AND THEIR SPEED, DISTANCE TO INTERSECTION, AND QUEUE LENGTH AHEAD
-    def getEVs(self, trafficLight) -> dict:
+    # GET A LIST OF ALL EMERGENCY VEHICLES
+    def getEVs(self, trafficLight: TrafficLight) -> List[EmergencyVehicle]:
         state = self.getState(trafficLight)
-        EVs = {}
+        EVs = []
 
         for lane in state:
-            EVs[lane] = []
-
-            # Populate vehicleDistancesList
+            EVsInLane = []
             for veh in state[lane]:
                 if "_EV" in veh:
                     vehID = veh.split("_")[0]
                     speed = traci.vehicle.getSpeed(vehID)
                     distance = traci.lane.getLength(lane) - traci.vehicle.getLanePosition(vehID)
-                    EVs[lane].append(EmergencyVehicle(veh, speed, distance))
+                    EVsInLane.append(EmergencyVehicle(veh, speed, distance, lane))
 
             # Sort EVs based on their distance to the intersection
-            EVs[lane].sort(key=lambda EV: EV.getDistance())
+            EVsInLane.sort(key=lambda EV: EV.getDistance())
 
             # Obtain queue length ahead based on the vehicle's index in the list
-            for i, EV in enumerate(EVs[lane]):
+            for i, EV in enumerate(EVsInLane):
                 EV.setQueue(i)
+
+            # Add EVs in lane to EV list
+            EVs += EVsInLane
+
+        EVs.sort(key=lambda EV: EV.getDistance())
 
         return EVs
 
     # GET LEADING EMERGENCY VEHICLE AMONG ALL LANES
-    def getLeadingEV(self, trafficLight) -> dict:
+    def getLeadingEV(self, trafficLight: TrafficLight) -> EmergencyVehicle:
         EVs = self.getEVs(trafficLight)
-        leadingEV = None
 
-        for lane in EVs:
-            if EVs[lane] == []:
-                continue
-            if leadingEV is None:
-                leadingEV = EVs[lane][0]
-            elif EVs[lane][0].getDistance() < leadingEV.getDistance():
-                leadingEV = EVs[lane][0]
-
-        return leadingEV
-
+        if EVs == []:
+            return None
+        else:
+            return EVs[0]
 #---------------------------------- EV PREDICATES END ----------------------------------#
 
+
 #------------------------------ EV EVOLUTIONARY LEARNING -------------------------------#
-    def getEVSpeedsList(self, trafficLight):
+
+    def getEVSpeedsList(self, trafficLight: TrafficLight) -> List[int]:
         EVs = self.getEVs(trafficLight)
-        EVSpeedsList = []
-        for lane in EVs:
-            for EV in EVs[lane]:
-                EVSpeedsList.append(EV.getSpeed())
+        EVSpeedsList = [EV.getSpeed() for EV in EVs]
+
         return EVSpeedsList
 
-    def getNumEVStops(self, trafficLight):
+    def getNumEVStops(self, trafficLight: TrafficLight) -> int:
         EVs = self.getEVs(trafficLight)
         numEVStops = 0
-        for lane in EVs:
-            for EV in EVs[lane]:
-                if traci.vehicle.getWaitingTime(EV.getID().split("_")[0]) > 0:
-                    numEVStops += 1
+        for EV in EVs:
+            if traci.vehicle.getWaitingTime(EV.getID().split("_")[0]) > 0:
+                numEVStops += 1
 
         return numEVStops
 #---------------------------- EV EVOLUTIONARY LEARNING END -----------------------------#
 
-    def getPredicateParameters(self, trafficLight, predicate):
+    def getPredicateParameters(self, trafficLight: TrafficLight, predicate: str) -> Union[float, int, str, bool, List[str, float, int], List[str]]:
         if "longestTimeWaitedToProceedStraight" == predicate:
             # Find max wait time for relevant intersection
-            maxWaitTime = 0
+            maxWaitTime: float = 0
             # Retrieve state of specified intersection
             state = self.getState(trafficLight)
             for lane in state:
@@ -402,13 +395,12 @@ class DriverEV(Driver):
                             vehIDSplit = veh.split("_")
                             vehID = vehIDSplit[0]
                             if traci.vehicle.getWaitingTime(vehID) > maxWaitTime:
-                                maxWaitTime = traci.vehicle.getWaitingTime(
-                                    vehID)
+                                maxWaitTime = traci.vehicle.getWaitingTime(vehID)
             return maxWaitTime
 
         elif "longestTimeWaitedToTurnLeft" == predicate:
             # Find max wait time for relevant intersection
-            maxWaitTime = 0
+            maxWaitTime: float = 0
             # Retrieve state of specified intersection
             state = self.getState(trafficLight)
             for lane in state:
@@ -418,12 +410,11 @@ class DriverEV(Driver):
                             vehIDSplit = veh.split("_")
                             vehID = vehIDSplit[0]
                             if traci.vehicle.getWaitingTime(vehID) > maxWaitTime:
-                                maxWaitTime = traci.vehicle.getWaitingTime(
-                                    vehID)
+                                maxWaitTime = traci.vehicle.getWaitingTime(vehID)
             return maxWaitTime
 
         elif "numCarsWaitingToProceedStraight" == predicate:
-            carsWaiting = 0
+            carsWaiting: int = 0
             # Retrieve state of specified intersection
             state = self.getState(trafficLight)
             for lane in state:
@@ -437,7 +428,7 @@ class DriverEV(Driver):
             return carsWaiting
 
         elif "numCarsWaitingToTurnLeft" == predicate:
-            carsWaiting = 0
+            carsWaiting: int = 0
             # Retrieve state of specified intersection
             state = self.getState(trafficLight)
             for lane in state:
@@ -458,7 +449,7 @@ class DriverEV(Driver):
             return traci.trafficlight.getPhaseName(trafficLight.getName()).split("_")
 
         elif "maxGreenPhaseTimeReached" == predicate:
-            parameters = []
+            parameters: List[str, float, int] = []
             parameters.append(traci.trafficlight.getPhaseName(trafficLight.getName()))
 
             # Get phase (G or Y) from phase name
@@ -479,8 +470,8 @@ class DriverEV(Driver):
             getPhase = parameters[0].split("_")
             parameters[0] = getPhase[2]
 
-            parameters.append(traci.trafficlight.getPhaseDuration(trafficLight.getName(
-            )) - (traci.trafficlight.getNextSwitch(trafficLight.getName()) - traci.simulation.getTime()))
+            parameters.append(traci.trafficlight.getPhaseDuration(trafficLight.getName()) -
+                              (traci.trafficlight.getNextSwitch(trafficLight.getName()) - traci.simulation.getTime()))
             parameters.append(self.maxYellowPhaseTime)
 
             return parameters
@@ -492,86 +483,23 @@ class DriverEV(Driver):
 
         elif "EVDistanceToIntersection" == predicate:
             leadingEV = self.getLeadingEV(trafficLight)
-
-            if leadingEV is None:
-                return -1
-
-            return leadingEV["distance"]
+            return leadingEV.getDistance() if leadingEV is not None else -1
 
         elif "EVTrafficDensity" == predicate:
             leadingEV = self.getLeadingEV(trafficLight)
+            return leadingEV.getTrafficDensity() if leadingEV is not None else -1
 
-            if leadingEV is None:
-                return -1
-
-            return leadingEV.getTrafficDensity()
-
-        elif "EVLaneID" == predicate:
+        elif "leadingEVLane" == predicate:
             leadingEV = self.getLeadingEV(trafficLight)
+            return leadingEV.getLane() if leadingEV is not None else None
 
-            if leadingEV is None:
-                return None
-
-            vehID = leadingEV["ID"].split("_")[0]
-
-            return traci.vehicle.getLaneID(vehID)
-
-        # TODO: Might have to change this is to individual action sets rather than just horizontal or veritcal.
-        #       However, that's hard because the possible actions is unique for each traffic light.
-        elif "EVApproachingHorizontal" == predicate:
-            parameters = []
-
-            # get the lane of the leading EV
-            leadingEV = self.getLeadingEV(trafficLight)
-            if leadingEV is not None:
-                vehID = leadingEV["ID"].split("_")[0]
-                EVLane = traci.vehicle.getLaneID(vehID)
-                parameters.append(EVLane)
-            else:
-                parameters.append(None)
-
-            # find the horizontal lanes based on the traffic light
-            horizontalLanes = []
-            tlName = trafficLight.getName()
-            if tlName == "four-arm":
-                horizontalLanes = ["WB2four-arm_LTL_0", "incoming2four-arm_LTL_0", "WB2four-arm_LTL_1", "incoming2four-arm_LTL_1"]
-            elif tlName == "incoming":
-                horizontalLanes = ["four-arm2incoming_0", "four-arm2incoming_1", "EB2incoming_0", "EB2incoming_1"]
-            elif tlName == "T-intersection":
-                horizontalLanes = ["SEB2T-intersection_0", "SEB2T-intersection_1", "bend2T-intersection_LTL_0"]
-            parameters.append(horizontalLanes)
-
-            return parameters
-
-        elif "EVApproachingVertical" == predicate:
-            parameters = []
-
-            # get the lane of the leading EV
-            leadingEV = self.getLeadingEV(trafficLight)
-            if leadingEV is not None:
-                vehID = leadingEV["ID"].split("_")[0]
-                EVLane = traci.vehicle.getLaneID(vehID)
-                parameters.append(EVLane)
-            else:
-                parameters.append(None)
-
-            # find the vertical lanes based on the traffic light
-            verticalLanes = []
-            tlName = trafficLight.getName()
-            if tlName == "four-arm":
-                verticalLanes = ["NWB2four-arm_LTL_0", "bend2four-arm_LTL_0", "NWB2four-arm_LTL_1", "bend2four-arm_LTL_1"]
-            elif tlName == "incoming":
-                verticalLanes = ["T-intersection2incoming_LTL_0", "T-intersection2incoming_LTL_1", "NEB2incoming_LTL_0", "NEB2incoming_LTL_1"]
-            elif tlName == "T-intersection":
-                verticalLanes = []
-            parameters.append(verticalLanes)
-
-            return parameters
+        else:
+            raise Exception("Undefined predicate:", predicate)
 
 #---------------------------------- EV PREDICATES END ----------------------------------#
 
     # RETURNS RULES THAT ARE APPLICABLE AT A GIVEN TIME AND STATE
-    def getValidRules(self, trafficLight, individual):
+    def getValidRules(self, trafficLight: TrafficLight, individual: Individual) -> Tuple[List[Rule], List[Rule], List[Rule]]:
         validRS = []
         validRSint = []
         validRSev = []
@@ -588,32 +516,50 @@ class DriverEV(Driver):
 
         # Find valid RSev rules
         for rule in individual.getRSev():
-            if self.evaluateRule(trafficLight, rule):
+            if self.evaluateEVRule(trafficLight, rule):
                 validRSev.append(rule)
 
         return (validRS, validRSint, validRSev)
 
     # EVALUATE RULE VALIDITY (fEval)
-
-    def evaluateRule(self, trafficLight, rule):
+    def evaluateRule(self, trafficLight: TrafficLight, rule: Rule) -> bool:
         if rule.getType() == 1:
             return self.evaluateCoopRule(trafficLight, rule)
+        if rule.getType() == 2:
+            return self.evaluateEVRule(trafficLight, rule)
 
         # For each condition, its parameters are acquired and the condition predicate is evaluated
         for cond in rule.getConditions():
-            predicateSplit = cond.split("_")
-            predicate = predicateSplit[0]
+            predicate = cond.split("_")[0]
 
             # Construct predicate fuction call
-            if cond in PredicateSet.getPredicateList():
-                predCall = getattr(PredicateSet, cond)(self.getPredicateParameters(trafficLight, predicate))
-            elif cond in EVPredicateSet.getPredicateList():
-                predCall = getattr(EVPredicateSet, cond)(self.getPredicateParameters(trafficLight, predicate))
-            else:
-                raise Exception("undefined condition:", cond)
+            predCall = getattr(PredicateSet, cond)(self.getPredicateParameters(trafficLight, predicate))
 
             # Determine validity of predicate
             if predCall == False:
                 return False
 
         return True  # if all predicates return true, evaluate rule as True
+
+    def evaluateEVRule(self, trafficLight: TrafficLight, rule: Rule) -> bool:
+        if rule.getType() == 0:
+            return self.evaluateRule(trafficLight, rule)
+        if rule.getType() == 1:
+            return self.evaluateCoopRule(trafficLight, rule)
+
+        for cond in rule.getConditions():
+            predicate = cond.split("_")[0]
+
+            if "leadingEVLane" == predicate:
+                predCall = getattr(EVPredicateSet, "lanePredicate")(cond, self.getPredicateParameters(trafficLight, predicate))
+            elif cond in PredicateSet.getPredicateList():
+                predCall = getattr(PredicateSet, cond)(self.getPredicateParameters(trafficLight, predicate))
+            elif cond in EVPredicateSet.getPredicateSet(trafficLight.getAgentPool()):
+                predCall = getattr(EVPredicateSet, cond)(self.getPredicateParameters(trafficLight, predicate))
+            else:
+                raise Exception("Undefined condition:", cond)
+
+            if predCall is False:
+                return False
+
+        return True
