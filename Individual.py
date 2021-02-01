@@ -84,10 +84,6 @@ class Individual:
 
     # UPDATE INDIVIDUAL'S FITNESS SCORE
     def updateFitness(self, fitness: float, EVFitness: float):
-        print("no EV:", fitness + self.fitnessRuleApplicationPenalty)
-        print("EV:", EVFitness)
-        print("with EV:", fitness + self.fitnessRuleApplicationPenalty - EVFitness)
-
         # Add run fitness plus rule application penalty minus EV fitness to master rFit list
         self.runFitnessResults.append(fitness + self.fitnessRuleApplicationPenalty - EVFitness)  # minus cause it's weird
 
