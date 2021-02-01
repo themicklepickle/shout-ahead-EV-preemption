@@ -260,14 +260,9 @@ class DriverEV(Driver):
         print(f"  RSev: {numOfRSevRulesApplied}\n")
         for tl in trafficLights:
             tl.resetRecievedIntentions()
-            i = tl.getAssignedIndividual()
-            i.updateLastRunTime(simRunTime)
-            i.updateFitness(EvolutionaryLearner.rFit(i, simRunTime))
-            print(f"Individual {i} ({tl.getName()}) has a last runtime of {i.getLastRunTime()}")
-            print("  Invalid rates")
-            print(f"    RS: {round(tl.getRSRuleValidRate(), 2)}%")
-            print(f"    RSint: {round(tl.getCoopRuleValidRate(), 2)}%")
-            print(f"    RSev: {round(tl.getRSevRuleValidRate(), 2)}%\n")
+            individual = tl.getAssignedIndividual()
+            individual.updateLastRunTime(simRunTime)
+            individual.updateFitness(EvolutionaryLearner.rFit(individual, simRunTime), EvolutionaryLearner.EVrFit(individual))
         traci.close()  # End simulation
 
         # Returns all the agent pools to the main module
