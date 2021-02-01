@@ -89,11 +89,10 @@ class Individual:
 
         if sum(self.runFitnessResults) == 0:
             self.fitness = defaultFitness
+        elif self.totalSelectedCount == 0:
+            self.fitness = sum(self.runFitnessResults)/1
         else:
-            if self.totalSelectedCount == 0:
-                self.fitness = sum(self.runFitnessResults)/1
-            else:
-                self.fitness = sum(self.runFitnessResults)/self.totalSelectedCount
+            self.fitness = sum(self.runFitnessResults)/self.totalSelectedCount
 
     def getNormalizedFitness(self):
         return self.normalizedFitness
