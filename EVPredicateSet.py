@@ -69,12 +69,8 @@ def EVDistanceToIntersection_0(distanceToIntersection: float):
     return distanceToIntersection == 0
 
 
-def EVDistanceToIntersection_0_50(distanceToIntersection: float):
-    return 0 < distanceToIntersection <= 50
-
-
-def EVDistanceToIntersection_50_100(distanceToIntersection: float):
-    return 50 < distanceToIntersection <= 100
+def EVDistanceToIntersection_0_100(distanceToIntersection: float):
+    return 0 < distanceToIntersection <= 100
 
 
 def EVDistanceToIntersection_100_200(distanceToIntersection: float):
@@ -85,21 +81,9 @@ def EVDistanceToIntersection_200_300(distanceToIntersection: float):
     return 200 < distanceToIntersection <= 300
 
 
-def EVDistanceToIntersection_400_500(distanceToIntersection: float):
-    return 400 < distanceToIntersection <= 500
-
-
-def EVDistanceToIntersection_500_600(distanceToIntersection: float):
-    return 500 < distanceToIntersection <= 600
-
-
-def EVDistanceToIntersection_600_800(distanceToIntersection: float):
-    return 600 < distanceToIntersection <= 800
-
-
-def EVDistanceToIntersection_800(distanceToIntersection: float):
-    return distanceToIntersection > 800
-    #----------------------------- end -----------------------------#
+def EVDistanceToIntersection_300(distanceToIntersection: float):
+    return distanceToIntersection > 300
+#----------------------------- end -----------------------------#
 
 
 # EVALUATES VALIDITY OF LEADING EV LANE PREDICATE
