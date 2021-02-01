@@ -25,7 +25,7 @@ from sumolib import checkBinary  # Checks for the binary in environ vars
 import traci
 
 if __name__ == "__main__":
-    folderName = datetime.datetime.now(pytz.timezone('America/Denver')).strftime('%a %b %d %I:%M:%S %p %Y')
+    folderName = datetime.datetime.now(pytz.timezone('America/Denver')).strftime('%a %b %d %I_%M_%S %p %Y')
     Path(f"log/{folderName}").mkdir(parents=True, exist_ok=True)
 
     with open("email.txt", "r") as f:
