@@ -1,16 +1,19 @@
-# EVOLUTIONARY LEARNER ALGORITHM
+from __future__ import annotations
 
-import os
-import sys
-import PredicateSet as PredicateSet
-import CoopPredicateSet as CoopPredicateSet
 import numpy.random as npr
-import random
+from random import randrange, randint, random, choice
 
+import PredicateSet
+import CoopPredicateSet
+import EVPredicateSet
 from Rule import Rule
 from Individual import Individual
-from random import randrange
-from random import randint
+
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from typing import List, Literal
+    from AgentPool import AgentPool
+
 
 # Best runtime in seconds by the SUMO traffic light algorithm
 global bestSUMORuntime
@@ -45,7 +48,7 @@ ruleWeightFactor = 1
 
 
 # FITNESS FUNCTION FOR AN INDIVIDUAL AFTER ONE SIMULATION RUN/EPISODE
-def rFit(individual, simTime):
+def rFit(individual: Individual, simTime: int) -> float:
     # If Individual's simulation time is less than the best time, its fitness is the difference between those two values
     if simTime < bestSUMORuntime:
         return simTime - bestSUMORuntime
@@ -98,15 +101,15 @@ def rFit(individual, simTime):
 
 
 # FITNESS FUNCTION FOR ONE GENERATION
-def fit(simTime, agentPools):
+def fit(simTime: int, agentPools: List[AgentPool]):
     ruleWeights = getSumRuleWeights(agentPools)
-    fit = runtimeFactor*(1/simTime) + ruleWeightFactor*(1-(1/ruleWeights))
+    fit = runtimeFactor * (1 / simTime) + ruleWeightFactor * (1 - (1 / ruleWeights))
 
     return fit
 
 
 # CREATES NEW GENERATION AFTER A SIMULATION RUN AND UPDATES AGENT POOLS' INDIVIDUAL SET WITH NEW GEN
-def createNewGeneration(agentPools, folderName, generations):
+def createNewGeneration(agentPools: List[AgentPool], folderName: str, generations: int):
     print("Creating a new Generation.")
     for ap in agentPools:
         individuals = ap.getIndividualsSet()
@@ -130,7 +133,6 @@ def createNewGeneration(agentPools, folderName, generations):
             newGeneration.append(mutate(Individual(individualToMutate.getID(), individualToMutate.getAgentPool(), individualToMutate.getRS(), individualToMutate.getRSint())))
 
         # Add first
-        # Lines 100 - 130 are file writing lines just for mid-simulation validation
 
         fileName = f"log/{folderName}/gen_{generations}/{ap.getID()}.txt"
         f = open(fileName, "w")
@@ -160,8 +162,8 @@ def createNewGeneration(agentPools, folderName, generations):
 
 
 # CREATE INDIVIDUALS WITH RANDOM RULES POPULATING THEIR RULE SETS BEFORE FIRST RUN
-def initIndividuals(agentPool):
-    individuals = []
+def initIndividuals(agentPool: AgentPool):
+    individuals: List[Individual] = []
     for x in range(maxIndividuals):
         RS = []  # RS is a rule set with no shout-ahead predicates
         RSint = []  # RSint is a rule set with shout-ahead predicates
@@ -176,8 +178,8 @@ def initIndividuals(agentPool):
 
 
 # CREATE A RANDOM RULE USING RANDOM PREDICATES AND AN AGENT POOL RELATED ACTION
-def createRandomRule(agentPool, ruleType):
-    conditions = []  # Conditions for a rule
+def createRandomRule(agentPool: AgentPool, ruleType: Literal[-1, 0, 1, 2]):
+    conditions: List[str] = []  # Conditions for a rule
 
     # RS rule
     if ruleType == 0:
@@ -191,12 +193,13 @@ def createRandomRule(agentPool, ruleType):
     elif ruleType == 1:
         # Set conditions of rules as a random amount of random predicates
         for _ in range(randint(1, maxRulePredicates)):
+            newCond = agentPool.getRandomRSintPredicate()  # different from RS because RSint predicates are unique to each AP
             if checkValidCond(newCond, conditions):
                 conditions.append(newCond)
                 # print("Conditions set now contains", conditions, "\n\n")
 
     # Get index of possible action. SUMO changes phases on indexes
-    action = randrange(0, len(agentPool.getActionSet()))     # Set rule action to a random action from ActionSet pertaining to Agent Pool being serviced
+    action = randrange(0, len(agentPool.getActionSet()))  # Set rule action to a random action from ActionSet pertaining to Agent Pool being serviced
     if action == -1:
         import pdb
         pdb.set_trace()  # print("The action set is:", agentPool.getActionSet())
@@ -206,7 +209,7 @@ def createRandomRule(agentPool, ruleType):
 
 
 # CREATE A CHILD RULE BY BREEDING TWO PARENT RULES
-def crossover(indiv1, indiv2):
+def crossover(indiv1: Individual, indiv2: Individual):
     identifier = str(indiv1.getID()) + "." + str(indiv2.getID())
     identifier = identifier[-4:]  # Memory saving line
     agentPool = indiv1.getAgentPool()
@@ -274,7 +277,7 @@ def crossover(indiv1, indiv2):
     return newIndividual
 
 
-def mutate(individual):
+def mutate(individual: Individual):
     chosenRule = individual.getRS()[randrange(0, len(individual.getRS()))]
     newRule = mutateRule(chosenRule)
 
@@ -326,17 +329,17 @@ def mutateRule(rule):
 
 
 # RETURNS A PARENT TO BE BREED BASED ON FITNESS PROPOTIONAL SELECTION
-def chooseFirstParent(breedingPopulation):
+def chooseFirstParent(breedingPopulation: List[Individual]):
     totalFitness = sum([i.getNormalizedFitness() for i in breedingPopulation])  # Adjust fitnesses to benefit the smallest
     if totalFitness != 0:
         selection_probs = [i.getNormalizedFitness()/totalFitness for i in breedingPopulation]
         return breedingPopulation[npr.choice(len(breedingPopulation), p=selection_probs)]
     else:
-        return random.choice(breedingPopulation)
+        return choice(breedingPopulation)
 
 
 # RETURNS A PARENT TO BE BREED BASED ON FITNESS PROPOTIONAL SELECTION
-def chooseSecondParent(breedingPopulation, parent1):
+def chooseSecondParent(breedingPopulation: List[Individual], parent1: Individual):
     adjustedPopulation = breedingPopulation.copy()
     adjustedPopulation.remove(parent1)
     totalFitness = sum([i.getNormalizedFitness() for i in adjustedPopulation])
@@ -344,11 +347,11 @@ def chooseSecondParent(breedingPopulation, parent1):
         selection_probs = [i.getNormalizedFitness()/totalFitness for i in adjustedPopulation]
         return adjustedPopulation[npr.choice(len(adjustedPopulation), p=selection_probs)]
     else:
-        return random.choice(breedingPopulation)
+        return choice(breedingPopulation)
 
 
 # ENSURE UNIQUE PREDICATE TYPES IN CONDITIONS
-def checkValidCond(cond, conditions):
+def checkValidCond(cond: str, conditions: List[str]):
     predicateType = cond.split("_")
     condPredicateTypes = []
 
@@ -363,7 +366,7 @@ def checkValidCond(cond, conditions):
         return True
 
 
-def removeDuplicateRules(ruleSet):
+def removeDuplicateRules(ruleSet: List[Rule]):
     for rule in ruleSet:
         for otherRule in ruleSet:
             if rulesAreDuplicate(rule, otherRule):
@@ -372,7 +375,7 @@ def removeDuplicateRules(ruleSet):
 
 
 # CHECK IF TWO RULES ARE DUPLICATES OF EACH OTHER
-def rulesAreDuplicate(rule1, rule2):
+def rulesAreDuplicate(rule1: Rule, rule2: Rule):
     conds1 = rule1.getConditions()
     conds2 = rule2.getConditions()
 
@@ -386,12 +389,12 @@ def rulesAreDuplicate(rule1, rule2):
 
 
 # CHECK IF TWO RULE SETS ARE DUPLICATES OF EACH OTHER
-def ruleSetsAreDuplicate(rs1, rs2):
+def ruleSetsAreDuplicate(rs1: List[Rule], rs2: List[Rule]):
     return set(rs1) == set(rs2)
 
 
 # RETURN SUM OF ALL WEIGHTS IN A RULE SET
-def getSumRuleWeights(agentPools):
+def getSumRuleWeights(agentPools: List[AgentPool]) -> float:
     weightSum = 0
 
     for ap in agentPools:
