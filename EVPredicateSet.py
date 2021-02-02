@@ -115,6 +115,17 @@ def getPredicateSet(agentPool: AgentPool, includeLanePredicates: bool = True):
     return predicateList
 
 
+# GET THE TYPES OF PREDICATES
+def getPredicateTypes(includeLanePredicates: bool = False) -> List[str]:
+    predicateTypes = [
+        "EVTrafficDensity",
+        "EVDistanceToIntersection"
+    ]
+    if includeLanePredicates:
+        predicateTypes.append("leadingEVLane")
+    return predicateTypes
+
+
 # RETURN RANDOM PREDICATE FROM LIST OF PREDICATE FUNCTIONS
 def getRandomPredicate(agentPool: AgentPool):
     predicateList = getPredicateSet(agentPool, False)

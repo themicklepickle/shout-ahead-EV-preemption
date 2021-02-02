@@ -202,30 +202,21 @@ def createRandomRule(agentPool: AgentPool, ruleType: Literal[-1, 0, 1, 2]):
 
     # RSev rule
     elif ruleType == 2:
-        EVCondPicked: bool = False
+        # Ensure that at least one of the conditions is relating to an EV
+        newCond = EVPredicateSet.getRandomPredicate(agentPool)  # Pick a new predicate from the EV predicate set
+        conditions.append(newCond)  # No need to check the validity of the rule because this is the first rule
+
+        # Add a lane predicate
+        conditions.append(EVPredicateSet.getRandomLanePredicate(agentPool))
+
         # Set conditions of rules as a random amount of random predicates
-        for _ in range(randint(1, maxEVRulePredicates)):
+        for _ in range(randint(1, maxEVRulePredicates - 2)):
             if random() < EVPredicateProbability:
                 newCond = EVPredicateSet.getRandomPredicate(agentPool)
             else:
                 newCond = PredicateSet.getRandomPredicate()
             if checkValidCond(newCond, conditions):
                 conditions.append(newCond)
-                if newCond in EVPredicateSet.getPredicateSet(agentPool):
-                    EVCondPicked = True
-
-        # Ensure that at least one of the conditions is relating to an EV
-        if not EVCondPicked:
-            if len(conditions) == maxEVRulePredicates:
-                del conditions[randrange(len(conditions))]  # Remove an element if the max number of rule predicates has already been reached
-            while True:
-                newCond = EVPredicateSet.getRandomPredicate(agentPool)  # Pick a new predicate from the EV predicate set
-                if checkValidCond(newCond, conditions):
-                    conditions.append(newCond)  # Append the new condition and break out of the loop when a valid condition has been chosen
-                    break
-
-        # Add a lane predicate
-        conditions.append(EVPredicateSet.getRandomLanePredicate(agentPool))
 
     # Get index of possible action. SUMO changes phases on indexes
     action = randrange(0, len(agentPool.getActionSet()))  # Set rule action to a random action from ActionSet pertaining to Agent Pool being serviced
@@ -379,7 +370,7 @@ def mutateRule(rule: Rule, agentPool: AgentPool):
         elif rule.getType() == 1:
             numCondToAdd = randint(1, maxRulePredicates - len(ruleCond))
             for _ in range(numCondToAdd):
-                newPredicate = CoopPredicateSet.getRandomPredicate(rule.getAgentPool())
+                newPredicate = CoopPredicateSet.getRandomPredicate(agentPool)
                 # If new random predicate is valid, append it to the conditions list
                 if checkValidCond(newPredicate, ruleCond):
                     ruleCond.append(newPredicate)
@@ -387,33 +378,40 @@ def mutateRule(rule: Rule, agentPool: AgentPool):
         # If rule is from RSev
         elif rule.getType() == 2:
             numCondToAdd = randint(1, maxEVRulePredicates - len(ruleCond))
-            EVCondPicked = False
+
             for _ in range(numCondToAdd):
                 if random() < EVPredicateProbability:
-                    newPredicate = EVPredicateSet.getRandomPredicate(rule.getAgentPool())
+                    newPredicate = EVPredicateSet.getRandomPredicate(agentPool)
                 else:
                     newPredicate = PredicateSet.getRandomPredicate()
                 # If new random predicate is valid, append it to the conditions list
                 if checkValidCond(newPredicate, ruleCond):
                     ruleCond.append(newPredicate)
-                    if newPredicate in EVPredicateSet.getPredicateSet(rule.getAgentPool()):
-                        EVCondPicked = True
 
             # Ensure that at least one of the conditions is relating to an EV
-            if not EVCondPicked:
+            if not EVPredicateExists(ruleCond):
                 if len(ruleCond) == maxEVRulePredicates:
                     del ruleCond[randrange(len(ruleCond))]  # Remove an element if the max number of rule predicates has already been reached
-                while True:
-                    newPredicate = EVPredicateSet.getRandomPredicate(rule.getAgentPool())  # Pick a new predicate from the EV predicate set
-                    if checkValidCond(newPredicate, ruleCond):
-                        ruleCond.append(newPredicate)  # Append the new condition and break out of the loop when a valid condition has been chosen
-                        break
+                ruleCond.append(EVPredicateSet.getRandomPredicate(agentPool))
 
-            # Add a lane predicate
-            ruleCond.append(EVPredicateSet.getRandomLanePredicate(agentPool))
+            # Ensure that a EV lane predicate exists in the rule
+            if not EVLanePredicateExists(ruleCond):
+                if len(ruleCond) == maxEVRulePredicates:
+                    removed = False
+                    # Loop through and remove the first non-EV predicate to ensure that there is always at least one EV predicate
+                    for i, cond in enumerate(ruleCond):
+                        condType = cond.split("_")[0]
+                        if condType not in EVPredicateSet.getPredicateTypes():
+                            del ruleCond[i]
+                            removed = True
+                            break
+                    # If nothing was removed, then it means that all conditions were EV predicates, so a random one can be removed
+                    if not removed:
+                        ruleCond[randrange(len(ruleCond))]
+                ruleCond.append(EVPredicateSet.getRandomLanePredicate(agentPool))
 
     rule.setConditions(ruleCond)  # set rule's new conditions
-    rule.setAction(rule.getAgentPool().getActionSet()[randrange(0, len(rule.getAgentPool().getActionSet()))])
+    rule.setAction(agentPool.getActionSet()[randrange(0, len(agentPool.getActionSet()))])
     rule.setWeight(0)
     return rule
 
@@ -454,6 +452,23 @@ def checkValidCond(cond: str, conditions: List[str]):
         return False
     else:
         return True
+
+
+def EVPredicateExists(conditions: List[str]):
+    EVPredicateTypes = EVPredicateSet.getPredicateTypes()
+    for cond in conditions:
+        condType = cond.split("_")[0]
+        if condType in EVPredicateTypes:
+            return True
+    return False
+
+
+def EVLanePredicateExists(conditions: List[str]):
+    for cond in conditions:
+        condType = cond.split("_")[0]
+        if condType == "leadingEVLane":
+            return True
+    return False
 
 
 def removeDuplicateRules(ruleSet: List[Rule]):
