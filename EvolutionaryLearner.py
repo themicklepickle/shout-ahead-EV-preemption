@@ -53,7 +53,7 @@ global maxEVRulePredicates
 global maxEVRulesInNewGenerationSet
 
 EVPredicateProbability = 0.5  # The probability of choosing an EV predicate vs another one for RSev
-maxEVRulePredicates = 6
+maxEVRulePredicates = 4
 maxEVRules = 30
 maxEVRulesInNewGenerationSet = 60
 
