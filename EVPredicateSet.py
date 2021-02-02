@@ -103,6 +103,7 @@ def getPredicateSet(agentPool: AgentPool, includeLanePredicates: bool = True):
     methodsDict.pop("getAgentSpecificPredicates")
     methodsDict.pop("lanePredicate")
     methodsDict.pop("getRandomLanePredicate")
+    methodsDict.pop("getPredicateTypes")
 
     # Seperate methods/predicates from rest of data in dictionary into a list
     predicateList: List[str] = []
