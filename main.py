@@ -5,6 +5,7 @@ import datetime
 import timeit
 import time
 import pytz
+import socket
 
 import InitSetUp
 import OutputManager
@@ -12,6 +13,7 @@ from DriverEV import DriverEV
 import EvolutionaryLearner
 from Notifier import Notifier
 from Logger import Logger
+from Status import Status
 
 # Importing needed python modules from the $SUMO_HOME/tools directory
 if 'SUMO_HOME' in os.environ:
@@ -24,7 +26,13 @@ else:
 from sumolib import checkBinary  # Checks for the binary in environ vars
 import traci
 
-if __name__ == "__main__":
+global status
+status = Status(socket.gethostname())
+
+
+def main():
+    status.initialize()
+
     folderName = datetime.datetime.now(pytz.timezone('America/Denver')).strftime('%a %b %d %I_%M_%S %p %Y')
     Path(f"log/{folderName}").mkdir(parents=True, exist_ok=True)
 
@@ -44,6 +52,7 @@ if __name__ == "__main__":
     # --- TRAINING OPTIONS ---
     gui = False
     totalGenerations = 50
+    status.update("total generations", totalGenerations)
     # Min number of training runs an individual gets per generation
     individualRunsPerGen = 3
     # ----------------------
@@ -87,6 +96,7 @@ if __name__ == "__main__":
         print(f"---------- GENERATION {generations} of {totalGenerations} ----------")
         print(f"This simulation began at: {simulationStartTime}")
         print(f"The average generation runtime is {sum(generationRuntimes)/generations}\n")
+        status.update("generation", generations)
         sys.stdout.flush()
         genStart = datetime.datetime.now(pytz.timezone('America/Denver')).strftime('%a %b %d %I:%M:%S %p %Y')
         startTime = time.time()
@@ -113,6 +123,7 @@ if __name__ == "__main__":
             print(f"----- Episode {episode+1} of GENERATION {generations} of {totalGenerations} -----")
             print(f"Generation start time: {genStart}")
             print(f"The average generation runtime is {sum(generationRuntimes)/generations}")
+            status.update("episode", episode+1)
             start = timeit.default_timer()
             resultingAgentPools = simRunner.run()  # run the simulation
             stop = timeit.default_timer()
@@ -169,4 +180,10 @@ if __name__ == "__main__":
     notifier.sendEmail(f"COMPLETE!", f"All {totalGenerations} have been completed.")
     sys.stdout.flush()
 
-    # Do something to save session stats here
+
+if __name__ == "__main__":
+    try:
+        main()
+    except:
+        status.terminate()
+        print("end")
