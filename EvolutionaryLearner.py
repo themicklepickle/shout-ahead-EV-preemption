@@ -252,7 +252,7 @@ def crossover(indiv1: Individual, indiv2: Individual):
     superRSev = indiv1.getRSev() + indiv2.getRSev()
     superRSev = removeDuplicateRules(superRSev)
     while len(superRSev) < maxEVRulesInNewGenerationSet:
-        superRSev.append(createRandomRule(agentPool, 1))
+        superRSev.append(createRandomRule(agentPool, 2))
     superRSev.sort(key=lambda x: x.getWeight(), reverse=True)
 
     newRS = superRS[0:maxRules]
