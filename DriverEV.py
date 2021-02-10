@@ -108,10 +108,10 @@ class DriverEV(Driver):
                 # END USER DEFINED RULE CHECK
                 # -------------------------------------------------------
 
+                tl.updateTimeInCurrentPhase(5)
+
                 # Check if a user-defined rule can be applied
                 nextRule = self.applicableUserDefinedRule(tl, userDefinedRules)
-
-                # If no user-defined rules can be applied, get a rule from Agent Pool
                 if nextRule:
                     self.applyUserDefinedRuleAction(tl, traci.trafficlight.getPhaseName(tl.getName()), nextRule)
                     tl.resetTimeInCurrentPhase()
@@ -126,18 +126,18 @@ class DriverEV(Driver):
                     if self.maxRedPhaseTime_UDRule:
                         self.checkMaxRedPhaseTimeRule(tl)
 
-                    # Update the currently applied rule in the traffic light
+                    # update evolutionary learning attributes
+                    tl.getAssignedIndividual().updateMeanEVSpeed(self.getEVSpeedsList(tl))
+                    tl.getAssignedIndividual().updateEVStops(self.getNumEVStops(tl))
+
+                    # Update traffic light
                     tl.setCurrentRule(nextRule)
-                    # Set the number of cars waiting count within the TL itself
                     tl.updateCarsWaiting(carsWaitingAfter)
-                    # Update EV details within the TL itself
                     tl.setEVs(self.getEVs(tl))
                     tl.setLeadingEV(self.getLeadingEV(tl))
                     continue
 
-                # No user-defined rule applied
-                tl.updateTimeInCurrentPhase(5)
-
+                # If no user-defined rules can be applied, get a rule from Agent Pool
                 carsWaitingBefore = tl.getCarsWaiting()
                 carsWaitingAfter = self.carsWaiting(tl)
 
@@ -155,7 +155,7 @@ class DriverEV(Driver):
                     if leadingEVBefore is None:
                         EVChangeInSpeed = None
                         EVChangeInTrafficDensity = None
-                    elif leadingEVBefore.ID == leadingEV.getID():
+                    elif leadingEVBefore.getID() == leadingEV.getID():
                         EVChangeInSpeed = leadingEV.getSpeed() - leadingEVBefore.getSpeed()
                         EVChangeInTrafficDensity = leadingEV.getTrafficDensity() - leadingEVBefore.getTrafficDensity()
                     elif tl.existedBefore(leadingEV.getID()):
@@ -180,8 +180,7 @@ class DriverEV(Driver):
                 elif len(validRules[2]) == 0 and len(validRules[1]) == 0 and isEVApproaching:
                     nextRule = -1  # -1 is used to represent "no valid next rule"
                 else:
-                    # Get a rule from assigned Individual
-                    nextRule = tl.getNextRule(validRules[0], validRules[1], validRules[2], isEVApproaching, traci.simulation.getTime())
+                    nextRule = tl.getNextRule(validRules[0], validRules[1], validRules[2], isEVApproaching, traci.simulation.getTime())  # Get a rule from assigned Individual
 
                 if nextRule == -1:
                     tl.doNothing()  # Update traffic light's Do Nothing counter
@@ -193,8 +192,8 @@ class DriverEV(Driver):
                     # If applied rule isn't user-defined, update its weight
                     if oldRule not in userDefinedRules:
                         if oldRule != -1:
-                            # Used to calculate fitness penalty to individual
-                            ruleWeightBefore = oldRule.getWeight()
+                            ruleWeightBefore = oldRule.getWeight()  # Used to calculate fitness penalty to individual
+
                             # Update the weight with EV parameters is there is an EV present and there was an EV present the previous step
                             oldRule.updateWeight(
                                 ReinforcementLearner.updatedWeight(
@@ -215,8 +214,6 @@ class DriverEV(Driver):
                                 )
                             )
                             tl.getAssignedIndividual().updateFitnessPenalty(True, oldRule.getWeight() > ruleWeightBefore)
-                            tl.getAssignedIndividual().updateMeanEVSpeed(self.getEVSpeedsList(tl))
-                            tl.getAssignedIndividual().updateEVStops(self.getNumEVStops(tl))
 
                         # Apply the next rule; if action is -1 then action is do nothing
                         if not nextRule.hasDoNothingAction():
@@ -228,11 +225,13 @@ class DriverEV(Driver):
                                 tl.resetTimeInCurrentPhase()
 
                         if nextRule.getType() == 0:
-
                             numOfRSRulesApplied += 1
                         elif nextRule.getType() == 1:
                             numOfRSintRulesApplied += 1
                         elif nextRule.getType() == 2:
+                            print(nextRule)
+                            print(oldRule)
+                            print()
                             numOfRSevRulesApplied += 1
 
                 # USER DEFINED RULE CHECK
@@ -244,6 +243,10 @@ class DriverEV(Driver):
 
                 if self.maxRedPhaseTime_UDRule:
                     self.checkMaxRedPhaseTimeRule(tl)
+
+                # update evolutionary learning attributes
+                tl.getAssignedIndividual().updateMeanEVSpeed(self.getEVSpeedsList(tl))
+                tl.getAssignedIndividual().updateEVStops(self.getNumEVStops(tl))  # TODO: come back to this and make it only if an EV is approaching
 
                 # Update attributes within the tl itself
                 tl.setCurrentRule(nextRule)
@@ -263,6 +266,8 @@ class DriverEV(Driver):
             individual = tl.getAssignedIndividual()
             individual.updateLastRunTime(simRunTime)
             individual.updateFitness(EvolutionaryLearner.rFit(individual, simRunTime), EvolutionaryLearner.EVrFit(individual))
+            print(tl.getName())
+            print([r for r in tl.getAssignedIndividual().getRSev() if r.getWeight() != 0])
         traci.close()  # End simulation
 
         # Returns all the agent pools to the main module
@@ -305,11 +310,11 @@ class DriverEV(Driver):
                     if leftTurnLane == laneID:
                         identifer += "_EV_L"
                     else:
-                        identifer += "_EV_S"  # TODO: change to the same as other predicates?
+                        identifer += "_EV_S"
 
 #---------------------------------- EV IDENTIFIER END ----------------------------------#
 
-                state[laneID].append(vehID + identifer)
+                state[laneID].append(vehID + identifer)  # TODO: check that the vehID is the bare number
 
         return state
 
@@ -365,6 +370,7 @@ class DriverEV(Driver):
 
 
 #------------------------------ EV EVOLUTIONARY LEARNING -------------------------------#
+
 
     def getEVSpeedsList(self, trafficLight: TrafficLight) -> List[int]:
         EVs = self.getEVs(trafficLight)
@@ -445,7 +451,12 @@ class DriverEV(Driver):
         elif "timeSpentInCurrentPhase" == predicate:
             return traci.trafficlight.getPhaseDuration(trafficLight.getName())
 
-        elif "verticalPhaseIs" in predicate or "horizontalPhaseIs" in predicate or "northSouthPhaseIs" in predicate or "southNorthPhaseIs" in predicate or "eastWestPhaseIs" in predicate or "westEastPhaseIs" in predicate:
+        elif ("verticalPhaseIs" in predicate or
+              "horizontalPhaseIs" in predicate or
+              "northSouthPhaseIs" in predicate or
+              "southNorthPhaseIs" in predicate or
+              "eastWestPhaseIs" in predicate or
+              "westEastPhaseIs" in predicate):
             return traci.trafficlight.getPhaseName(trafficLight.getName()).split("_")
 
         elif "maxGreenPhaseTimeReached" == predicate:
@@ -509,11 +520,13 @@ class DriverEV(Driver):
             if self.evaluateRule(trafficLight, rule):
                 validRS.append(rule)
 
-        # Find valid RSint rules
-        for rule in individual.getRSint():
-            if self.evaluateCoopRule(trafficLight, rule):
-                validRSint.append(rule)
+        if self.useShoutahead:
+            # Find valid RSint rules
+            for rule in individual.getRSint():
+                if self.evaluateCoopRule(trafficLight, rule):
+                    validRSint.append(rule)
 
+        # TODO: add toggle for learning RSev and toggle for learning RS
         # Find valid RSev rules
         for rule in individual.getRSev():
             if self.evaluateEVRule(trafficLight, rule):

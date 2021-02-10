@@ -58,15 +58,15 @@ class Notifier:
             topIndividual = min(individuals, key=attrgetter('fitness'))
             message += f"The top individual has a fitness of {topIndividual.getFitness()}"
 
-            message += "RS:\n"
+            message += "\n\nRS:\n"
             for rule in topIndividual.getRS():
                 message += str(rule)
 
-            message += "RSint:\n"
+            message += "\n\nRSint:\n"
             for rule in topIndividual.getRSint():
                 message += str(rule)
 
-            message += "RSev:\n"
+            message += "\n\nRSev:\n"
             for rule in topIndividual.getRSev():
                 message += str(rule)
 

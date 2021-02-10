@@ -34,15 +34,15 @@ def run(agentPools: List[AgentPool], avgGenTime: float, totalGenTime: float, gen
         topIndividual = min(individuals, key=attrgetter('fitness'))
         f.write(f"The top individual has a fitness of {topIndividual.getFitness()}\n")
 
-        f.write("RS:\n")
+        f.write("\n\nRS:\n")
         for rule in topIndividual.getRS():
             f.write(str(rule))
 
-        f.write("RSint:\n")
+        f.write("\n\nRSint:\n")
         for rule in topIndividual.getRSint():
             f.write(str(rule))
 
-        f.write("RSev:\n")
+        f.write("\n\nRSev:\n")
         for rule in topIndividual.getRSev():
             f.write(str(rule))
 

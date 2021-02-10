@@ -20,7 +20,8 @@ class Driver:
                  sumoCmd: str,
                  setUpTuple: Tuple[List[Rule], List[TrafficLight], List[AgentPool]],
                  maxGreenPhaseTime: int, maxYellowPhaseTime: int, maxSimulationTime: int,
-                 maxGreenAndYellow_UDRule: bool, maxRedPhaseTime_UDRule: bool, assignGreenPhaseToSingleWaitingPhase: bool) -> None:
+                 maxGreenAndYellow_UDRule: bool, maxRedPhaseTime_UDRule: bool, assignGreenPhaseToSingleWaitingPhase: bool,
+                 useShoutahead: bool) -> None:
         self.sumoCmd = sumoCmd
         self.setUpTuple = setUpTuple
         self.maxGreenPhaseTime = maxGreenPhaseTime
@@ -29,6 +30,7 @@ class Driver:
         self.maxGreenAndYellow_UDRule = maxGreenAndYellow_UDRule
         self.maxRedPhaseTime_UDRule = maxRedPhaseTime_UDRule
         self.assignGreenPhaseToSingleWaitingPhase_UDRule = assignGreenPhaseToSingleWaitingPhase
+        self.useShoutahead = useShoutahead
 
     # RETURNS A DICTIONARY WITH KEYS OF VEHIDs WAITING AT AN INTERSECTION AND THEIR WAITING TIME AS VALUES
     def carsWaiting(self, trafficLight: TrafficLight) -> Dict[str, float]:
@@ -38,14 +40,13 @@ class Driver:
         for lanes in state:
             for veh in state[lanes]:
                 vehID = veh.split("_")
-                carsWaiting[vehID[0]] = traci.vehicle.getAccumulatedWaitingTime(
-                    vehID[0])
+                carsWaiting[vehID[0]] = traci.vehicle.getAccumulatedWaitingTime(wehID[0])
 
         return carsWaiting
 
     # RETURNS NUMBER OF CARS WAITING AT AN INTERSECTION
     def carsWaitingCount(self, trafficLight: TrafficLight) -> int:
-        state = self.getState(trafficLight)
+        state = self.getState(trafficLight)  # TODO: save state so this doesn't need to be repeatedly called
         carsWaiting = 0
         # Count all vehicles in the state dictionary
         for lanes in state:
@@ -58,7 +59,7 @@ class Driver:
         if totalCarsWaiting == 0:
             return throughput
         else:
-            return throughput/totalCarsWaiting
+            return throughput / totalCarsWaiting
 
     # RETURNS THROUGHPUT OF AN INTERSECTION BASED ON VEHICLES WAITING BEFORE AND AFTER A GIVEN TIME
     def getThroughput(self, trafficLight: TrafficLight, carsWaitingBefore: Dict[str, float], carsWaitingAfter: Dict[str, float]) -> int:
@@ -67,18 +68,15 @@ class Driver:
         elif not carsWaitingAfter:
             return len(carsWaitingBefore)
         else:
-            carsThrough = {k: carsWaitingBefore[k] for k in set(
-                carsWaitingBefore) - set(carsWaitingAfter)}
+            carsThrough = {k: carsWaitingBefore[k] for k in set(carsWaitingBefore) - set(carsWaitingAfter)}
             return len(carsThrough)
 
     # RETURNS THE AGGREGATE WAITING TIME OF CARS THAT HAVE GONE THROUGH THE INTERSECTION AT A GIVEN TIME
     def getThroughputWaitingTime(self, trafficLight: TrafficLight, carsWaitingBefore: Dict[str, float], carsWaitingAfter: Dict[str, float]) -> float:
-        carsThrough = {k: carsWaitingBefore[k] for k in set(
-            carsWaitingBefore) - set(carsWaitingAfter)}
+        carsThrough = {k: carsWaitingBefore[k] for k in set(carsWaitingBefore) - set(carsWaitingAfter)}
 
         # Update the relevant individual's aggregate vehicle wait time and return the throughput waiting time
-        trafficLight.getAssignedIndividual().updateAggregateVehicleWaitTime(
-            sum(carsThrough.values()))
+        trafficLight.getAssignedIndividual().updateAggregateVehicleWaitTime(sum(carsThrough.values()))
         return sum(carsThrough.values())
 
     # RETURNS TOTAL WAIT TIME AT AN INTERSECTION AT A GIVEN TIME
@@ -99,7 +97,7 @@ class Driver:
         if totalWaitTime == 0:
             return 1
         else:
-            return throughputWaitTime/totalWaitTime
+            return throughputWaitTime / totalWaitTime
 
     # EVALUATE RULE VALIDITY (fEval)
     def evaluateCoopRule(self, trafficLight: TrafficLight, rule: Rule) -> bool:
@@ -114,25 +112,22 @@ class Driver:
             for i in intentions[x]:
                 # For each condition, its parameters are acquired and the condition predicate is evaluated
                 for cond in rule.getConditions():
-                    predicateSplit = cond.split("_")
-                    predicate = predicateSplit[0]
+                    predicate = cond.split("_")[0]
 
                     if any(x.getName() == predicate for x in self.setUpTuple[1]):
                         parameters = [cond, i]
                     else:
                         parameters = self.getCoopPredicateParameters(
                             trafficLight, predicate, i)
+
                     if isinstance(parameters, int) or isinstance(parameters, float) or isinstance(parameters, str):
-                        predCall = getattr(CoopPredicateSet, cond)(
-                            parameters)  # Construct predicate fuction call
+                        predCall = getattr(CoopPredicateSet, cond)(parameters)  # Construct predicate fuction call
                     else:
                         # Construct predicate fuction call for custom predicates (they are of form TLname_action but are handled by the same predicate in CoopPredicateSet)
-                        predCall = getattr(CoopPredicateSet, "customPredicate")(
-                            parameters[0], parameters[1])
+                        predCall = getattr(CoopPredicateSet, "customPredicate")(parameters[0], parameters[1])
 
                     # Determine validity of predicate
                     if predCall == False:
-                        # print("Predicate is false.\n\n\n")
                         return False
 
         return True  # if all predicates return true, evaluate rule as True
@@ -165,8 +160,7 @@ class Driver:
             if traci.trafficlight.getPhase(trafficLight.getName()) >= (len(trafficLight.getPhases()) - 2):
                 traci.trafficlight.setPhase(trafficLight.getName(), 0)
             else:
-                traci.trafficlight.setPhase(trafficLight.getName(
-                ), traci.trafficlight.getPhase(trafficLight.getName()) + 1)
+                traci.trafficlight.setPhase(trafficLight.getName(), traci.trafficlight.getPhase(trafficLight.getName()) + 1)
 
     # PROVIDE SIMULATION RELEVANT PARAMETERS
     def getCoopPredicateParameters(self, trafficLight: TrafficLight, predicate: str, intention: Intention) -> Union[int, Tuple[str, Intention]]:

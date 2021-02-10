@@ -6,6 +6,8 @@ import timeit
 import time
 import pytz
 import socket
+import cProfile
+import json
 
 import InitSetUp
 import OutputManager
@@ -24,67 +26,59 @@ else:
 
 
 from sumolib import checkBinary  # Checks for the binary in environ vars
-import traci
 
 global status
-status = Status(socket.gethostname())
 
 
-def main():
-    status.initialize()
-
-    folderName = datetime.datetime.now(pytz.timezone('America/Denver')).strftime('%a %b %d %I_%M_%S %p %Y')
-    Path(f"log/{folderName}").mkdir(parents=True, exist_ok=True)
-
-    with open("email.txt", "r") as f:
-        emailLogin = [line.strip() for line in f.readlines()]
-    notifier = Notifier(
-        email=emailLogin[0],
-        password=emailLogin[1],
-        recipients=[
-            "michael.xu1816@gmail.com"
-        ]
-    )
-
-    sys.stdout = Logger(folderName)
-
-    # for _ in range(10):
+def main(status: Status):
     # --- TRAINING OPTIONS ---
     gui = False
     totalGenerations = 50
-    status.update("total generations", totalGenerations)
-    # Min number of training runs an individual gets per generation
-    individualRunsPerGen = 3
-    # ----------------------
+    individualRunsPerGen = 3  # Min number of training runs an individual gets per generation
+    # ------------------------
 
     # --- USER-DEFINED RULES TOGGLE ---
     maxGreenAndYellowPhaseTime_UDRule = True
     maxRedPhaseTime_UDRule = False
     assignGreenPhaseToSingleWaitingPhase_UDRule = True
-    # ----------------------
+    # ----------------------------------
 
-    # Attributes of the simulation
+    # --- SIMULATION ATTRIBUTES ---
+    useShoutahead = False
     sumoNetworkName = "simpleNetwork.net.xml"
     maxGreenPhaseTime = 225
     maxYellowPhaseTime = 5
     maxSimulationTime = 10000
     runTimeSet = []
+    # ------------------------------
 
-    # setting the cmd mode or the visual mode
+    # --- SUMO BINARY SETUP ---
     if gui == False:
         sumoBinary = checkBinary('sumo')
         sumoCmd = [sumoBinary, "-c", "config_file.sumocfg", "--waiting-time-memory", "5", "--time-to-teleport", "-1"]
     else:
         sumoBinary = checkBinary('sumo-gui')
         sumoCmd = [sumoBinary, "-c", "config_file.sumocfg", "--waiting-time-memory", "5", "--time-to-teleport", "-1", "-Q", "true", "-S", "true"]
+    # -------------------------
 
-    # initializations
-    # sumoCmd = [sumoBinary, "-c", "intersection/tlcs_config_train.sumocfg", "--no-step-log", "true", "--waiting-time-memory", str(max_steps)]
+    # --- OUTPUT MANAGEMENT ---
+    status.initialize()
+    status.update("total generations", totalGenerations)
+
+    folderName = datetime.datetime.now(pytz.timezone('America/Denver')).strftime('%a %b %d %I_%M_%S %p %Y')
+    Path(f"log/{folderName}").mkdir(parents=True, exist_ok=True)  # TODO: make this use MongoDB instead of local files
+
+    with open("credentials.json", "r") as f:
+        credentials = json.load(f)
+    notifier = Notifier(email=credentials["email"], password=credentials["password"], recipients=["michael.xu1816@gmail.com"])
+
+    sys.stdout = Logger(folderName)
+    # -------------------------
 
     print(f"----- Start time: {datetime.datetime.now(pytz.timezone('America/Denver')).strftime('%a %b %d %I:%M:%S %p %Y')} -----\n")
     setUpTuple = InitSetUp.run(sumoNetworkName, individualRunsPerGen)
     simRunner = DriverEV(sumoCmd, setUpTuple, maxGreenPhaseTime, maxYellowPhaseTime, maxSimulationTime,
-                         maxGreenAndYellowPhaseTime_UDRule, maxRedPhaseTime_UDRule, assignGreenPhaseToSingleWaitingPhase_UDRule)
+                         maxGreenAndYellowPhaseTime_UDRule, maxRedPhaseTime_UDRule, assignGreenPhaseToSingleWaitingPhase_UDRule, useShoutahead)
     generations = 1
     episode = 0
     allIndividualsTested = False
@@ -93,13 +87,14 @@ def main():
 
     # Evolutionary learning loop
     while generations <= totalGenerations:
+        # Output management
         print(f"---------- GENERATION {generations} of {totalGenerations} ----------")
         print(f"This simulation began at: {simulationStartTime}")
         print(f"The average generation runtime is {sum(generationRuntimes)/generations}\n")
-        status.update("generation", generations)
-        sys.stdout.flush()
         genStart = datetime.datetime.now(pytz.timezone('America/Denver')).strftime('%a %b %d %I:%M:%S %p %Y')
         startTime = time.time()
+        status.update("generation", generations)
+        sys.stdout.flush()
         Path(f"log/{folderName}/gen_{generations}").mkdir(parents=True, exist_ok=True)
 
         # Prepare for next simulation run
@@ -107,7 +102,6 @@ def main():
         for ap in setUpTuple[2]:
             for i in ap.getIndividualsSet():
                 i.resetSelectedCount()
-                # print("Generation includes Individual:", i.getID())
 
         # Reinforcement learning loop
         while not allIndividualsTested:
@@ -118,18 +112,20 @@ def main():
                 maxSimulationTime = 4000
 
             simRunner = DriverEV(sumoCmd, setUpTuple, maxGreenPhaseTime, maxYellowPhaseTime, maxSimulationTime,
-                                 maxGreenAndYellowPhaseTime_UDRule, maxRedPhaseTime_UDRule, assignGreenPhaseToSingleWaitingPhase_UDRule)
+                                 maxGreenAndYellowPhaseTime_UDRule, maxRedPhaseTime_UDRule, assignGreenPhaseToSingleWaitingPhase_UDRule, useShoutahead)
 
+            # Output management
             print(f"----- Episode {episode+1} of GENERATION {generations} of {totalGenerations} -----")
             print(f"Generation start time: {genStart}")
-            print(f"The average generation runtime is {sum(generationRuntimes)/generations}")
+            print(f"The average generation runtime is {sum(generationRuntimes) / generations}")
             status.update("episode", episode+1)
             start = timeit.default_timer()
             resultingAgentPools = simRunner.run()  # run the simulation
             stop = timeit.default_timer()
             print(f"Time: {round(stop - start, 1)}")
-            episode += 1
             sys.stdout.flush()
+
+            episode += 1
 
             needsTesting = []
             for ap in resultingAgentPools:
@@ -148,13 +144,12 @@ def main():
 
         # Prepare individuals for the next run through
         for ap in setUpTuple[2]:
-            # Normalize the fitness values of each Individual in an agent pool for breeding purposes
-            ap.normalizeIndividualsFitnesses()
+            ap.normalizeIndividualsFitnesses()  # Normalize the fitness values of each Individual in an agent pool for breeding purposes
 
         if generations + 1 < totalGenerations:
-            # Update agent pools with a new generation of individuals
-            EvolutionaryLearner.createNewGeneration(setUpTuple[2], folderName, generations)
-            # EvolutionaryLearner.createNewGeneration(setUpTuple[2], 1, generations)
+
+            # Update agent pools with a new generation of individuals TODO: update this section to include shoutAhead in the creation of new generation
+            EvolutionaryLearner.createNewGeneration(setUpTuple[2], folderName, generations, useShoutahead)
             for ap in setUpTuple[2]:
                 for i in ap.getIndividualsSet():
                     i.resetSelectedCount()
@@ -173,6 +168,7 @@ def main():
         notifier.run(setUpTuple[2], sum(generationRuntimes)/50, (sum(generationRuntimes)/50)*50, generations, totalGenerations)
 
         generations += 1
+
         sys.stdout.flush()
 
     print(f"Generation start time: {simulationStartTime} ----- End time: {datetime.datetime.now(pytz.timezone('America/Denver')).strftime('%a %b %d %I:%M:%S %p %Y')}")
@@ -182,8 +178,10 @@ def main():
 
 
 if __name__ == "__main__":
+    status = Status(socket.gethostname())
     try:
-        main()
+        main(status)
+        # cProfile.run("main()", sort="cumtime")
     except:
         status.terminate()
         print("end")
