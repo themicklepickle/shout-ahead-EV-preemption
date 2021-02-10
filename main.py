@@ -1,34 +1,39 @@
 import os
 import sys
 from pathlib import Path
-import InitSetUp
-import OutputManager
-
 import datetime
 import timeit
 import time
 import pytz
+import socket
 
+import InitSetUp
+import OutputManager
 from DriverEV import DriverEV
 import EvolutionaryLearner
-
 from Notifier import Notifier
-
 from Logger import Logger
+from Status import Status
 
 # Importing needed python modules from the $SUMO_HOME/tools directory
 if 'SUMO_HOME' in os.environ:
     tools = os.path.join(os.environ['SUMO_HOME'], 'tools')
     sys.path.append(tools)
 else:
-    sys.exit("please declare environment variable 'SUMO_HOME'")
+    sys.exit("Please declare environment variable 'SUMO_HOME'")
 
 
 from sumolib import checkBinary  # Checks for the binary in environ vars
 import traci
 
-if __name__ == "__main__":
-    folderName = datetime.datetime.now(pytz.timezone('America/Denver')).strftime('%a %b %d %I:%M:%S %p %Y')
+global status
+status = Status(socket.gethostname())
+
+
+def main():
+    status.initialize()
+
+    folderName = datetime.datetime.now(pytz.timezone('America/Denver')).strftime('%a %b %d %I_%M_%S %p %Y')
     Path(f"log/{folderName}").mkdir(parents=True, exist_ok=True)
 
     with open("email.txt", "r") as f:
@@ -47,6 +52,7 @@ if __name__ == "__main__":
     # --- TRAINING OPTIONS ---
     gui = False
     totalGenerations = 50
+    status.update("total generations", totalGenerations)
     # Min number of training runs an individual gets per generation
     individualRunsPerGen = 3
     # ----------------------
@@ -67,14 +73,15 @@ if __name__ == "__main__":
     # setting the cmd mode or the visual mode
     if gui == False:
         sumoBinary = checkBinary('sumo')
+        sumoCmd = [sumoBinary, "-c", "config_file.sumocfg", "--waiting-time-memory", "5", "--time-to-teleport", "-1"]
     else:
         sumoBinary = checkBinary('sumo-gui')
+        sumoCmd = [sumoBinary, "-c", "config_file.sumocfg", "--waiting-time-memory", "5", "--time-to-teleport", "-1", "-Q", "true", "-S", "true"]
 
     # initializations
     # sumoCmd = [sumoBinary, "-c", "intersection/tlcs_config_train.sumocfg", "--no-step-log", "true", "--waiting-time-memory", str(max_steps)]
-    sumoCmd = [sumoBinary, "-c", "config_file.sumocfg", "--waiting-time-memory", "5", "--time-to-teleport", "-1"]
 
-    print(f"----- Start time: {datetime.datetime.now(pytz.timezone('America/Denver')).strftime('%a %b %d %I:%M:%S %p %Y')}")
+    print(f"----- Start time: {datetime.datetime.now(pytz.timezone('America/Denver')).strftime('%a %b %d %I:%M:%S %p %Y')} -----\n")
     setUpTuple = InitSetUp.run(sumoNetworkName, individualRunsPerGen)
     simRunner = DriverEV(sumoCmd, setUpTuple, maxGreenPhaseTime, maxYellowPhaseTime, maxSimulationTime,
                          maxGreenAndYellowPhaseTime_UDRule, maxRedPhaseTime_UDRule, assignGreenPhaseToSingleWaitingPhase_UDRule)
@@ -86,9 +93,10 @@ if __name__ == "__main__":
 
     # Evolutionary learning loop
     while generations <= totalGenerations:
-        print(f"----- GENERATION {generations} of {totalGenerations}")
+        print(f"---------- GENERATION {generations} of {totalGenerations} ----------")
         print(f"This simulation began at: {simulationStartTime}")
-        print(f"The average generation runtime is {sum(generationRuntimes)/generations}")
+        print(f"The average generation runtime is {sum(generationRuntimes)/generations}\n")
+        status.update("generation", generations)
         sys.stdout.flush()
         genStart = datetime.datetime.now(pytz.timezone('America/Denver')).strftime('%a %b %d %I:%M:%S %p %Y')
         startTime = time.time()
@@ -112,9 +120,10 @@ if __name__ == "__main__":
             simRunner = DriverEV(sumoCmd, setUpTuple, maxGreenPhaseTime, maxYellowPhaseTime, maxSimulationTime,
                                  maxGreenAndYellowPhaseTime_UDRule, maxRedPhaseTime_UDRule, assignGreenPhaseToSingleWaitingPhase_UDRule)
 
-            print(f"----- Episode {episode+1} of GENERATION {generations} of {totalGenerations}")
+            print(f"----- Episode {episode+1} of GENERATION {generations} of {totalGenerations} -----")
             print(f"Generation start time: {genStart}")
             print(f"The average generation runtime is {sum(generationRuntimes)/generations}")
+            status.update("episode", episode+1)
             start = timeit.default_timer()
             resultingAgentPools = simRunner.run()  # run the simulation
             stop = timeit.default_timer()
@@ -145,6 +154,7 @@ if __name__ == "__main__":
         if generations + 1 < totalGenerations:
             # Update agent pools with a new generation of individuals
             EvolutionaryLearner.createNewGeneration(setUpTuple[2], folderName, generations)
+            # EvolutionaryLearner.createNewGeneration(setUpTuple[2], 1, generations)
             for ap in setUpTuple[2]:
                 for i in ap.getIndividualsSet():
                     i.resetSelectedCount()
@@ -170,4 +180,10 @@ if __name__ == "__main__":
     notifier.sendEmail(f"COMPLETE!", f"All {totalGenerations} have been completed.")
     sys.stdout.flush()
 
-    # Do something to save session stats here
+
+if __name__ == "__main__":
+    try:
+        main()
+    except:
+        status.terminate()
+        print("end")

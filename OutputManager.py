@@ -1,13 +1,14 @@
-import os
-import sys
-import optparse
-import traci
-
+from __future__ import annotations
 
 from operator import attrgetter
 
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from typing import List
+    from AgentPool import AgentPool
 
-def run(agentPools, avgGenTime, totalGenTime, generations, totalGenerations, folderName):
+
+def run(agentPools: List[AgentPool], avgGenTime: float, totalGenTime: float, generations: int, totalGenerations: int, folderName: str):
     avgGenRuntime = avgGenTime
     finalGenRuntime = totalGenTime
 
@@ -25,40 +26,25 @@ def run(agentPools, avgGenTime, totalGenTime, generations, totalGenerations, fol
     f.write("Best Individuals per Agent Pool\n")
 
     for ap in agentPools:
-        actionSet = ""
-        for a in ap.getActionSet()[:-1]:
-            actionSet += f"{a}, "
-        actionSet += ap.getActionSet()[-1]
-
         f.write(f"Agent Pool {ap.getID()}\n")
-        f.write(f"This agent pool has an action set of: {actionSet}\n")
+        f.write(f"This agent pool has an action set of: {', '.join(ap.getActionSet())}\n")
 
         individuals = ap.getIndividualsSet()
         individuals.sort
         topIndividual = min(individuals, key=attrgetter('fitness'))
-        f.write(f"The top individual has a fitness of {topIndividual.getFitness()} and its RS and RSint sets contain the following rules (formatted as \"<conditions>, <action>\"):\n\n")
+        f.write(f"The top individual has a fitness of {topIndividual.getFitness()}\n")
 
         f.write("RS:\n")
-        ruleCount = 1
         for rule in topIndividual.getRS():
-            cond = ""
-            for c in rule.getConditions()[:-1]:
-                cond += f"{c}, "
-            cond += rule.getConditions()[-1]
-
-            f.write(f"RS Rule {ruleCount}: <{cond}>, <{rule.getAction()}> and rule has a weight of {rule.getWeight()}\n\n")
-            ruleCount += 1
+            f.write(str(rule))
 
         f.write("RSint:\n")
-        ruleCount = 1
         for rule in topIndividual.getRSint():
-            cond = ""
-            for c in rule.getConditions()[:-1]:
-                cond += f"{c}, "
-            cond += rule.getConditions()[-1]
+            f.write(str(rule))
 
-            f.write(f"RSint Rule {ruleCount}: <{cond}>, <{rule.getAction()}> and rule has a weight of {rule.getWeight()}\n\n")
-            ruleCount += 1
+        f.write("RSev:\n")
+        for rule in topIndividual.getRSev():
+            f.write(str(rule))
 
         f.write("*******\n")
 

@@ -1,8 +1,16 @@
-import os
-import sys
+from __future__ import annotations
+
 from numpy.random import choice
 
 from Intention import Intention
+
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from typing import List, Dict, Union, Literal
+    from Intention import Intention
+    from EmergencyVehicle import EmergencyVehicle
+    from Rule import Rule
+    from AgentPool import AgentPool
 
 
 class TrafficLight:
@@ -14,28 +22,29 @@ class TrafficLight:
     maxIntentionRecievedTime = 40
     pCoop = 0.5
 
-    def __init__(self, name, lanes):
+    def __init__(self, name: str, lanes: List[str]):
         self.name = name
         self.lanes = lanes
-        self.edges = []
+        self.edges: List[str] = []
         self._setEdges(self.lanes)
-        self.phases = []
-        self.currentRule = -1
-        self.carsWaiting = {}
-        self.waitTime = 0
-        self.doNothingCount = 0
-        self.communicationPartners = []
-        self.communicatedIntentions = {}
-        self.recievedIntentions = {}
-        self.numOfTimesNoCoopRuleWasValid = 0
-        self.numOfRulesSelected = 0
-        self.numOfTimesNoRSRuleWasValid = 0
-        self.timeInCurrentPhase = 0
-        self.currentPhase = None
-        self.maxRedPhaseTime = 0
-        self.phaseTimeSpentInRed = []
-        self.EVSpeed = None
-        self.EVTrafficDensity = None
+        self.phases: List[str] = []
+        self.currentRule: Union[Rule, Literal[-1]] = -1
+        self.carsWaiting: Dict[str, List[str]] = {}
+        self.waitTime: float = 0
+        self.doNothingCount: int = 0
+        self.communicationPartners: List[TrafficLight] = []
+        self.communicatedIntentions: Dict[float, Intention] = {}
+        self.recievedIntentions: Dict[float, List[Intention]] = {}
+        self.numOfTimesNoCoopRuleWasValid: int = 0
+        self.numOfRulesSelected: int = 0
+        self.numOfTimesNoRSRuleWasValid: int = 0
+        self.numOfTimesNoRSevRuleWasValid: int = 0
+        self.timeInCurrentPhase: float = 0
+        self.currentPhase: str = None
+        self.maxRedPhaseTime: float = 0
+        self.phaseTimeSpentInRed: List[float] = []
+        self.EVs: List[EmergencyVehicle] = []
+        self.leadingEV: EmergencyVehicle = None
 
     def __str__(self) -> str:
         return self.getName()
@@ -47,16 +56,16 @@ class TrafficLight:
     def getName(self):
         return self.name
 
-    # RETURNS THE NUMBER OF LANES CONTROLLED BY THE TRAFFIC LIGHT
+    # RETURNS THE LANES CONTROLLED BY THE TRAFFIC LIGHT
     def getLanes(self):
         return self.lanes
 
-    # RETURNS THE NUMBER OF EDGES CONTROLLED BY THE TRAFFIC LIGHT
+    # RETURNS THE EDGES CONTROLLED BY THE TRAFFIC LIGHT
     def getEdges(self):
         return self.edges
 
     # SETS THE NUMBER OF EDGES CONTROLLED BY THE TRAFFIC LIGHT
-    def _setEdges(self, lanes):
+    def _setEdges(self, lanes: List[str]):
         # Determine edges from lanes
         for l in lanes:
             # Isolate edge name from lane name
@@ -72,31 +81,31 @@ class TrafficLight:
                 self.edges.append(edge[0])
 
             else:
-                print("Edge already exists or is unprocessable:", edge)
+                pass
 
     # RETURNS THE PHASES AVAILBLE TO THE TRAFFIC LIGHT
     def getPhases(self):
         return self.phases
 
     # SETS THE PHASES AVAILBLE TO THE TRAFFIC LIGHT
-    def setPhases(self, phases):
+    def setPhases(self, phases: List[str]):
         self.phases = phases
 
     # SETS THE PHASES AVAILBLE TO THE TRAFFIC LIGHT
-    def addPhase(self, phase):
+    def addPhase(self, phase: str):
         self.phases.append(phase)
         # print("Adding a new phase to TL. Phases now include:", self.phases)
 
     def getCurrentPhase(self):
         return self.currentPhase
 
-    def updateCurrentPhase(self, phase):
+    def updateCurrentPhase(self, phase: str):
         self.currentPhase = phase
 
     def getTimeInCurrentPhase(self):
         return self.timeInCurrentPhase
 
-    def updateTimeInCurrentPhase(self, time):
+    def updateTimeInCurrentPhase(self, time: float):
         self.timeInCurrentPhase += time
 
     def resetTimeInCurrentPhase(self):
@@ -107,7 +116,7 @@ class TrafficLight:
         return self.currentRule
 
     # SET THE CURRENTLY SELECTED RULE
-    def setCurrentRule(self, rule):
+    def setCurrentRule(self, rule: Rule):
         self.currentRule = rule
 
     # RETURNS THE AGENT POOL OF THE TRAFFIC LIGHT
@@ -115,7 +124,7 @@ class TrafficLight:
         return self.agentPool
 
     # ASSIGNS THE TRAFFIC LIGHT TO AN AGENT POOL
-    def assignToAgentPool(self, agentPool):
+    def assignToAgentPool(self, agentPool: AgentPool):
         self.agentPool = agentPool
 
     # RETURNS THE RULE SET INDIVIDUAL CURRENTLY BEING USED BY THE TRAFFIC LIGHT FOR A SIM RUN
@@ -132,7 +141,7 @@ class TrafficLight:
         return self.carsWaiting
 
     # SETS THE TOTAL NUMBER OF CARS WAITING AT THE TRAFFIC LIGHT'S INTERSECTION
-    def updateCarsWaiting(self, carsWaiting):
+    def updateCarsWaiting(self, carsWaiting: Dict[str, List[str]]):
         self.carsWaiting = carsWaiting
 
     # RETURNS THE TOTAL WAIT TIME OF CARS WAITING AT THE TRAFFIC LIGHT'S INTERSECTION
@@ -140,7 +149,7 @@ class TrafficLight:
         return self.waitTime
 
     # SETS THE TOTAL WAIT TIME OF CARS WAITING AT THE TRAFFIC LIGHT'S INTERSECTION
-    def setWaitTime(self, waitTime):
+    def setWaitTime(self, waitTime: float):
         self.waitTime = waitTime
 
     # INCREMENTS THE NUMBER OF TIMES THE TL HAS APPLIED THE Do Nothing ACTION
@@ -156,25 +165,25 @@ class TrafficLight:
         return self.communicationPartners
 
     # SET LIST OF COMMUNICATION PARTNERS
-    def setCommunicationPartners(self, commPartners):
+    def setCommunicationPartners(self, commPartners: List[TrafficLight]):
         self.communicationPartners = commPartners
 
     # ADD A COMMUNICATION PARTNER
-    def addCommunicationPartner(self, commPartner):
+    def addCommunicationPartner(self, commPartner: TrafficLight):
         self.communicationPartners.append(commPartner)
 
     # SET TL'S NEXT INTENDED ACTION
-    def setIntention(self, intention):
+    def setIntention(self, intention: Intention):
         self.communicateIntention(intention)
         self.communicatedIntentions[intention.getTurn()] = intention
 
     # COMMUNICATE INTENTION TO ALL COMMUNICATION PARTNERS
-    def communicateIntention(self, intention):
+    def communicateIntention(self, intention: Intention):
         for tl in self.communicationPartners:
             tl.recieveIntention(intention)
 
     # RECIEVE AN INTENTION FROM A COMMUNICATION PARTNER
-    def recieveIntention(self, intention):
+    def recieveIntention(self, intention: Intention):
         if intention.getTurn() not in self.recievedIntentions:
             self.recievedIntentions[intention.getTurn()] = []
 
@@ -184,7 +193,7 @@ class TrafficLight:
         return self.recievedIntentions
 
     # REMOVES ALL INTENTIONS SENT TOO LONG AGO
-    def removeOldIntentions(self, currentTime):
+    def removeOldIntentions(self, currentTime: float):
         intentionsToRemove = []
         for intention in self.recievedIntentions:
             if (currentTime - intention) > maxIntentionRecievedTime:
@@ -196,7 +205,7 @@ class TrafficLight:
         self.recievedIntentions = {}
 
     # SETS MAXIMUM TIME A TL EDGE CAN SPEND IN A RED PHASE (MaxGreenPhaseTime*NumOfGreenPhases + MaxYellowPhaseTime*NumOfGreenPhases)
-    def setMaxRedPhaseTime(self, maxGreenPhaseTime, maxYellowPhaseTime):
+    def setMaxRedPhaseTime(self, maxGreenPhaseTime: float, maxYellowPhaseTime: float):
         numberOfPhases = len(self.phases)/2
         self.maxRedPhaseTime = (numberOfPhases/2)*maxGreenPhaseTime + (numberOfPhases/2)*maxYellowPhaseTime
 
@@ -204,31 +213,35 @@ class TrafficLight:
         return self.maxRedPhaseTime
 
     def initPhaseTimeSpentInRedArray(self):
-        for i in range(len(self.agentPool.getActionSet())-1):
+        for _ in range(len(self.agentPool.getActionSet())-1):
             self.phaseTimeSpentInRed.append(0)
-        #print('Array initialized!', self.phaseTimeSpentInRed)
+        # print('Array initialized!', self.phaseTimeSpentInRed)
 
-    def updateTimePhaseSpentInRed(self, currentPhase, time):
+    def updateTimePhaseSpentInRed(self, currentPhase: int, time: float):
         for x in range(len(self.phaseTimeSpentInRed)):
             if x != currentPhase:
                 self.phaseTimeSpentInRed[x] += time
         self.phaseTimeSpentInRed[currentPhase] = 0
 
     def maxRedPhaseTimeReached(self):
-        index = 0
-        for x in self.phaseTimeSpentInRed:
-            if x >= self.maxRedPhaseTime:
-                return index
-            index += 1
+        for i, time in enumerate(self.phaseTimeSpentInRed):
+            if time >= self.maxRedPhaseTime:
+                return self.phases[i]
         return False
 
     # DECIDE WHICH RULE TO APPLY AT CURRENT ACTION STEP
-    def getNextRule(self, validRulesRS, validRulesRSint, time):
+    def getNextRule(self, validRulesRS: List[Rule], validRulesRSint: List[Rule], validRulesRSev: List[Rule], isEVApproaching: bool, time: float) -> Union[Rule, Literal[-1]]:
         self.numOfRulesSelected += 1
-        # First, select a rule from RS and communicate it
-        intendedRule = self.getAssignedIndividual().selectRule(validRulesRS)  # Get intended rule to apply
+        # First, select a rule from RS (or RSev if applicable) and communicate it
+        if isEVApproaching:
+            intendedRule = self.getAssignedIndividual().selectRule(validRulesRSev)  # Get intended rule to apply
+        else:
+            intendedRule = self.getAssignedIndividual().selectRule(validRulesRS)  # Get intended rule to apply
         if intendedRule == -1:
-            self.numOfTimesNoRSRuleWasValid += 1
+            if isEVApproaching:
+                self.numOfTimesNoRSevRuleWasValid += 1
+            else:
+                self.numOfTimesNoRSRuleWasValid += 1
             if self.currentRule is None or self.currentRule == -1:
                 # Return the Do Nothing action
                 self.setIntention(Intention(self, len(self.getAgentPool().getActionSet())-1, time))
@@ -267,7 +280,7 @@ class TrafficLight:
             return coopRule
         else:
             # Select one of the two rules based on pCoop value
-            rule = choice([coopRule, intendedRule], 1, p=[pCoop, (1-pCoop)])
+            rule: List[Rule] = choice([coopRule, intendedRule], 1, p=[pCoop, (1-pCoop)])
             self.setIntention(Intention(self, rule[0].getAction(), time))
             # Choice returns an array, so we take the only element of it
             return rule[0]
@@ -278,14 +291,28 @@ class TrafficLight:
     def getRSRuleValidRate(self):
         return (self.numOfTimesNoRSRuleWasValid/self.numOfRulesSelected)*100
 
-    def getEVSpeed(self):
-        return self.EVSpeed
+    def getRSevRuleValidRate(self):
+        return (self.numOfTimesNoRSevRuleWasValid/self.numOfRulesSelected)*100
 
-    def setEVSpeed(self, EVSpeed):
-        self.EVSpeed = EVSpeed
+    def getEVs(self):
+        return self.EVs
 
-    def getEVTrafficDensity(self):
-        return self.EVTrafficDensity
+    def setEVs(self, EVs: List[EmergencyVehicle]):
+        self.EVs = EVs
 
-    def setEVTrafficDensity(self, EVTrafficDensity):
-        self.EVTrafficDensity = EVTrafficDensity
+    def getLeadingEV(self):
+        return self.leadingEV
+
+    def setLeadingEV(self, leadingEV: EmergencyVehicle):
+        self.leadingEV = leadingEV
+
+    def existedBefore(self, ID: str):
+        for EV in self.EVs:
+            if EV.getID() == ID:
+                return True
+        return False
+
+    def getEV(self, ID: str) -> EmergencyVehicle:
+        for EV in self.EVs:
+            if EV.getID() == ID:
+                return EV

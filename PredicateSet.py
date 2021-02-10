@@ -1,791 +1,366 @@
-# TODO: add other predicates besides traffic density
+from __future__ import annotations
 
-import os
 import sys
-import optparse
 import inspect
 from random import randrange
 from pprint import pprint
-# class PredicateSet:
+
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from typing import List
+
 
 #---------- longestTimeWaitedToProceedStaight predicate set ----------#
+def longestTimeWaitedToProceedStraight_0(time: float):
+    return time == 0
 
 
-def longestTimeWaitedToProceedStraight_0(time):
-    if time == 0:
-        return True
-    else:
-        return False
+def longestTimeWaitedToProceedStraight_0_15(time: float):
+    return 0 < time <= 15
 
 
-def longestTimeWaitedToProceedStraight_0_15(time):
-    if 0 < time <= 15:
-        return True
-    else:
-        return False
+def longestTimeWaitedToProceedStraight_15_30(time: float):
+    return 15 < time <= 30
 
 
-def longestTimeWaitedToProceedStraight_15_30(time):
-    if 15 < time <= 30:
-        return True
-    else:
-        return False
+def longestTimeWaitedToProceedStraight_30_45(time: float):
+    return 30 < time <= 45
 
 
-def longestTimeWaitedToProceedStraight_30_45(time):
-    if 30 < time <= 45:
-        return True
-    else:
-        return False
+def longestTimeWaitedToProceedStraight_45_60(time: float):
+    return 45 < time <= 60
 
 
-def longestTimeWaitedToProceedStraight_45_60(time):
-    if 45 < time <= 60:
-        return True
-    else:
-        return False
+def longestTimeWaitedToProceedStraight_60_90(time: float):
+    return 60 < time <= 90
 
 
-def longestTimeWaitedToProceedStraight_60_90(time):
-    if 60 < time <= 90:
-        return True
-    else:
-        return False
+def longestTimeWaitedToProceedStraight_90_120(time: float):
+    return 90 < time <= 120
 
 
-def longestTimeWaitedToProceedStraight_90_120(time):
-    if 90 < time <= 120:
-        return True
-    else:
-        return False
+def longestTimeWaitedToProceedStraight_120_150(time: float):
+    return 120 < time <= 150
 
 
-def longestTimeWaitedToProceedStraight_120_150(time):
-    if 120 < time <= 150:
-        return True
-    else:
-        return False
+def longestTimeWaitedToProceedStraight_150_180(time: float):
+    return 150 < time <= 180
 
 
-def longestTimeWaitedToProceedStraight_150_180(time):
-    if 150 < time <= 180:
-        return True
-    else:
-        return False
+def longestTimeWaitedToProceedStraight_180_210(time: float):
+    return 180 < time <= 210
 
 
-def longestTimeWaitedToProceedStraight_180_210(time):
-    if 180 < time <= 210:
-        return True
-    else:
-        return False
+def longestTimeWaitedToProceedStraight_210_240(time: float):
+    return 210 < time <= 240
 
 
-def longestTimeWaitedToProceedStraight_210_240(time):
-    if 210 < time <= 240:
-        return True
-    else:
-        return False
+def longestTimeWaitedToProceedStraight_240_270(time: float):
+    return 240 < time <= 270
 
 
-def longestTimeWaitedToProceedStraight_240_270(time):
-    if 240 < time <= 270:
-        return True
-    else:
-        return False
+def longestTimeWaitedToProceedStraight_270_300(time: float):
+    return 270 < time <= 300
 
 
-def longestTimeWaitedToProceedStraight_270_300(time):
-    if 270 < time <= 300:
-        return True
-    else:
-        return False
-
-
-def longestTimeWaitedToProceedStraight_300(time):
-    if time > 300:
-        return True
-    else:
-        return False
+def longestTimeWaitedToProceedStraight_300(time: float):
+    return time > 300
 #----------------------------- end -----------------------------#
 
 
 #---------- longestTimeWaitedToTurnLeft predicate set ----------#
-def longestTimeWaitedToTurnLeft_0(time):
-    if time == 0:
-        return True
-    else:
-        return False
+def longestTimeWaitedToTurnLeft_0(time: float):
+    return time == 0
 
 
-def longestTimeWaitedToTurnLeft_0_15(time):
-    if 0 < time <= 15:
-        return True
-    else:
-        return False
+def longestTimeWaitedToTurnLeft_0_15(time: float):
+    return 0 < time <= 15
 
 
-def longestTimeWaitedToTurnLeft_15_30(time):
-    if 15 < time <= 30:
-        return True
-    else:
-        return False
+def longestTimeWaitedToTurnLeft_15_30(time: float):
+    return 15 < time <= 30
 
 
-def longestTimeWaitedToTurnLeft_30_45(time):
-    if 30 < time <= 45:
-        return True
-    else:
-        return False
+def longestTimeWaitedToTurnLeft_30_45(time: float):
+    return 30 < time <= 45
 
 
-def longestTimeWaitedToTurnLeft_45_60(time):
-    if 45 < time <= 60:
-        return True
-    else:
-        return False
+def longestTimeWaitedToTurnLeft_45_60(time: float):
+    return 45 < time <= 60
 
 
-def longestTimeWaitedToTurnLeft_60_90(time):
-    if 60 < time <= 90:
-        return True
-    else:
-        return False
+def longestTimeWaitedToTurnLeft_60_90(time: float):
+    return 60 < time <= 90
 
 
-def longestTimeWaitedToTurnLeft_90_120(time):
-    if 90 < time <= 120:
-        return True
-    else:
-        return False
+def longestTimeWaitedToTurnLeft_90_120(time: float):
+    return 90 < time <= 120
 
 
-def longestTimeWaitedToTurnLeft_120_150(time):
-    if 120 < time <= 150:
-        return True
-    else:
-        return False
+def longestTimeWaitedToTurnLeft_120_150(time: float):
+    return 120 < time <= 150
 
 
-def longestTimeWaitedToTurnLeft_150_180(time):
-    if 150 < time <= 180:
-        return True
-    else:
-        return False
+def longestTimeWaitedToTurnLeft_150_180(time: float):
+    return 150 < time <= 180
 
 
-def longestTimeWaitedToTurnLeft_180_210(time):
-    if 180 < time <= 210:
-        return True
-    else:
-        return False
+def longestTimeWaitedToTurnLeft_180_210(time: float):
+    return 180 < time <= 210
 
 
-def longestTimeWaitedToTurnLeft_210_240(time):
-    if 210 < time <= 240:
-        return True
-    else:
-        return False
+def longestTimeWaitedToTurnLeft_210_240(time: float):
+    return 210 < time <= 240
 
 
-def longestTimeWaitedToTurnLeft_240_270(time):
-    if 240 < time <= 270:
-        return True
-    else:
-        return False
+def longestTimeWaitedToTurnLeft_240_270(time: float):
+    return 240 < time <= 270
 
 
-def longestTimeWaitedToTurnLeft_270_300(time):
-    if 270 < time <= 300:
-        return True
-    else:
-        return False
+def longestTimeWaitedToTurnLeft_270_300(time: float):
+    return 270 < time <= 300
 
 
-def longestTimeWaitedToTurnLeft_300(time):
-    if time > 300:
-        return True
-    else:
-        return False
+def longestTimeWaitedToTurnLeft_300(time: float):
+    return time > 300
 #----------------------------- end -----------------------------#
 
 
 #-------- NumCarsWaitingToProceedStraight predicate set --------#
-def numCarsWaitingToProceedStraight_0(carCount):
-    if carCount == 0:
-        return True
-    else:
-        return False
+def numCarsWaitingToProceedStraight_0(carCount: int):
+    return carCount == 0
 
 
-def numCarsWaitingToProceedStraight_0_5(carCount):
-    if 0 < carCount <= 5:
-        return True
-    else:
-        return False
+def numCarsWaitingToProceedStraight_0_5(carCount: int):
+    return 0 < carCount <= 5
 
 
-def numCarsWaitingToProceedStraight_5_10(carCount):
-    if 5 < carCount <= 10:
-        return True
-    else:
-        return False
+def numCarsWaitingToProceedStraight_5_10(carCount: int):
+    return 5 < carCount <= 10
 
 
-def numCarsWaitingToProceedStraight_10_15(carCount):
-    if 10 < carCount <= 15:
-        return True
-    else:
-        return False
+def numCarsWaitingToProceedStraight_10_15(carCount: int):
+    return 10 < carCount <= 15
 
 
-def numCarsWaitingToProceedStraight_15_25(carCount):
-    if 15 < carCount <= 25:
-        return True
-    else:
-        return False
+def numCarsWaitingToProceedStraight_15_25(carCount: int):
+    return 15 < carCount <= 25
 
 
-def numCarsWaitingToProceedStraight_25_35(carCount):
-    if 25 < carCount <= 35:
-        return True
-    else:
-        return False
+def numCarsWaitingToProceedStraight_25_35(carCount: int):
+    return 25 < carCount <= 35
 
 
-def numCarsWaitingToProceedStraight_35_45(carCount):
-    if 35 < carCount <= 45:
-        return True
-    else:
-        return False
+def numCarsWaitingToProceedStraight_35_45(carCount: int):
+    return 35 < carCount <= 45
 
 
-def numCarsWaitingToProceedStraight_45(carCount):
-    if carCount > 45:
-        return True
-    else:
-        return False
+def numCarsWaitingToProceedStraight_45(carCount: int):
+    return carCount > 45
 
 #----------------------------- end -----------------------------#
 
 
 #------------ NumCarsWaitingToTurnLeft predicate set ------------#
-def numCarsWaitingToTurnLeft_0(carCount):
-    if carCount == 0:
-        return True
-    else:
-        return False
+def numCarsWaitingToTurnLeft_0(carCount: int):
+    return carCount == 0
 
 
-def numCarsWaitingToTurnLeft_0_3(carCount):
-    if 0 < carCount <= 3:
-        return True
-    else:
-        return False
+def numCarsWaitingToTurnLeft_0_3(carCount: int):
+    return 0 < carCount <= 3
 
 
-def numCarsWaitingToTurnLeft_3_6(carCount):
-    if 3 < carCount <= 6:
-        return True
-    else:
-        return False
+def numCarsWaitingToTurnLeft_3_6(carCount: int):
+    return 3 < carCount <= 6
 
 
-def numCarsWaitingToTurnLeft_6_9(carCount):
-    if 6 < carCount <= 9:
-        return True
-    else:
-        return False
+def numCarsWaitingToTurnLeft_6_9(carCount: int):
+    return 6 < carCount <= 9
 
 
-def numCarsWaitingToTurnLeft_9_12(carCount):
-    if 9 < carCount <= 12:
-        return True
-    else:
-        return False
+def numCarsWaitingToTurnLeft_9_12(carCount: int):
+    return 9 < carCount <= 12
 
 
-def numCarsWaitingToTurnLeft_12_15(carCount):
-    if 12 < carCount <= 15:
-        return True
-    else:
-        return False
+def numCarsWaitingToTurnLeft_12_15(carCount: int):
+    return 12 < carCount <= 15
 
 
-def numCarsWaitingToTurnLeft_15(carCount):
-    if carCount > 15:
-        return True
-    else:
-        return False
+def numCarsWaitingToTurnLeft_15(carCount: int):
+    return carCount > 15
 #----------------------------- end -----------------------------#
 
 
 #-------- TimeSpentInCurrentPhase predicate set --------#
-def timeSpentInCurrentPhase_0(time):
-    if time == 0:
-        return True
-    else:
-        return False
+def timeSpentInCurrentPhase_0(time: float):
+    return time == 0
 
 
-def timeSpentInCurrentPhase_0_15(time):
-    if 0 < time <= 15:
-        return True
-    else:
-        return False
+def timeSpentInCurrentPhase_0_15(time: float):
+    return 0 < time <= 15
 
 
-def timeSpentInCurrentPhase_15_30(time):
-    if 15 < time <= 30:
-        return True
-    else:
-        return False
+def timeSpentInCurrentPhase_15_30(time: float):
+    return 15 < time <= 30
 
 
-def timeSpentInCurrentPhase_30_45(time):
-    if 30 < time <= 45:
-        return True
-    else:
-        return False
+def timeSpentInCurrentPhase_30_45(time: float):
+    return 30 < time <= 45
 
 
-def timeSpentInCurrentPhase_45_60(time):
-    if 45 < time <= 60:
-        return True
-    else:
-        return False
+def timeSpentInCurrentPhase_45_60(time: float):
+    return 45 < time <= 60
 
 
-def timeSpentInCurrentPhase_60_90(time):
-    if 60 < time <= 90:
-        return True
-    else:
-        return False
+def timeSpentInCurrentPhase_60_90(time: float):
+    return 60 < time <= 90
 
 
-def timeSpentInCurrentPhase_90_120(time):
-    if 90 < time <= 120:
-        return True
-    else:
-        return False
+def timeSpentInCurrentPhase_90_120(time: float):
+    return 90 < time <= 120
 
 
-def timeSpentInCurrentPhase_120_150(time):
-    if 120 < time <= 150:
-        return True
-    else:
-        return False
+def timeSpentInCurrentPhase_120_150(time: float):
+    return 120 < time <= 150
 
 
-def timeSpentInCurrentPhase_150_180(time):
-    if 150 < time <= 180:
-        return True
-    else:
-        return False
+def timeSpentInCurrentPhase_150_180(time: float):
+    return 150 < time <= 180
 
 
-def timeSpentInCurrentPhase_180_210(time):
-    if 180 < time <= 210:
-        return True
-    else:
-        return False
+def timeSpentInCurrentPhase_180_210(time: float):
+    return 180 < time <= 210
 
 
-def timeSpentInCurrentPhase_210_240(time):
-    if 210 < time <= 250:
-        return True
-    else:
-        return False
+def timeSpentInCurrentPhase_210_240(time: float):
+    return 210 < time <= 250
 
 
-def timeSpentInCurrentPhase_240_270(time):
-    if 240 < time <= 270:
-        return True
-    else:
-        return False
+def timeSpentInCurrentPhase_240_270(time: float):
+    return 240 < time <= 270
 
 
-def timeSpentInCurrentPhase_270_300(time):
-    if 270 < time <= 300:
-        return True
-    else:
-        return False
+def timeSpentInCurrentPhase_270_300(time: float):
+    return 270 < time <= 300
 
 
-def timeSpentInCurrentPhase_300(time):
-    if time > 300:
-        return True
-    else:
-        return False
+def timeSpentInCurrentPhase_300(time: float):
+    return time > 300
 #----------------------------- end -----------------------------#
+
 
 #------------------- Phase check predicates --------------------#
+def verticalPhaseIs_Green(tlPhaseArray: List[str]):
+    return "V" == tlPhaseArray[0] and "G" == tlPhaseArray[2] and ("S" == tlPhaseArray[1] or "SL" == tlPhaseArray[1])
 
 
-def verticalPhaseIs_Green(tlPhaseArray):
-    if "V" == tlPhaseArray[0] and "G" == tlPhaseArray[2] and ("S" == tlPhaseArray[1] or "SL" == tlPhaseArray[1]):
-        return True
-    else:
-        return False
+def verticalPhaseIs_Yellow(tlPhaseArray: List[str]):
+    return "V" == tlPhaseArray[0] and "Y" == tlPhaseArray[2] and ("S" == tlPhaseArray[1] or "SL" == tlPhaseArray[1])
 
 
-def verticalPhaseIs_Yellow(tlPhaseArray):
-    if "V" == tlPhaseArray[0] and "Y" == tlPhaseArray[2] and ("S" == tlPhaseArray[1] or "SL" == tlPhaseArray[1]):
-        return True
-    else:
-        return False
+def northSouthPhaseIs_Green(tlPhaseArray: List[str]):
+    return "NS" == tlPhaseArray[0] and "G" == tlPhaseArray[2] and ("S" == tlPhaseArray[1] or "SL" == tlPhaseArray[1])
 
 
-def northSouthPhaseIs_Green(tlPhaseArray):
-    if "NS" == tlPhaseArray[0] and "G" == tlPhaseArray[2] and ("S" == tlPhaseArray[1] or "SL" == tlPhaseArray[1]):
-        return True
-    else:
-        return False
+def northSouthPhaseIs_Yellow(tlPhaseArray: List[str]):
+    return "NS" == tlPhaseArray[0] and "Y" == tlPhaseArray[2] and ("S" == tlPhaseArray[1] or "SL" == tlPhaseArray[1])
 
 
-def northSouthPhaseIs_Yellow(tlPhaseArray):
-    if "NS" == tlPhaseArray[0] and "Y" == tlPhaseArray[2] and ("S" == tlPhaseArray[1] or "SL" == tlPhaseArray[1]):
-        return True
-    else:
-        return False
+def southNorthPhaseIs_Green(tlPhaseArray: List[str]):
+    return "SN" == tlPhaseArray[0] and "G" == tlPhaseArray[2] and ("S" == tlPhaseArray[1] or "SL" == tlPhaseArray[1])
 
 
-def southNorthPhaseIs_Green(tlPhaseArray):
-    if "SN" == tlPhaseArray[0] and "G" == tlPhaseArray[2] and ("S" == tlPhaseArray[1] or "SL" == tlPhaseArray[1]):
-        return True
-    else:
-        return False
+def southNorthPhaseIs_Yellow(tlPhaseArray: List[str]):
+    return "SN" == tlPhaseArray[0] and "Y" == tlPhaseArray[2] and ("S" == tlPhaseArray[1] or "SL" == tlPhaseArray[1])
 
 
-def southNorthPhaseIs_Yellow(tlPhaseArray):
-    if "SN" == tlPhaseArray[0] and "Y" == tlPhaseArray[2] and ("S" == tlPhaseArray[1] or "SL" == tlPhaseArray[1]):
-        return True
-    else:
-        return False
+def verticalPhaseIsLeftTurn_Green(tlPhaseArray: List[str]):
+    return "V" == tlPhaseArray[0] and "G" == tlPhaseArray[2] and ("L" == tlPhaseArray[1] or "SL" == tlPhaseArray[1])
 
 
-def verticalPhaseIsLeftTurn_Green(tlPhaseArray):
-    if "V" == tlPhaseArray[0] and "G" == tlPhaseArray[2] and ("L" == tlPhaseArray[1] or "SL" == tlPhaseArray[1]):
-        return True
-    else:
-        return False
+def verticalPhaseIsLeftTurn_Yellow(tlPhaseArray: List[str]):
+    return "V" == tlPhaseArray[0] and "Y" == tlPhaseArray[2] and ("L" == tlPhaseArray[1] or "SL" == tlPhaseArray[1])
 
 
-def verticalPhaseIsLeftTurn_Yellow(tlPhaseArray):
-    if "V" == tlPhaseArray[0] and "Y" == tlPhaseArray[2] and ("L" == tlPhaseArray[1] or "SL" == tlPhaseArray[1]):
-        return True
-    else:
-        return False
+def northSouthPhaseIsLeftTurn_Green(tlPhaseArray: List[str]):
+    return "NS" == tlPhaseArray[0] and "G" == tlPhaseArray[2] and ("L" == tlPhaseArray[1] or "SL" == tlPhaseArray[1])
 
 
-def northSouthPhaseIsLeftTurn_Green(tlPhaseArray):
-    if "NS" == tlPhaseArray[0] and "G" == tlPhaseArray[2] and ("L" == tlPhaseArray[1] or "SL" == tlPhaseArray[1]):
-        return True
-    else:
-        return False
+def northSouthPhaseIsLeftTurn_Yellow(tlPhaseArray: List[str]):
+    return "NS" == tlPhaseArray[0] and "Y" == tlPhaseArray[2] and ("L" == tlPhaseArray[1] or "SL" == tlPhaseArray[1])
 
 
-def northSouthPhaseIsLeftTurn_Yellow(tlPhaseArray):
-    if "NS" == tlPhaseArray[0] and "Y" == tlPhaseArray[2] and ("L" == tlPhaseArray[1] or "SL" == tlPhaseArray[1]):
-        return True
-    else:
-        return False
+def southNorthPhaseIsLeftTurn_Green(tlPhaseArray: List[str]):
+    return "SN" == tlPhaseArray[0] and "G" == tlPhaseArray[2] and ("L" == tlPhaseArray[1] or "SL" == tlPhaseArray[1])
 
 
-def southNorthPhaseIsLeftTurn_Green(tlPhaseArray):
-    if "SN" == tlPhaseArray[0] and "G" == tlPhaseArray[2] and ("L" == tlPhaseArray[1] or "SL" == tlPhaseArray[1]):
-        return True
-    else:
-        return False
+def southNorthPhaseIsLeftTurn_Yellow(tlPhaseArray: List[str]):
+    return "SN" == tlPhaseArray[0] and "Y" == tlPhaseArray[2] and ("L" == tlPhaseArray[1] or "SL" == tlPhaseArray[1])
 
 
-def southNorthPhaseIsLeftTurn_Yellow(tlPhaseArray):
-    if "SN" == tlPhaseArray[0] and "Y" == tlPhaseArray[2] and ("L" == tlPhaseArray[1] or "SL" == tlPhaseArray[1]):
-        return True
-    else:
-        return False
+def horizontalPhaseIs_Green(tlPhaseArray: List[str]):
+    return "H" == tlPhaseArray[0] and "G" == tlPhaseArray[2] and ("S" == tlPhaseArray[1] or "SL" == tlPhaseArray[1])
 
 
-def horizontalPhaseIs_Green(tlPhaseArray):
-    if "H" == tlPhaseArray[0] and "G" == tlPhaseArray[2] and ("S" == tlPhaseArray[1] or "SL" == tlPhaseArray[1]):
-        return True
-    else:
-        return False
+def horizontalPhaseIs_Yellow(tlPhaseArray: List[str]):
+    return "H" == tlPhaseArray[0] and "Y" == tlPhaseArray[2] and ("S" == tlPhaseArray[1] or "SL" == tlPhaseArray[1])
 
 
-def horizontalPhaseIs_Yellow(tlPhaseArray):
-    if "H" == tlPhaseArray[0] and "Y" == tlPhaseArray[2] and ("S" == tlPhaseArray[1] or "SL" == tlPhaseArray[1]):
-        return True
-    else:
-        return False
+def eastWestPhaseIs_Green(tlPhaseArray: List[str]):
+    return "EW" == tlPhaseArray[0] and "G" == tlPhaseArray[2] and ("S" == tlPhaseArray[1] or "SL" == tlPhaseArray[1])
 
 
-def eastWestPhaseIs_Green(tlPhaseArray):
-    if "EW" == tlPhaseArray[0] and "G" == tlPhaseArray[2] and ("S" == tlPhaseArray[1] or "SL" == tlPhaseArray[1]):
-        return True
-    else:
-        return False
+def eastWestPhaseIs_Yellow(tlPhaseArray: List[str]):
+    return "EW" == tlPhaseArray[0] and "Y" == tlPhaseArray[2] and ("S" == tlPhaseArray[1] or "SL" == tlPhaseArray[1])
 
 
-def eastWestPhaseIs_Yellow(tlPhaseArray):
-    if "EW" == tlPhaseArray[0] and "Y" == tlPhaseArray[2] and ("S" == tlPhaseArray[1] or "SL" == tlPhaseArray[1]):
-        return True
-    else:
-        return False
+def westEastPhaseIs_Green(tlPhaseArray: List[str]):
+    return "WE" == tlPhaseArray[0] and "G" == tlPhaseArray[2] and ("S" == tlPhaseArray[1] or "SL" == tlPhaseArray[1])
 
 
-def westEastPhaseIs_Green(tlPhaseArray):
-    if "WE" == tlPhaseArray[0] and "G" == tlPhaseArray[2] and ("S" == tlPhaseArray[1] or "SL" == tlPhaseArray[1]):
-        return True
-    else:
-        return False
+def westEastPhaseIs_Yellow(tlPhaseArray: List[str]):
+    return "WE" == tlPhaseArray[0] and "Y" == tlPhaseArray[2] and ("S" == tlPhaseArray[1] or "SL" == tlPhaseArray[1])
 
 
-def westEastPhaseIs_Yellow(tlPhaseArray):
-    if "WE" == tlPhaseArray[0] and "Y" == tlPhaseArray[2] and ("S" == tlPhaseArray[1] or "SL" == tlPhaseArray[1]):
-        return True
-    else:
-        return False
+def horizontalPhaseIsLeftTurn_Green(tlPhaseArray: List[str]):
+    return "H" == tlPhaseArray[0] and "G" == tlPhaseArray[2] and ("L" == tlPhaseArray[1] or "SL" == tlPhaseArray[1])
 
 
-def horizontalPhaseIsLeftTurn_Green(tlPhaseArray):
-    if "H" == tlPhaseArray[0] and "G" == tlPhaseArray[2] and ("L" == tlPhaseArray[1] or "SL" == tlPhaseArray[1]):
-        return True
-    else:
-        return False
+def horizontalPhaseIsLeftTurn_Yellow(tlPhaseArray: List[str]):
+    return "H" == tlPhaseArray[0] and "Y" == tlPhaseArray[2] and ("L" == tlPhaseArray[1] or "SL" == tlPhaseArray[1])
 
 
-def horizontalPhaseIsLeftTurn_Yellow(tlPhaseArray):
-    if "H" == tlPhaseArray[0] and "Y" == tlPhaseArray[2] and ("L" == tlPhaseArray[1] or "SL" == tlPhaseArray[1]):
-        return True
-    else:
-        return False
+def eastWestPhaseIsLeftTurn_Green(tlPhaseArray: List[str]):
+    return "EW" == tlPhaseArray[0] and "G" == tlPhaseArray[2] and ("L" == tlPhaseArray[1] or "SL" == tlPhaseArray[1])
 
 
-def eastWestPhaseIsLeftTurn_Green(tlPhaseArray):
-    if "EW" == tlPhaseArray[0] and "G" == tlPhaseArray[2] and ("L" == tlPhaseArray[1] or "SL" == tlPhaseArray[1]):
-        return True
-    else:
-        return False
+def eastWestPhaseIsLeftTurn_Yellow(tlPhaseArray: List[str]):
+    return "EW" == tlPhaseArray[0] and "Y" == tlPhaseArray[2] and ("L" == tlPhaseArray[1] or "SL" == tlPhaseArray[1])
 
 
-def eastWestPhaseIsLeftTurn_Yellow(tlPhaseArray):
-    if "EW" == tlPhaseArray[0] and "Y" == tlPhaseArray[2] and ("L" == tlPhaseArray[1] or "SL" == tlPhaseArray[1]):
-        return True
-    else:
-        return False
+def westEastPhaseIsLeftTurn_Green(tlPhaseArray: List[str]):
+    return "WE" == tlPhaseArray[0] and "G" == tlPhaseArray[2] and ("L" == tlPhaseArray[1] or "SL" == tlPhaseArray[1])
 
 
-def westEastPhaseIsLeftTurn_Green(tlPhaseArray):
-    if "WE" == tlPhaseArray[0] and "G" == tlPhaseArray[2] and ("L" == tlPhaseArray[1] or "SL" == tlPhaseArray[1]):
-        return True
-    else:
-        return False
-
-
-def westEastPhaseIsLeftTurn_Yellow(tlPhaseArray):
-    if "WE" == tlPhaseArray[0] and "Y" == tlPhaseArray[2] and ("L" == tlPhaseArray[1] or "SL" == tlPhaseArray[1]):
-        return True
-    else:
-        return False
+def westEastPhaseIsLeftTurn_Yellow(tlPhaseArray: List[str]):
+    return "WE" == tlPhaseArray[0] and "Y" == tlPhaseArray[2] and ("L" == tlPhaseArray[1] or "SL" == tlPhaseArray[1])
 #----------------------------- end -----------------------------#
 
-
-#---------------------- EV is Appoaching -----------------------#
-# def EVApproachingVertical(isEVApproaching):
-#     return isEVApporaching
-
-# def EVApproachingHorizontal(isEVApproaching):
-# TODO: add the functionality to check for which lane the EV is in to check if it is approaching hoizontally or vertically
-#----------------------------- end -----------------------------#
-
-
-#--------------------- EV Traffic Density ----------------------#
-def EVTrafficDensity_0(trafficDensity):
-    if trafficDensity == 0:
-        return True
-    else:
-        return False
-
-
-def EVTrafficDensity_0_15(trafficDensity):
-    if 0 < trafficDensity <= 15:
-        return True
-    else:
-        return False
-
-
-def EVTrafficDensity_15_30(trafficDensity):
-    if 15 < trafficDensity <= 30:
-        return True
-    else:
-        return False
-
-
-def EVTrafficDensity_30_45(trafficDensity):
-    if 30 < trafficDensity <= 45:
-        return True
-    else:
-        return False
-
-
-def EVTrafficDensity_45_60(trafficDensity):
-    if 45 < trafficDensity <= 60:
-        return True
-    else:
-        return False
-
-
-def EVTrafficDensity_60_90(trafficDensity):
-    if 60 < trafficDensity <= 90:
-        return True
-    else:
-        return False
-
-
-def EVTrafficDensity_90_120(trafficDensity):
-    if 90 < trafficDensity <= 120:
-        return True
-    else:
-        return False
-
-
-def EVTrafficDensity_120_150(trafficDensity):
-    if 120 < trafficDensity <= 150:
-        return True
-    else:
-        return False
-
-
-def EVTrafficDensity_150(trafficDensity):
-    if trafficDensity > 150:
-        return True
-    else:
-        return False
-#----------------------------- end -----------------------------#
-
-
-#----------------- EV distance to intersection ------------------#
-def EVDistanceToIntersection_0(distanceToIntersection):
-    if distanceToIntersection == 0:
-        return True
-    else:
-        return False
-
-
-def EVDistanceToIntersection_0_50(distanceToIntersection):
-    if 0 < distanceToIntersection <= 50:
-        return True
-    else:
-        return False
-
-
-def EVDistanceToIntersection_50_100(distanceToIntersection):
-    if 50 < distanceToIntersection <= 100:
-        return True
-    else:
-        return False
-
-
-def EVDistanceToIntersection_100_200(distanceToIntersection):
-    if 100 < distanceToIntersection <= 200:
-        return True
-    else:
-        return False
-
-
-def EVDistanceToIntersection_200_300(distanceToIntersection):
-    if 200 < distanceToIntersection <= 300:
-        return True
-    else:
-        return False
-
-
-def EVDistanceToIntersection_400_500(distanceToIntersection):
-    if 400 < distanceToIntersection <= 500:
-        return True
-    else:
-        return False
-
-
-def EVDistanceToIntersection_500_600(distanceToIntersection):
-    if 500 < distanceToIntersection <= 600:
-        return True
-    else:
-        return False
-
-
-def EVDistanceToIntersection_600_700(distanceToIntersection):
-    if 600 < distanceToIntersection <= 700:
-        return True
-    else:
-        return False
-
-
-def EVDistanceToIntersection_800(distanceToIntersection):
-    if distanceToIntersection > 800:
-        return True
-    else:
-        return False
-#----------------------------- end -----------------------------#
-
-
-#-------------------- EV Approach Direction --------------------#
-def EVApproachingHorizontal(laneInfo):
-    EVLane, horizontalLanes = laneInfo
-    if EVLane is None:
-        return False
-    elif EVLane in horizontalLanes:
-        return True
-    else:
-        return False
-
-
-def EVApproachingVertical(laneInfo):
-    EVLane, verticalLanes = laneInfo
-    if EVLane is None:
-        return False
-    elif EVLane in verticalLanes:
-        return True
-    else:
-        return False
-#----------------------------- end -----------------------------#
 
 #------------------- User-defined predicates --------------------#
-# def emergencyVehicleApproachingVertical(tlPhaseArray, vehTypeIDs):
-#     for vt in vehTypeIDs:
-#         if vt == "emergency":
-#             return True
-#     return False
-
-
-# def emergencyVehicleApproachingHorizontal(tlPhaseArray, vehTypeIDs):
-#     # if in Vertical phase
-#     for vt in vehTypeIDs:
-#         if vt == "emergency":
-#             return True
-#     return False
-
-
-def maxGreenPhaseTimeReached(phase, timeInPhase, maxTime):
+def maxGreenPhaseTimeReached(phase: str, timeInPhase: float, maxTime: int):
     if phase == "G":
-        if timeInPhase >= maxTime:
-            return True
-        else:
-            return False
+        return timeInPhase >= maxTime
 
 
-def maxYellowPhaseTimeReached(phase, timeInPhase, maxTime):
+def maxYellowPhaseTimeReached(phase: str, timeInPhase: float, maxTime: int):
     if phase == "Y":
-        if timeInPhase >= maxTime:
-            return True
-        else:
-            return False
+        return timeInPhase >= maxTime
 #----------------------------- end -----------------------------#
 
 
 # RETURN LIST OF PREDICATE FUNCTIONS
-def getPredicateList():
+def getPredicateList() -> List[str]:
     # Get reference to this module for next operation
     thisModule = sys.modules[__name__]
     # Get a dictionary with all methods (predicates) in this module
@@ -795,9 +370,7 @@ def getPredicateList():
     methodsDict.pop("getRandomPredicate")
     methodsDict.pop("run")
     methodsDict.pop("pprint")
-    # Remove all user define predicates
-    # methodsDict.pop("emergencyVehicleApproachingVertical")
-    # methodsDict.pop("emergencyVehicleApproachingHorizontal")
+    # Remove all user-defined predicates
     methodsDict.pop("maxGreenPhaseTimeReached")
     methodsDict.pop("maxYellowPhaseTimeReached")
 
@@ -810,12 +383,12 @@ def getPredicateList():
 
 
 # RETURN RANDOM PREDICATE FROM LIST OF PREDICATE FUNCTIONS
-def getRandomPredicate():
+def getRandomPredicate() -> str:
     predicateList = getPredicateList()
     return (predicateList[randrange(len(predicateList))])
 
 
-def run():
+def run() -> None:
     print("\nThe predicate list is:")
     pprint(getPredicateList())
 

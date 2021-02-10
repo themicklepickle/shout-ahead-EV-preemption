@@ -1,27 +1,23 @@
-# This script creates all the agents
-
-import os
-import sys
-import optparse
-import re
+from __future__ import annotations
 
 from TrafficLight import TrafficLight
 from AgentPool import AgentPool
-from Rule import Rule
+
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from typing import List, Dict
+    from Rule import Rule
 
 
-def run(sumoNetworkName, minIndividualRunsPerGen):
-    tlAgentPoolList = []
-    trafficLightDict = {}
-    userDefinedRules = []
-    edgePartners = {}
-    communicationPartners = {}
+def run(sumoNetworkName: str, minIndividualRunsPerGen: int):
+    userDefinedRules: List[Rule] = []
+    edgePartners: Dict[str, List[str]] = {}
 
     f = open(sumoNetworkName, "r")  # Open desired file
 
-    lanes = []
-    trafficLights = []
-    tlPhases = {}
+    lanes: List[str] = []
+    trafficLights: List[TrafficLight] = []
+    tlPhases: Dict[str, List[str]] = {}
     # Parse file to gather information about traffic lights, and instantiate their objects
     for x in f:
         # Create an action set dictionary for each traffic light
@@ -93,7 +89,7 @@ def run(sumoNetworkName, minIndividualRunsPerGen):
                 tl.setPhases(tlPhases[x])
 
     # Create and assign agent pools; populate communicationPartners dictionary
-    agentPools = []
+    agentPools: List[AgentPool] = []
     for tl in trafficLights:
         for edge in tl.getEdges():
             edgeSplit = edge.split("2")
@@ -102,7 +98,6 @@ def run(sumoNetworkName, minIndividualRunsPerGen):
                 for otherTL in trafficLights:
                     if edgeSplit[0] == otherTL.getName() and otherTL not in tl.getCommunicationPartners():
                         tl.addCommunicationPartner(otherTL)
-        print("Current light:", tl.getName(), "\nEdge goes to:", endPoint[0], "\nEdge comes from:", edgeSplit[0], "\n\n")
 
         apAssigned = False
         # If agent pool(s) already exist, check to see its ability to host the traffic light
@@ -126,8 +121,6 @@ def run(sumoNetworkName, minIndividualRunsPerGen):
     for ap in agentPools:
         ap.finishSetUp()
 
-    for tl in trafficLights:
-        print(tl.getName(), "communicates with:", tl.getCommunicationPartners())
     return (userDefinedRules, trafficLights, agentPools)
 
 

@@ -1,7 +1,8 @@
-import os
-import sys
-import math
-from Rule import Rule
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from Rule import Rule
 
 global learningFactor           # Influences rate with which the weight value converges against the correct weight value
 global discountRate             # Determines the emphasis on the importance of future evaluations
@@ -15,13 +16,13 @@ learningFactor = 0.5
 discountRate = 0.5
 throughputFactor = 1
 waitTimeReducedFactor = 1
-EVSpeedFactor = 5
-EVTrafficDensityFactor = 5
+EVSpeedFactor = 1
+EVTrafficDensityFactor = 1
 penaltyMultiplier = -0.05
-EVIsStoppedPenalty = -20
+EVIsStoppedPenalty = -3
 
 
-def updatedWeight(rule, nextRule, throughputRatio, waitTimeReducedRatio, intersectionQueueDifference, EVChangeInSpeed, EVChangeInTrafficDensity, EVIsStopped):
+def updatedWeight(rule: Rule, nextRule: Rule, throughputRatio: float, waitTimeReducedRatio: float, intersectionQueueDifference: int, EVChangeInSpeed: float, EVChangeInTrafficDensity: float, EVIsStopped: bool) -> float:
     # Returns the updated weight based on the Sarsa learning method
     updatedWeight = rule.getWeight() + (learningFactor*(determineReward(throughputRatio, waitTimeReducedRatio, EVChangeInSpeed, EVChangeInTrafficDensity) +
                                                         (discountRate*nextRule.getWeight() - rule.getWeight()))) + determinePenalty(intersectionQueueDifference, EVIsStopped)
@@ -30,7 +31,7 @@ def updatedWeight(rule, nextRule, throughputRatio, waitTimeReducedRatio, interse
 
 
 # Function to determine the reward
-def determineReward(throughputRatio, waitTimeReducedRatio, EVChangeInSpeed, EVChangeInTrafficDensity):
+def determineReward(throughputRatio: float, waitTimeReducedRatio: float, EVChangeInSpeed: float, EVChangeInTrafficDensity: float):
     reward = 0
 
     reward += throughputFactor * throughputRatio
