@@ -85,7 +85,7 @@ class Individual:
     # UPDATE INDIVIDUAL'S FITNESS SCORE
     def updateFitness(self, fitness: float, EVFitness: float):
         # Add run fitness plus rule application penalty minus EV fitness to master rFit list
-        self.runFitnessResults.append(fitness + self.fitnessRuleApplicationPenalty - EVFitness)  # minus cause it's weird
+        self.runFitnessResults.append(fitness + self.fitnessRuleApplicationPenalty - EVFitness)  # minus EV fitness cause we are trying to minimize fitness values
 
         # Reset values for next simulation run
         self.fitnessRuleApplicationPenalty = 0
@@ -96,9 +96,9 @@ class Individual:
         if sum(self.runFitnessResults) == 0:
             self.fitness = defaultFitness
         elif self.totalSelectedCount == 0:
-            self.fitness = sum(self.runFitnessResults)/1
+            self.fitness = sum(self.runFitnessResults) / 1
         else:
-            self.fitness = sum(self.runFitnessResults)/self.totalSelectedCount
+            self.fitness = sum(self.runFitnessResults) / self.totalSelectedCount
 
     def getNormalizedFitness(self):
         return self.normalizedFitness
@@ -163,38 +163,38 @@ class Individual:
         elif len(validRules) == 1:
             return validRules[0]
 
-        ruleSets = self.subDivideValidRules(validRules)
+        rsMax, rsRest = self.subDivideValidRules(validRules)
+
         rules: List[Rule] = []
         probabilities: List[float] = []
 
         # Add a number of max weight rules to selection set relative to their probabilities
-        for rule in ruleSets[0]:
-            probability = self.getRuleProbabilityMax(rule, ruleSets[0], ruleSets[1])
+        for rule in rsMax:
+            probability = self.getRuleProbabilityMax(rule, rsMax, rsRest)
             rules.append(rule)
             probabilities.append(probability)
 
         # If rsRest contains elements too, calculate their probabilities
-        if len(ruleSets[1]) > 0:
+        if len(rsRest) > 0:
             # Acquire sum of weights in rsRest
-            sumOfWeights = self.getSumOfWeights(ruleSets[1])
+            sumOfWeights = self.getSumOfWeights(rsRest)
 
             # If sum of weights is 0, assign a weight based on the available probability left
             if sumOfWeights == 0:
-                probability = (1-sum(probabilities))/len(ruleSets[1])
+                probability = (1 - sum(probabilities)) / len(rsRest)
 
                 # If sum of weights is 0, assign equal part of the remaining probability to each rule
-                for rule in ruleSets[1]:
+                for rule in rsRest:
                     rules.append(rule)
                     probabilities.append(probability)
-
             else:
                 # If weights do not sum to 0, normalize them between 0 and 1 (0.1 and 1.1 technically) and calculate their probabilities
-                weightsList = self.getWeightsList(ruleSets[1])
-                self.normalizeRuleWeights(ruleSets[1], weightsList)
-                sumOfWeights = self.getSumOfWeights(self.getNormalizedWeightsList(ruleSets[1]))
+                weightsList = self.getWeightsList(rsRest)
+                self.normalizeRuleWeights(rsRest, weightsList)
+                sumOfWeights = self.getSumOfWeights(self.getNormalizedWeightsList(rsRest))
 
                 # Individually calculate probabilities
-                for rule in ruleSets[1]:
+                for rule in rsRest:
                     probability = self.getRuleProbabilityRest(rule, sumOfWeights)
                     rules.append(rule)
                     probabilities.append(probability)
@@ -202,7 +202,7 @@ class Individual:
         # print("Probabilities have a sum of:", sum(probabilities))
         if sum(probabilities) == 0:
             for i in range(len(probabilities)):
-                probabilities[i] = 1/len(probabilities)
+                probabilities[i] = 1 / len(probabilities)
         rule: List[Rule] = choice(rules, 1, p=probabilities)  # Returns a list (of size 1) of rules based on their probabilities
 
         return rule[0]  # Choice function returns an array, so we take the only element in it
@@ -214,39 +214,40 @@ class Individual:
         elif len(validRules) == 1:
             return validRules[0]
 
-        ruleSets = self.subDivideValidRules(validRules)
+        rsMax, rsRest = self.subDivideValidRules(validRules)
 
         rules: List[Rule] = []
         probabilities: List[float] = []
-        if len(ruleSets[0]) > 0:
+
+        if len(rsMax) > 0:
             # Add a number of max weight rules to selection set relative to their probabilities
-            for rule in ruleSets[0]:
-                probability = int(self.getRuleProbabilityMax(rule, ruleSets[0], ruleSets[1]))
+            for rule in rsMax:
+                probability = int(self.getRuleProbabilityMax(rule, rsMax, rsRest))
                 rules.append(rule)
                 probabilities.append(probability)
 
         # If rsRest contains elements too, calculate their probabilities
-        if len(ruleSets[1]) > 0:
+        if len(rsRest) > 0:
             # Acquire sum of weights in rsRest
-            sumOfWeights = self.getSumOfWeights(ruleSets[1])
+            sumOfWeights = self.getSumOfWeights(rsMax)
 
             # If sum of weights is 0, assign a weight based on the available probability left
             if sumOfWeights == 0:
-                probability = (1-sum(probabilities))/len(ruleSets[1])
+                probability = (1-sum(probabilities))/len(rsRest)
 
                 # If sum of weights is 0, assign equal part of the remaining probability to each rule
-                for rule in ruleSets[1]:
+                for rule in rsRest:
                     rules.append(rule)
                     probabilities.append(probability)
             else:
                 # If weights do not sum to 0, normalize them between 0 and 1 (0.1 and 1.1 technically) and calculate their probabilities
-                weightsList = self.getWeightsList(ruleSets[1])
-                self.normalizeWeights(ruleSets[1], weightsList)
-                sumOfWeights = self.getSumOfWeights(ruleSets[1])
+                weightsList = self.getWeightsList(rsRest)
+                self.normalizeWeights(rsRest, weightsList)
+                sumOfWeights = self.getSumOfWeights(rsRest)
 
                 # Individually calculate probabilities
-                for rule in ruleSets[1]:
-                    probability = self.getRuleProbabilityRest(rule, sumOfWeights)
+                for rule in rsRest:
+                    probability = self.getRuleProbabilityRest(rule, sumOfWeights)  # TODO: fix this
                     rules.append(rule)
                     probabilities.append(probability)
 
@@ -267,20 +268,19 @@ class Individual:
         weight = rule.getWeight()
 
         if len(rsRest) == 0:
-            return 1/len(rsMax)
+            return 1 / len(rsMax)
 
         # Avoid dividing by zero
         if weight == 0:
             weight = 2.2250738585072014e-308
 
-        return ((1-epsilon)*(weight/(weight*len(rsMax))))
+        return ((1 - epsilon) * (weight / (weight * len(rsMax))))
 
     # RETURN PROBABILITY OF SELECTION FOR A RULE IN rsRest
     def getRuleProbabilityRest(self, rule: Rule, sumOfWeights):
         weight = rule.getNormalizedWeight()
 
-        # print("Rule with weight", rule.getNormalizedWeight(), "has a probability of", epsilon*(weight/sumOfWeights))
-        return epsilon*(weight/sumOfWeights)
+        return epsilon * (weight / sumOfWeights)
 
     # RETURN SUM OF ALL WEIGHTS IN A RULE SET
     def getSumOfWeights(self, setOfRules: List[Rule]) -> float:
@@ -305,7 +305,7 @@ class Individual:
     # NORMALIZE WEIGHTS BETWEEN 0.1 AND 1.1 (WEIGHTS ARE NORMALIZED BETWEEN 0 AND 1, AND 0.1 IS ADDED TO AVOID WEIGHTS OF 0)
     def normalizeWeights(self, setOfRules: List[Rule], weightsList: List[float]):
         for r in setOfRules:
-            r.setNormalizedWeight(((r.getWeight()-min(weightsList))/(max(weightsList)-min(weightsList))) + 0.1)
+            r.setNormalizedWeight(((r.getWeight() - min(weightsList)) / (max(weightsList) - min(weightsList))) + 0.1)
 
     # SEPERATE RULES INTO rsMax AND rsRest
     def subDivideValidRules(self, validRules: List[Rule]) -> Tuple[List[Rule], List[Rule]]:
@@ -324,7 +324,6 @@ class Individual:
                 rsMax.append(rule)
                 validRules.remove(rule)
 
-        # print("RSMax contains:", rsMax, "\nRSRest contains:", validRules)
         return (rsMax, validRules)  # Return the two rule sets (validRules now serves as rsRest)
 
     def updateFitnessPenalty(self, ruleApplied: bool, positiveRuleReward: float):

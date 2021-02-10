@@ -3,7 +3,6 @@ from __future__ import annotations
 import sys
 import inspect
 from random import randrange
-from pprint import pprint
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
@@ -361,15 +360,14 @@ def maxYellowPhaseTimeReached(phase: str, timeInPhase: float, maxTime: int):
 
 # RETURN LIST OF PREDICATE FUNCTIONS
 def getPredicateList() -> List[str]:
-    # Get reference to this module for next operation
-    thisModule = sys.modules[__name__]
-    # Get a dictionary with all methods (predicates) in this module
-    methodsDict = dict(inspect.getmembers(thisModule, predicate=inspect.isfunction))
+    thisModule = sys.modules[__name__]  # Get reference to this module for next operation
+    methodsDict = dict(inspect.getmembers(thisModule, predicate=inspect.isfunction))  # Get a dictionary with all methods (predicates) in this module
+
     # Remove all methods that are not predicates from dictionary
     methodsDict.pop("getPredicateList")
     methodsDict.pop("getRandomPredicate")
     methodsDict.pop("run")
-    methodsDict.pop("pprint")
+
     # Remove all user-defined predicates
     methodsDict.pop("maxGreenPhaseTimeReached")
     methodsDict.pop("maxYellowPhaseTimeReached")
@@ -389,8 +387,7 @@ def getRandomPredicate() -> str:
 
 
 def run() -> None:
-    print("\nThe predicate list is:")
-    pprint(getPredicateList())
+    print("\nThe predicate list is:", getPredicateList())
 
 
 if __name__ == "__main__":

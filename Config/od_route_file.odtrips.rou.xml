@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 10/23/19 20:45:30 by Eclipse SUMO duarouter Version 1.3.1
+<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/duarouterConfiguration.xsd">
+
+    <input>
+        <net-file value="simpleNetwork.net.xml"/>
+        <route-files value="od_file.odtrips.xml"/>
+    </input>
+
+    <output>
+        <output-file value="od_route_file.odtrips.rou.xml"/>
+        <alternatives-output value="od_route_file.odtrips.rou.alt.xml"/>
+    </output>
+
+    <report>
+        <xml-validation value="never"/>
+        <no-step-log value="true"/>
+    </report>
+
+</configuration>
+-->
+
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/routes_file.xsd">
+    <vehicle id="57" depart="27.48" departLane="free" departSpeed="max" fromTaz="3" toTaz="14">
+        <route edges="NWB2four-arm_LTL four-arm2incoming incoming2EB"/>
+    </vehicle>
+    <vehicle id="17" depart="163.02" departLane="free" departSpeed="max" fromTaz="2" toTaz="14">
+        <route edges="WB2four-arm_LTL four-arm2incoming incoming2EB"/>
+    </vehicle>
+    <vehicle id="46" depart="353.09" departLane="free" departSpeed="max" fromTaz="3" toTaz="1">
+        <route edges="NWB2four-arm_LTL four-arm2WB"/>
+    </vehicle>
+    <vehicle id="47" depart="363.29" departLane="free" departSpeed="max" fromTaz="3" toTaz="1">
+        <route edges="NWB2four-arm_LTL four-arm2WB"/>
+    </vehicle>
+    <vehicle id="7" depart="401.49" departLane="free" departSpeed="max" fromTaz="13" toTaz="1">
+        <route edges="EB2incoming incoming2four-arm_LTL four-arm2WB"/>
+    </vehicle>
+    <vehicle id="40" depart="410.68" departLane="free" departSpeed="max" fromTaz="2" toTaz="4">
+        <route edges="WB2four-arm_LTL four-arm2NWB"/>
+    </vehicle>
+    <vehicle id="31" depart="423.68" departLane="free" departSpeed="max" fromTaz="2" toTaz="16">
+        <route edges="WB2four-arm_LTL four-arm2bend bend2T_LTL T2SEB"/>
+    </vehicle>
+    <vehicle id="24" depart="436.43" departLane="free" departSpeed="max" fromTaz="2" toTaz="14">
+        <route edges="WB2four-arm_LTL four-arm2incoming incoming2EB"/>
+    </vehicle>
+    <vehicle id="1" depart="476.94" departLane="free" departSpeed="max" fromTaz="11" toTaz="1">
+        <route edges="NEB2incoming_LTL incoming2four-arm_LTL four-arm2WB"/>
+    </vehicle>
+    <vehicle id="37" depart="557.09" departLane="free" departSpeed="max" fromTaz="2" toTaz="4">
+        <route edges="WB2four-arm_LTL four-arm2NWB"/>
+    </vehicle>
+    <vehicle id="13" depart="666.67" departLane="free" departSpeed="max" fromTaz="15" toTaz="1">
+        <route edges="SEB2T T2incoming_LTL incoming2four-arm_LTL four-arm2WB"/>
+    </vehicle>
+    <vehicle id="15" depart="724.95" departLane="free" departSpeed="max" fromTaz="2" toTaz="14">
+        <route edges="WB2four-arm_LTL four-arm2incoming incoming2EB"/>
+    </vehicle>
+    <vehicle id="3" depart="754.69" departLane="free" departSpeed="max" fromTaz="11" toTaz="1">
+        <route edges="NEB2incoming_LTL incoming2four-arm_LTL four-arm2WB"/>
+    </vehicle>
+    <vehicle id="25" depart="785.27" departLane="free" departSpeed="max" fromTaz="2" toTaz="16">
+        <route edges="WB2four-arm_LTL four-arm2bend bend2T_LTL T2SEB"/>
+    </vehicle>
+    <vehicle id="8" depart="819.88" departLane="free" departSpeed="max" fromTaz="13" toTaz="1">
+        <route edges="EB2incoming incoming2four-arm_LTL four-arm2WB"/>
+    </vehicle>
+    <vehicle id="38" depart="833.34" departLane="free" departSpeed="max" fromTaz="2" toTaz="4">
+        <route edges="WB2four-arm_LTL four-arm2NWB"/>
+    </vehicle>
+    <vehicle id="22" depart="842.52" departLane="free" departSpeed="max" fromTaz="2" toTaz="14">
+        <route edges="WB2four-arm_LTL four-arm2incoming incoming2EB"/>
+    </vehicle>
+    <vehicle id="55" depart="891.90" departLane="free" departSpeed="max" fromTaz="3" toTaz="14">
+        <route edges="NWB2four-arm_LTL four-arm2incoming incoming2EB"/>
+    </vehicle>
+    <vehicle id="59" depart="997.76" departLane="free" departSpeed="max" fromTaz="3" toTaz="14">
+        <route edges="NWB2four-arm_LTL four-arm2incoming incoming2EB"/>
+    </vehicle>
+    <vehicle id="51" depart="1034.54" departLane="free" departSpeed="max" fromTaz="3" toTaz="1">
+        <route edges="NWB2four-arm_LTL four-arm2WB"/>
+    </vehicle>
+    <vehicle id="52" depart="1130.77" departLane="free" departSpeed="max" fromTaz="3" toTaz="1">
+        <route edges="NWB2four-arm_LTL four-arm2WB"/>
+    </vehicle>
+    <vehicle id="58" depart="1184.71" departLane="free" departSpeed="max" fromTaz="3" toTaz="14">
+        <route edges="NWB2four-arm_LTL four-arm2incoming incoming2EB"/>
+    </vehicle>
+    <vehicle id="62" depart="1238.90" departLane="free" departSpeed="max" fromTaz="3" toTaz="14">
+        <route edges="NWB2four-arm_LTL four-arm2incoming incoming2EB"/>
+    </vehicle>
+    <vehicle id="5" depart="1283.82" departLane="free" departSpeed="max" fromTaz="13" toTaz="1">
+        <route edges="EB2incoming incoming2four-arm_LTL four-arm2WB"/>
+    </vehicle>
+    <vehicle id="33" depart="1302.21" departLane="free" departSpeed="max" fromTaz="2" toTaz="16">
+        <route edges="WB2four-arm_LTL four-arm2bend bend2T_LTL T2SEB"/>
+    </vehicle>
+    <vehicle id="12" depart="1372.68" departLane="free" departSpeed="max" fromTaz="15" toTaz="1">
+        <route edges="SEB2T T2incoming_LTL incoming2four-arm_LTL four-arm2WB"/>
+    </vehicle>
+    <vehicle id="20" depart="1651.42" departLane="free" departSpeed="max" fromTaz="2" toTaz="14">
+        <route edges="WB2four-arm_LTL four-arm2incoming incoming2EB"/>
+    </vehicle>
+    <vehicle id="53" depart="1669.56" departLane="free" departSpeed="max" fromTaz="3" toTaz="1">
+        <route edges="NWB2four-arm_LTL four-arm2WB"/>
+    </vehicle>
+    <vehicle id="26" depart="1752.65" departLane="free" departSpeed="max" fromTaz="2" toTaz="16">
+        <route edges="WB2four-arm_LTL four-arm2bend bend2T_LTL T2SEB"/>
+    </vehicle>
+    <vehicle id="42" depart="1762.81" departLane="free" departSpeed="max" fromTaz="2" toTaz="4">
+        <route edges="WB2four-arm_LTL four-arm2NWB"/>
+    </vehicle>
+    <vehicle id="45" depart="1822.07" departLane="free" departSpeed="max" fromTaz="3" toTaz="1">
+        <route edges="NWB2four-arm_LTL four-arm2WB"/>
+    </vehicle>
+    <vehicle id="2" depart="1847.70" departLane="free" departSpeed="max" fromTaz="11" toTaz="1">
+        <route edges="NEB2incoming_LTL incoming2four-arm_LTL four-arm2WB"/>
+    </vehicle>
+    <vehicle id="16" depart="1848.48" departLane="free" departSpeed="max" fromTaz="2" toTaz="14">
+        <route edges="WB2four-arm_LTL four-arm2incoming incoming2EB"/>
+    </vehicle>
+    <vehicle id="23" depart="1943.63" departLane="free" departSpeed="max" fromTaz="2" toTaz="14">
+        <route edges="WB2four-arm_LTL four-arm2incoming incoming2EB"/>
+    </vehicle>
+    <vehicle id="54" depart="1972.95" departLane="free" departSpeed="max" fromTaz="3" toTaz="1">
+        <route edges="NWB2four-arm_LTL four-arm2WB"/>
+    </vehicle>
+    <vehicle id="10" depart="2015.92" departLane="free" departSpeed="max" fromTaz="15" toTaz="1">
+        <route edges="SEB2T T2incoming_LTL incoming2four-arm_LTL four-arm2WB"/>
+    </vehicle>
+    <vehicle id="43" depart="2104.54" departLane="free" departSpeed="max" fromTaz="2" toTaz="4">
+        <route edges="WB2four-arm_LTL four-arm2NWB"/>
+    </vehicle>
+    <vehicle id="28" depart="2116.75" departLane="free" departSpeed="max" fromTaz="2" toTaz="16">
+        <route edges="WB2four-arm_LTL four-arm2bend bend2T_LTL T2SEB"/>
+    </vehicle>
+    <vehicle id="41" depart="2138.70" departLane="free" departSpeed="max" fromTaz="2" toTaz="4">
+        <route edges="WB2four-arm_LTL four-arm2NWB"/>
+    </vehicle>
+    <vehicle id="32" depart="2169.75" departLane="free" departSpeed="max" fromTaz="2" toTaz="16">
+        <route edges="WB2four-arm_LTL four-arm2bend bend2T_LTL T2SEB"/>
+    </vehicle>
+    <vehicle id="44" depart="2198.82" departLane="free" departSpeed="max" fromTaz="2" toTaz="4">
+        <route edges="WB2four-arm_LTL four-arm2NWB"/>
+    </vehicle>
+    <vehicle id="18" depart="2239.54" departLane="free" departSpeed="max" fromTaz="2" toTaz="14">
+        <route edges="WB2four-arm_LTL four-arm2incoming incoming2EB"/>
+    </vehicle>
+    <vehicle id="14" depart="2248.33" departLane="free" departSpeed="max" fromTaz="15" toTaz="1">
+        <route edges="SEB2T T2incoming_LTL incoming2four-arm_LTL four-arm2WB"/>
+    </vehicle>
+    <vehicle id="56" depart="2252.80" departLane="free" departSpeed="max" fromTaz="3" toTaz="14">
+        <route edges="NWB2four-arm_LTL four-arm2incoming incoming2EB"/>
+    </vehicle>
+    <vehicle id="34" depart="2279.74" departLane="free" departSpeed="max" fromTaz="2" toTaz="16">
+        <route edges="WB2four-arm_LTL four-arm2bend bend2T_LTL T2SEB"/>
+    </vehicle>
+    <vehicle id="9" depart="2300.46" departLane="free" departSpeed="max" fromTaz="13" toTaz="1">
+        <route edges="EB2incoming incoming2four-arm_LTL four-arm2WB"/>
+    </vehicle>
+    <vehicle id="27" depart="2313.26" departLane="free" departSpeed="max" fromTaz="2" toTaz="16">
+        <route edges="WB2four-arm_LTL four-arm2bend bend2T_LTL T2SEB"/>
+    </vehicle>
+    <vehicle id="61" depart="2341.13" departLane="free" departSpeed="max" fromTaz="3" toTaz="14">
+        <route edges="NWB2four-arm_LTL four-arm2incoming incoming2EB"/>
+    </vehicle>
+    <vehicle id="39" depart="2359.25" departLane="free" departSpeed="max" fromTaz="2" toTaz="4">
+        <route edges="WB2four-arm_LTL four-arm2NWB"/>
+    </vehicle>
+    <vehicle id="19" depart="2436.32" departLane="free" departSpeed="max" fromTaz="2" toTaz="14">
+        <route edges="WB2four-arm_LTL four-arm2incoming incoming2EB"/>
+    </vehicle>
+    <vehicle id="63" depart="2442.60" departLane="free" departSpeed="max" fromTaz="3" toTaz="14">
+        <route edges="NWB2four-arm_LTL four-arm2incoming incoming2EB"/>
+    </vehicle>
+    <vehicle id="0" depart="2488.08" departLane="free" departSpeed="max" fromTaz="11" toTaz="1">
+        <route edges="NEB2incoming_LTL incoming2four-arm_LTL four-arm2WB"/>
+    </vehicle>
+    <vehicle id="60" depart="2573.19" departLane="free" departSpeed="max" fromTaz="3" toTaz="14">
+        <route edges="NWB2four-arm_LTL four-arm2incoming incoming2EB"/>
+    </vehicle>
+    <vehicle id="35" depart="2587.01" departLane="free" departSpeed="max" fromTaz="2" toTaz="4">
+        <route edges="WB2four-arm_LTL four-arm2NWB"/>
+    </vehicle>
+    <vehicle id="48" depart="2807.46" departLane="free" departSpeed="max" fromTaz="3" toTaz="1">
+        <route edges="NWB2four-arm_LTL four-arm2WB"/>
+    </vehicle>
+    <vehicle id="6" depart="2852.53" departLane="free" departSpeed="max" fromTaz="13" toTaz="1">
+        <route edges="EB2incoming incoming2four-arm_LTL four-arm2WB"/>
+    </vehicle>
+    <vehicle id="36" depart="2896.69" departLane="free" departSpeed="max" fromTaz="2" toTaz="4">
+        <route edges="WB2four-arm_LTL four-arm2NWB"/>
+    </vehicle>
+    <vehicle id="11" depart="2901.62" departLane="free" departSpeed="max" fromTaz="15" toTaz="1">
+        <route edges="SEB2T T2incoming_LTL incoming2four-arm_LTL four-arm2WB"/>
+    </vehicle>
+    <vehicle id="4" depart="2950.16" departLane="free" departSpeed="max" fromTaz="11" toTaz="1">
+        <route edges="NEB2incoming_LTL incoming2four-arm_LTL four-arm2WB"/>
+    </vehicle>
+    <vehicle id="29" depart="3001.37" departLane="free" departSpeed="max" fromTaz="2" toTaz="16">
+        <route edges="WB2four-arm_LTL four-arm2bend bend2T_LTL T2SEB"/>
+    </vehicle>
+    <vehicle id="21" depart="3181.59" departLane="free" departSpeed="max" fromTaz="2" toTaz="14">
+        <route edges="WB2four-arm_LTL four-arm2incoming incoming2EB"/>
+    </vehicle>
+    <vehicle id="64" depart="3225.98" departLane="free" departSpeed="max" fromTaz="3" toTaz="14">
+        <route edges="NWB2four-arm_LTL four-arm2incoming incoming2EB"/>
+    </vehicle>
+    <vehicle id="30" depart="3363.45" departLane="free" departSpeed="max" fromTaz="2" toTaz="16">
+        <route edges="WB2four-arm_LTL four-arm2bend bend2T_LTL T2SEB"/>
+    </vehicle>
+    <vehicle id="50" depart="3425.09" departLane="free" departSpeed="max" fromTaz="3" toTaz="1">
+        <route edges="NWB2four-arm_LTL four-arm2WB"/>
+    </vehicle>
+    <vehicle id="49" depart="3573.33" departLane="free" departSpeed="max" fromTaz="3" toTaz="1">
+        <route edges="NWB2four-arm_LTL four-arm2WB"/>
+    </vehicle>
+</routes>

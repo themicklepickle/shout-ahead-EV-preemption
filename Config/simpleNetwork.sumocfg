@@ -1,0 +1,5 @@
+<configuration>
+    <input>
+        <net-file value="simpleNetwork.net.xml"/>
+    </input>
+</configuration>

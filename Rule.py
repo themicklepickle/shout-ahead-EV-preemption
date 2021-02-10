@@ -45,7 +45,6 @@ class Rule:
     # UPDATE RULE ACTION
     def setAction(self, action):
         if action == -1:
-            print("Setting action to -1")
             self.action = 1
         else:
             self._action = action

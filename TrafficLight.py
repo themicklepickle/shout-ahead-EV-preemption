@@ -94,7 +94,6 @@ class TrafficLight:
     # SETS THE PHASES AVAILBLE TO THE TRAFFIC LIGHT
     def addPhase(self, phase: str):
         self.phases.append(phase)
-        # print("Adding a new phase to TL. Phases now include:", self.phases)
 
     def getCurrentPhase(self):
         return self.currentPhase
@@ -218,15 +217,15 @@ class TrafficLight:
         # print('Array initialized!', self.phaseTimeSpentInRed)
 
     def updateTimePhaseSpentInRed(self, currentPhase: int, time: float):
-        for x in range(len(self.phaseTimeSpentInRed)):
-            if x != currentPhase:
-                self.phaseTimeSpentInRed[x] += time
+        for i in range(len(self.phaseTimeSpentInRed)):
+            if i != currentPhase:
+                self.phaseTimeSpentInRed[i] += time
         self.phaseTimeSpentInRed[currentPhase] = 0
 
     def maxRedPhaseTimeReached(self):
         for i, time in enumerate(self.phaseTimeSpentInRed):
             if time >= self.maxRedPhaseTime:
-                return self.phases[i]
+                return i
         return False
 
     # DECIDE WHICH RULE TO APPLY AT CURRENT ACTION STEP
@@ -259,7 +258,6 @@ class TrafficLight:
             self.numOfTimesNoCoopRuleWasValid += 1
 
         if intendedRule == -1 and coopRule == -1:
-            #print("Neither intended nor coopRule valid.")
             if self.currentRule is None or self.currentRule == -1:
                 self.setIntention(Intention(self, len(self.getAgentPool().getActionSet())-1, time))
                 return -1
@@ -280,7 +278,7 @@ class TrafficLight:
             return coopRule
         else:
             # Select one of the two rules based on pCoop value
-            rule: List[Rule] = choice([coopRule, intendedRule], 1, p=[pCoop, (1-pCoop)])
+            rule: List[Rule] = choice([coopRule, intendedRule], 1, p=[pCoop, (1 - pCoop)])
             self.setIntention(Intention(self, rule[0].getAction(), time))
             # Choice returns an array, so we take the only element of it
             return rule[0]
