@@ -22,7 +22,6 @@ def run(agentPools: List[AgentPool], avgGenTime: float, totalGenTime: float, dat
 
     for ap in agentPools:
         individuals = ap.getIndividualsSet()
-        individuals.sort
         topIndividual = min(individuals, key=attrgetter('fitness'))
 
         bestIndividuals[ap.getID()] = topIndividual.getJSON()
