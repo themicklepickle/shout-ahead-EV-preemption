@@ -53,6 +53,8 @@ def main(status: Status, database: Database, notifier):
     maxGreenPhaseTime = 225
     maxYellowPhaseTime = 5
     maxSimulationTime = 10000
+    maxSimulationTime_5_15 = 6000
+    maxSimulationTime_15 = 4000
     runTimeSet = []
     # -----------------------------
 
@@ -128,9 +130,9 @@ def main(status: Status, database: Database, notifier):
         while not allIndividualsTested:
             # Adjust maximum simulation times for individuals based on generation count
             if generations >= 5 and generations < 15:
-                maxSimulationTime = 6000
+                maxSimulationTime = maxSimulationTime_5_15
             elif generations >= 15:
-                maxSimulationTime = 4000
+                maxSimulationTime = maxSimulationTime_15
 
             simRunner = DriverEV(sumoCmd, setUpTuple, maxGreenPhaseTime, maxYellowPhaseTime, maxSimulationTime,
                                  maxGreenAndYellowPhaseTime_UDRule, maxRedPhaseTime_UDRule, assignGreenPhaseToSingleWaitingPhase_UDRule, useShoutahead)
