@@ -1,7 +1,7 @@
 <configuration> 
     <input> 
-        <net-file value="simpleNetwork.net.xml"/> 
-        <route-files value="routes.rou.xml"/> 
+        <net-file value="./simpleNetwork.net.xml"/> 
+        <route-files value="./routes.rou.xml"/> 
     </input> 
     
     <time> 
