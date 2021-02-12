@@ -40,8 +40,9 @@ class DriverEV(Driver):
         self.constructTLControllingLaneDict(trafficLights)
         self.constructLeftTurnLanesDict(trafficLights)
 
-        # get state and leading EV
+        # get state and EVs
         self.calculateState(trafficLights)
+        self.calculateEVs(trafficLights)
         self.calculateLeadingEV(trafficLights)
 
         # Assign each traffic light an individual from their agent pool for this simulation run, and a starting rule
@@ -94,8 +95,9 @@ class DriverEV(Driver):
             if (step - 1) % 5 != 0:
                 continue
 
-            # get state and leading EV
+            # get state and EVs
             self.calculateState(trafficLights)
+            self.calculateEVs(trafficLights)
             self.calculateLeadingEV(trafficLights)
 
             for tl in trafficLights:
@@ -348,33 +350,37 @@ class DriverEV(Driver):
 
         return False  # Return False if no EVs were found
 
+    def calculateEVs(self, trafficLights: List[TrafficLight]) -> None:
+        for tl in trafficLights:
+            state = self.getState(tl)
+            EVs = []
+
+            for lane in state:
+                EVsInLane = []
+                for veh in state[lane]:
+                    if "_EV" in veh:
+                        vehID = veh.split("_")[0]
+                        speed = traci.vehicle.getSpeed(vehID)
+                        distance = traci.lane.getLength(lane) - traci.vehicle.getLanePosition(vehID)
+                        EVsInLane.append(EmergencyVehicle(veh, speed, distance, lane))
+
+                # Sort EVs based on their distance to the intersection
+                EVsInLane.sort(key=lambda EV: EV.getDistance())
+
+                # Obtain queue length ahead based on the vehicle's index in the list
+                for i, EV in enumerate(EVsInLane):
+                    EV.setQueue(i)
+
+                # Add EVs in lane to EV list
+                EVs += EVsInLane
+
+            EVs.sort(key=lambda EV: EV.getDistance())
+
+            self.EVs[tl] = EVs
+
     # GET A LIST OF ALL EMERGENCY VEHICLES
     def getEVs(self, trafficLight: TrafficLight) -> List[EmergencyVehicle]:
-        state = self.getState(trafficLight)
-        EVs = []
-
-        for lane in state:
-            EVsInLane = []
-            for veh in state[lane]:
-                if "_EV" in veh:
-                    vehID = veh.split("_")[0]
-                    speed = traci.vehicle.getSpeed(vehID)
-                    distance = traci.lane.getLength(lane) - traci.vehicle.getLanePosition(vehID)
-                    EVsInLane.append(EmergencyVehicle(veh, speed, distance, lane))
-
-            # Sort EVs based on their distance to the intersection
-            EVsInLane.sort(key=lambda EV: EV.getDistance())
-
-            # Obtain queue length ahead based on the vehicle's index in the list
-            for i, EV in enumerate(EVsInLane):
-                EV.setQueue(i)
-
-            # Add EVs in lane to EV list
-            EVs += EVsInLane
-
-        EVs.sort(key=lambda EV: EV.getDistance())
-
-        return EVs
+        return self.EVs[trafficLight]
 
     def calculateLeadingEV(self, trafficLights: List[TrafficLight]) -> None:
         for tl in trafficLights:

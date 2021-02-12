@@ -35,6 +35,7 @@ class Driver:
         self.leadingEV = {}
         self.TLControllingLane = {}
         self.leftTurnLanes = []
+        self.EVs = {}
 
     # RETURNS A DICTIONARY WITH KEYS OF VEHIDs WAITING AT AN INTERSECTION AND THEIR WAITING TIME AS VALUES
     def carsWaiting(self, trafficLight: TrafficLight) -> Dict[str, float]:
