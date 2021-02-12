@@ -29,13 +29,13 @@ def updatedWeight(rule: Rule, nextRule: Rule, throughputRatio: float, waitTimeRe
     updatedWeight = rule.getWeight() + (learningFactor * (determineReward(throughputRatio, waitTimeReducedRatio, EVChangeInSpeed, EVChangeInTrafficDensity) +
                                                           (discountRate * nextRule.getWeight() - rule.getWeight()))) + (penaltyMultiplier * determinePenalty(intersectionQueueDifference, EVIsStopped))
 
-    if rule.getType() == 2:
-        print(rule)
-        print("throughputRatio", throughputFactor * throughputRatio)
-        print("waitTimeReducedRatio", waitTimeReducedFactor * waitTimeReducedRatio)
-        print("EVChangeInSpeed", EVSpeedFactor * EVChangeInSpeed)
-        print("EVChangeInTrafficDenisty", EVTrafficDensityFactor, EVChangeInTrafficDensity)
-        print("updatedWeight", updatedWeight)
+    # if rule.getType() == 2:
+    #     print(rule)
+    #     print("throughputRatio", throughputFactor * throughputRatio)
+    #     print("waitTimeReducedRatio", waitTimeReducedFactor * waitTimeReducedRatio)
+    #     print("EVChangeInSpeed", EVSpeedFactor * EVChangeInSpeed)
+    #     print("EVChangeInTrafficDenisty", EVTrafficDensityFactor, EVChangeInTrafficDensity)
+    #     print("updatedWeight", updatedWeight)
 
     return updatedWeight * 0.0001  # Numbers are reduced by 99.99% to keep them managable
 

@@ -43,6 +43,28 @@ class Individual:
     def __repr__(self) -> str:
         return str(self.id)
 
+    def getJSON(self) -> dict:
+        return {
+            "id": self.id,
+            "actionSet": self.agentPool.getActionSet(),
+            "RS": [rule.getJSON() for rule in self.RS],
+            "RSint": [rule.getJSON() for rule in self.RSint],
+            "RSev": [rule.getJSON() for rule in self.RSev],
+            "fitness": self.fitness,
+            "agentPool": self.agentPool,
+            "selectedCount": self.selectedCount,
+            "totalSelectedCount": self.totalSelectedCount,
+            "normalizedFitness": self.normalizedFitness,
+            "lastRunTime": self.lastRunTime,
+            "runFitnessResults": self.runFitnessResults,
+            "ruleWeightSum": self.ruleWeightSum,
+            "aggregateVehicleWaitTime": self.aggregateVehicleWaitTime,
+            "fitnessRuleApplicationPenalty": self.fitnessRuleApplicationPenalty,
+            "meanEVSpeedList": self.meanEVSpeedsList,
+            "meanEVSpeed": self.meanEVSpeed,
+            "EVStops": self.EVStops
+        }
+
     # RETURN INDIVIDUAL IDENTIFIER
     def getID(self):
         return self.id

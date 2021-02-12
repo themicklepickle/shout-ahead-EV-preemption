@@ -46,10 +46,8 @@ def customPredicate(predicate: str, intention: Intention) -> bool:
 
 # RETURN LIST OF PREDICATE FUNCTIONS AS DEFINED ABOVE
 def getPredicateSet(agentPool: AgentPool):
-    # Get reference to this module for next operation
-    thisModule = sys.modules[__name__]
-    # Get a dictionary with all methods (predicates) in this module
-    methodsDict = dict(inspect.getmembers(thisModule, predicate=inspect.isfunction))
+    thisModule = sys.modules[__name__]  # Get reference to this module for next operation
+    methodsDict = dict(inspect.getmembers(thisModule, predicate=inspect.isfunction))  # Get a dictionary with all methods (predicates) in this module
     # Remove all methods that are not predicates from dictionary
     methodsDict.pop("getPredicateSet")
     methodsDict.pop("getRandomPredicate")
@@ -78,6 +76,7 @@ def getPredicateSetFromFile(file: str):
         else:
             pred = x.split("\n")
             predicateList.append(pred[0])
+    f.close()
 
     return predicateList
 

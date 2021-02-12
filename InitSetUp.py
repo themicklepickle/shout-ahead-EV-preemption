@@ -13,18 +13,18 @@ def run(sumoNetworkName: str, minIndividualRunsPerGen: int):
     userDefinedRules: List[Rule] = []
     edgePartners: Dict[str, List[str]] = {}
 
-    # Parse user defined rules file and create rules for each
-    f = open("UserDefinedRules.txt", "r")
-    # Parse file to gather information about traffic lights, and instantiate their objects
-    for x in f:
-        # Ignore comment sections of input file
-        if "//" in x:
-            continue
-        # For each user defined rule, create a rule with its conditions
-        if "udr" in x:
-            ruleComponents = x.split(": ")
-            ruleComponents = ruleComponents[1].split()
-    f.close()  # Close file before moving on
+    # # Parse user defined rules file and create rules for each
+    # f = open("UserDefinedRules.txt", "r")
+    # # Parse file to gather information about traffic lights, and instantiate their objects
+    # for x in f:
+    #     # Ignore comment sections of input file
+    #     if "//" in x:
+    #         continue
+    #     # For each user defined rule, create a rule with its conditions
+    #     if "udr" in x:
+    #         ruleComponents = x.split(": ")
+    #         ruleComponents = ruleComponents[1].split()
+    # f.close()  # Close file before moving on
 
     f = open(sumoNetworkName, "r")  # Open desired file
 

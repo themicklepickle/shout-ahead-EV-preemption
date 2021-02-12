@@ -13,10 +13,11 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from typing import List, Literal
     from AgentPool import AgentPool
+    from Database import Database
 
 # Determine whether to use shoutahead or not
 global useShoutahead
-useShoutahead = False
+useShoutahead = True
 
 # Best runtime in seconds by the SUMO traffic light algorithm
 global bestSUMORuntime
@@ -108,7 +109,7 @@ def EVrFit(individual: Individual) -> float:
     return fitness
 
 
-def createNewGeneration(agentPools: List[AgentPool], folderName: str, generations: int, useShoutahead: bool):
+def createNewGeneration(agentPools: List[AgentPool], database: Database, useShoutahead: bool):
     """CREATES NEW GENERATION AFTER A SIMULATION RUN AND UPDATES AGENT POOLS' INDIVIDUAL SET WITH NEW GEN"""
     print("Creating a new Generation.")
     for ap in agentPools:
@@ -135,30 +136,9 @@ def createNewGeneration(agentPools: List[AgentPool], folderName: str, generation
                                                    individualToMutate.getRS(), individualToMutate.getRSint(), individualToMutate.getRSev())))
 
         # Output agent pool
-        fileName = f"log/{folderName}/gen_{generations}/{ap.getID()}.txt"
-        f = open(fileName, "w")
-        f.write("New Generation includes these individuals and their rules.\n\n\n")
+        agentPoolData = [i.getJSON() for i in newGeneration]
+        database.updateAgentPool(ap.getID(), agentPoolData)
 
-        individualCount = 1
-        for i in newGeneration:
-            f.write(f"Individual {individualCount}) has a fitness of {i.getFitness()} and a last runtime of {i.getLastRunTime()} and contains the following rules:\n\n")
-
-            f.write("Rules in RS:\n")
-            for rule in i.getRS():
-                f.write(str(rule))
-
-            f.write("Rules in RSint:\n")
-            for rule in i.getRSint():
-                f.write(str(rule))
-
-            f.write("Rules in RSint:\n")
-            for rule in i.getRSev():
-                f.write(str(rule))
-
-            f.write("-------------------\n\n")
-            individualCount += 1
-
-        f.write("\n*************END GENERATION*************\n\n\n")
         ap.updateIndividualsSet(newGeneration)
 
 
