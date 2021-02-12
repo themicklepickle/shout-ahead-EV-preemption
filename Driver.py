@@ -40,7 +40,7 @@ class Driver:
         for lanes in state:
             for veh in state[lanes]:
                 vehID = veh.split("_")
-                carsWaiting[vehID[0]] = traci.vehicle.getAccumulatedWaitingTime(wehID[0])
+                carsWaiting[vehID[0]] = traci.vehicle.getAccumulatedWaitingTime(vehID[0])
 
         return carsWaiting
 
