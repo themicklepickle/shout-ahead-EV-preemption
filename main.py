@@ -15,6 +15,7 @@ from DriverEV import DriverEV
 import EvolutionaryLearner
 from Notifier import Notifier
 from Status import Status
+from Database import Database
 
 # Importing needed python modules from the $SUMO_HOME/tools directory
 if 'SUMO_HOME' in os.environ:
@@ -26,10 +27,12 @@ else:
 
 from sumolib import checkBinary  # Checks for the binary in environ vars
 
-global status
+
+def getTime():
+    return datetime.datetime.now(pytz.timezone('America/Denver')).strftime('%a %b %d %I:%M:%S %p %Y')
 
 
-def main(status: Status):
+def main(status: Status, database: Database):
     # --- TRAINING OPTIONS ---
     gui = False
     totalGenerations = 50
@@ -43,56 +46,76 @@ def main(status: Status):
     # ----------------------------------
 
     # --- SIMULATION ATTRIBUTES ---
-    useShoutahead = False
-    sumoNetworkName = "simpleNetwork.net.xml"
+    folderName = "EV Traffic Flow 300"
+    useShoutahead = True
+    sumoNetworkName = f"{folderName}/simpleNetwork.net.xml"
     maxGreenPhaseTime = 225
     maxYellowPhaseTime = 5
     maxSimulationTime = 10000
     runTimeSet = []
-    # ------------------------------
+    # -----------------------------
 
     # --- SUMO BINARY SETUP ---
     if gui == False:
         sumoBinary = checkBinary('sumo')
-        sumoCmd = [sumoBinary, "-c", "config_file.sumocfg", "--waiting-time-memory", "5", "--time-to-teleport", "-1"]
+        sumoCmd = [sumoBinary, "-c", f"{folderName}/config_file.sumocfg", "--waiting-time-memory", "5", "--time-to-teleport", "-1"]
     else:
         sumoBinary = checkBinary('sumo-gui')
-        sumoCmd = [sumoBinary, "-c", "config_file.sumocfg", "--waiting-time-memory", "5", "--time-to-teleport", "-1", "-Q", "true", "-S", "true"]
+        sumoCmd = [sumoBinary, "-c", f"{folderName}/config_file.sumocfg", "--waiting-time-memory", "5", "--time-to-teleport", "-1", "-Q", "true", "-S", "true"]
     # -------------------------
 
     # --- OUTPUT MANAGEMENT ---
     status.initialize()
     status.update("total generations", totalGenerations)
 
-    folderName = datetime.datetime.now(pytz.timezone('America/Denver')).strftime('%a %b %d %I_%M_%S %p %Y')
-    Path(f"log/{folderName}").mkdir(parents=True, exist_ok=True)  # TODO: make this use MongoDB instead of local files
+    database.setOptions({
+        "deviceName": socket.gethostname(),
+        "trainingOptions": {
+            "gui": gui,
+            "totalGenerations": totalGenerations,
+            "individualRunsPerGen": individualRunsPerGen,
+        },
+        "userDefinedRulesToggle": {
+            "maxGreenAndYellowPhaseTime_UDRule": maxGreenAndYellowPhaseTime_UDRule,
+            "maxRedPhaseTime_UDRule": maxRedPhaseTime_UDRule,
+            "assignGreenPhaseToSingleWaitingPhase_UDRule": assignGreenPhaseToSingleWaitingPhase_UDRule,
+
+        },
+        "simulationAttributes": {
+            "useShoutahead": useShoutahead,
+            "sumoNetworkName": sumoNetworkName,
+            "maxGreenPhaseTime": maxGreenPhaseTime,
+            "maxYellowPhaseTime": maxYellowPhaseTime,
+            "maxSimulationTime": maxSimulationTime,
+        }
+    })
 
     with open("credentials.json", "r") as f:
         credentials = json.load(f)
     notifier = Notifier(email=credentials["email"], password=credentials["password"], recipients=["michael.xu1816@gmail.com"])
     # -------------------------
 
-    print(f"----- Start time: {datetime.datetime.now(pytz.timezone('America/Denver')).strftime('%a %b %d %I:%M:%S %p %Y')} -----\n")
+    print(f"----- Start time: {getTime()} -----\n")
     setUpTuple = InitSetUp.run(sumoNetworkName, individualRunsPerGen)
     simRunner = DriverEV(sumoCmd, setUpTuple, maxGreenPhaseTime, maxYellowPhaseTime, maxSimulationTime,
                          maxGreenAndYellowPhaseTime_UDRule, maxRedPhaseTime_UDRule, assignGreenPhaseToSingleWaitingPhase_UDRule, useShoutahead)
     generations = 1
     episode = 0
     allIndividualsTested = False
-    simulationStartTime = datetime.datetime.now(pytz.timezone('America/Denver')).strftime('%a %b %d %I:%M:%S %p %Y')
+    simulationStartTime = getTime()
     generationRuntimes = []
 
     # Evolutionary learning loop
     while generations <= totalGenerations:
+        database.setGeneration(generations)
         # Output management
         print(f"---------- GENERATION {generations} of {totalGenerations} ----------")
         print(f"This simulation began at: {simulationStartTime}")
         print(f"The average generation runtime is {sum(generationRuntimes)/generations}\n")
-        genStart = datetime.datetime.now(pytz.timezone('America/Denver')).strftime('%a %b %d %I:%M:%S %p %Y')
+        genStart = getTime()
         startTime = time.time()
         status.update("generation", generations)
         sys.stdout.flush()
-        Path(f"log/{folderName}/gen_{generations}").mkdir(parents=True, exist_ok=True)
 
         # Prepare for next simulation run
         allIndividualsTested = False
@@ -144,9 +167,7 @@ def main(status: Status):
             ap.normalizeIndividualsFitnesses()  # Normalize the fitness values of each Individual in an agent pool for breeding purposes
 
         if generations + 1 < totalGenerations:
-
-            # Update agent pools with a new generation of individuals TODO: update this section to include shoutAhead in the creation of new generation
-            EvolutionaryLearner.createNewGeneration(setUpTuple[2], folderName, generations, useShoutahead)
+            EvolutionaryLearner.createNewGeneration(setUpTuple[2], database, useShoutahead)
             for ap in setUpTuple[2]:
                 for i in ap.getIndividualsSet():
                     i.resetSelectedCount()
@@ -155,20 +176,20 @@ def main(status: Status):
                     i.resetEVStops()
             sys.stdout.flush()
         else:
-            OutputManager.run(setUpTuple[2], sum(generationRuntimes)/50, (sum(generationRuntimes)/50)*50, generations, totalGenerations, folderName)
+            OutputManager.run(setUpTuple[2], sum(generationRuntimes)/50, (sum(generationRuntimes)/50)*50, database)
             print("Output file created.")
 
-        print(f"Generation start time: {genStart} ----- End time: {datetime.datetime.now(pytz.timezone('America/Denver')).strftime('%a %b %d %I:%M:%S %p %Y')}")
+        print(f"Generation start time: {genStart} ----- End time: {getTime()}")
         generationRuntimes.append(time.time() - startTime)
 
-        OutputManager.run(setUpTuple[2], sum(generationRuntimes)/50, (sum(generationRuntimes)/50)*50, generations, totalGenerations, folderName)
+        OutputManager.run(setUpTuple[2], sum(generationRuntimes)/50, (sum(generationRuntimes)/50)*50, database)
         notifier.run(setUpTuple[2], sum(generationRuntimes)/50, (sum(generationRuntimes)/50)*50, generations, totalGenerations)
 
         generations += 1
 
         sys.stdout.flush()
 
-    print(f"Generation start time: {simulationStartTime} ----- End time: {datetime.datetime.now(pytz.timezone('America/Denver')).strftime('%a %b %d %I:%M:%S %p %Y')}")
+    print(f"Generation start time: {simulationStartTime} ----- End time: {getTime()}")
     print(f"This simulation began at: {simulationStartTime}")
     notifier.sendEmail(f"COMPLETE!", f"All {totalGenerations} have been completed.")
     sys.stdout.flush()
@@ -176,8 +197,9 @@ def main(status: Status):
 
 if __name__ == "__main__":
     status = Status(socket.gethostname())
+    database = Database(datetime.datetime.now(pytz.timezone('America/Denver')).strftime('%a_%b_%d_%I:%M:%S_%p_%Y'))
     try:
-        main(status)
+        main(status, database)
         # cProfile.run("main()", sort="cumtime")
     except:
         status.terminate()
