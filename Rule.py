@@ -26,6 +26,18 @@ class Rule:
     def __repr__(self):
         return f"\n{', '.join(self.getConditions())}\n  type: {self.getType()}\n  action: {self.getAction()}\n  weight: {self.getWeight()}"
 
+    def getJSON(self):
+        return {
+            "type": self.type,
+            "contions": self.conditions,
+            "action": self.action,
+            "agentPool": self.agentPool,
+            "weight": self.weight,
+            "timesSelected": self.timesSelected,
+            "normalizedWeight": self.normalizedWeight,
+            "doNothingAction": self.doNothingAction
+        }
+
     # GET RULE TYPE
     def getType(self):
         return self.type
