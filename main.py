@@ -14,7 +14,6 @@ import OutputManager
 from DriverEV import DriverEV
 import EvolutionaryLearner
 from Notifier import Notifier
-from Logger import Logger
 from Status import Status
 
 # Importing needed python modules from the $SUMO_HOME/tools directory
@@ -71,8 +70,6 @@ def main(status: Status):
     with open("credentials.json", "r") as f:
         credentials = json.load(f)
     notifier = Notifier(email=credentials["email"], password=credentials["password"], recipients=["michael.xu1816@gmail.com"])
-
-    sys.stdout = Logger(folderName)
     # -------------------------
 
     print(f"----- Start time: {datetime.datetime.now(pytz.timezone('America/Denver')).strftime('%a %b %d %I:%M:%S %p %Y')} -----\n")
