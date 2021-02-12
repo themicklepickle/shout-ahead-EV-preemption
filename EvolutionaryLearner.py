@@ -106,7 +106,7 @@ def EVrFit(individual: Individual) -> float:
     return fitness
 
 
-def createNewGeneration(agentPools: List[AgentPool], database: Database, useShoutahead: bool):
+def createNewGeneration(agentPools: List[AgentPool],  useShoutahead: bool, database: Database):
     """CREATES NEW GENERATION AFTER A SIMULATION RUN AND UPDATES AGENT POOLS' INDIVIDUAL SET WITH NEW GEN"""
     print("Creating a new Generation.")
     for ap in agentPools:
@@ -134,11 +134,12 @@ def createNewGeneration(agentPools: List[AgentPool], database: Database, useShou
                 useShoutahead
             ))
 
-        # Output agent pool
-        agentPoolData = [i.getJSON() for i in newGeneration]
-        database.updateAgentPool(ap.getID(), agentPoolData)
-
         ap.updateIndividualsSet(newGeneration)
+
+        # Output agent pool
+        if database:
+            agentPoolData = [i.getJSON() for i in newGeneration]
+            database.updateAgentPool(ap.getID(), agentPoolData)
 
 
 # CREATE INDIVIDUALS WITH RANDOM RULES POPULATING THEIR RULE SETS BEFORE FIRST RUN

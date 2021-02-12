@@ -51,7 +51,7 @@ class Individual:
             "RSint": [rule.getJSON() for rule in self.RSint],
             "RSev": [rule.getJSON() for rule in self.RSev],
             "fitness": self.fitness,
-            "agentPool": self.agentPool,
+            "agentPool": self.agentPool.getID(),
             "selectedCount": self.selectedCount,
             "totalSelectedCount": self.totalSelectedCount,
             "normalizedFitness": self.normalizedFitness,

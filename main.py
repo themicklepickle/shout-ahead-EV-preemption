@@ -33,7 +33,7 @@ def getTime():
     return datetime.datetime.now(pytz.timezone('America/Denver')).strftime('%a %b %d %I:%M:%S %p %Y')
 
 
-def main(status: Status, database: Database):
+def main(status: Status, database: Database, notifier):
     # --- TRAINING OPTIONS ---
     gui = False
     totalGenerations = 50
@@ -66,34 +66,32 @@ def main(status: Status, database: Database):
     # -------------------------
 
     # --- OUTPUT MANAGEMENT ---
-    status.initialize()
-    status.update("total generations", totalGenerations)
+    if status:
+        status.initialize()
+        status.update("total generations", totalGenerations)
+    if database:
+        database.setOptions({
+            "deviceName": socket.gethostname(),
+            "trainingOptions": {
+                "gui": gui,
+                "totalGenerations": totalGenerations,
+                "individualRunsPerGen": individualRunsPerGen,
+            },
+            "userDefinedRulesToggle": {
+                "maxGreenAndYellowPhaseTime_UDRule": maxGreenAndYellowPhaseTime_UDRule,
+                "maxRedPhaseTime_UDRule": maxRedPhaseTime_UDRule,
+                "assignGreenPhaseToSingleWaitingPhase_UDRule": assignGreenPhaseToSingleWaitingPhase_UDRule,
 
-    database.setOptions({
-        "deviceName": socket.gethostname(),
-        "trainingOptions": {
-            "gui": gui,
-            "totalGenerations": totalGenerations,
-            "individualRunsPerGen": individualRunsPerGen,
-        },
-        "userDefinedRulesToggle": {
-            "maxGreenAndYellowPhaseTime_UDRule": maxGreenAndYellowPhaseTime_UDRule,
-            "maxRedPhaseTime_UDRule": maxRedPhaseTime_UDRule,
-            "assignGreenPhaseToSingleWaitingPhase_UDRule": assignGreenPhaseToSingleWaitingPhase_UDRule,
+            },
+            "simulationAttributes": {
+                "useShoutahead": useShoutahead,
+                "sumoNetworkName": sumoNetworkName,
+                "maxGreenPhaseTime": maxGreenPhaseTime,
+                "maxYellowPhaseTime": maxYellowPhaseTime,
+                "maxSimulationTime": maxSimulationTime,
+            }
+        })
 
-        },
-        "simulationAttributes": {
-            "useShoutahead": useShoutahead,
-            "sumoNetworkName": sumoNetworkName,
-            "maxGreenPhaseTime": maxGreenPhaseTime,
-            "maxYellowPhaseTime": maxYellowPhaseTime,
-            "maxSimulationTime": maxSimulationTime,
-        }
-    })
-
-    with open("credentials.json", "r") as f:
-        credentials = json.load(f)
-    notifier = Notifier(email=credentials["email"], password=credentials["password"], recipients=["michael.xu1816@gmail.com"])
     # -------------------------
 
     print(f"----- Start time: {getTime()} -----\n")
@@ -108,14 +106,16 @@ def main(status: Status, database: Database):
 
     # Evolutionary learning loop
     while generations <= totalGenerations:
-        database.setGeneration(generations)
+        if database:
+            database.setGeneration(generations)
         # Output management
         print(f"---------- GENERATION {generations} of {totalGenerations} ----------")
         print(f"This simulation began at: {simulationStartTime}")
         print(f"The average generation runtime is {sum(generationRuntimes)/generations}\n")
         genStart = getTime()
         startTime = time.time()
-        status.update("generation", generations)
+        if status:
+            status.update("generation", generations)
         sys.stdout.flush()
 
         # Prepare for next simulation run
@@ -139,7 +139,8 @@ def main(status: Status, database: Database):
             print(f"----- Episode {episode+1} of GENERATION {generations} of {totalGenerations} -----")
             print(f"Generation start time: {genStart}")
             print(f"The average generation runtime is {sum(generationRuntimes) / generations}")
-            status.update("episode", episode+1)
+            if status:
+                status.update("episode", episode+1)
             start = timeit.default_timer()
             resultingAgentPools = simRunner.run()  # run the simulation
             stop = timeit.default_timer()
@@ -161,14 +162,14 @@ def main(status: Status, database: Database):
                 for ap in resultingAgentPools:
                     for i in ap.getIndividualsSet():
                         continue
-            # allIndividualsTested = True # Uncomment for quick testing
+            allIndividualsTested = True  # Uncomment for quick testing
 
         # Prepare individuals for the next run through
         for ap in setUpTuple[2]:
             ap.normalizeIndividualsFitnesses()  # Normalize the fitness values of each Individual in an agent pool for breeding purposes
 
         if generations + 1 < totalGenerations:
-            EvolutionaryLearner.createNewGeneration(setUpTuple[2], database, useShoutahead)  # Update agent pools with a new generation of individuals
+            EvolutionaryLearner.createNewGeneration(setUpTuple[2], useShoutahead, database)  # Update agent pools with a new generation of individuals
             for ap in setUpTuple[2]:
                 for i in ap.getIndividualsSet():
                     i.resetSelectedCount()
@@ -176,15 +177,17 @@ def main(status: Status, database: Database):
                     i.resetMeanEVSpeed()
                     i.resetEVStops()
             sys.stdout.flush()
-        else:
+        elif database:
             OutputManager.run(setUpTuple[2], sum(generationRuntimes)/50, (sum(generationRuntimes)/50)*50, database)
             print("Output file created.")
 
         print(f"Generation start time: {genStart} ----- End time: {getTime()}")
         generationRuntimes.append(time.time() - startTime)
 
-        OutputManager.run(setUpTuple[2], sum(generationRuntimes)/50, (sum(generationRuntimes)/50)*50, database)
-        notifier.run(setUpTuple[2], sum(generationRuntimes)/50, (sum(generationRuntimes)/50)*50, generations, totalGenerations)
+        if database:
+            OutputManager.run(setUpTuple[2], sum(generationRuntimes)/50, (sum(generationRuntimes)/50)*50, database)
+        if notifier:
+            notifier.run(setUpTuple[2], sum(generationRuntimes)/50, (sum(generationRuntimes)/50)*50, generations, totalGenerations)
 
         generations += 1
 
@@ -192,16 +195,31 @@ def main(status: Status, database: Database):
 
     print(f"Generation start time: {simulationStartTime} ----- End time: {getTime()}")
     print(f"This simulation began at: {simulationStartTime}")
-    notifier.sendEmail(f"COMPLETE!", f"All {totalGenerations} have been completed.")
+    if notifier:
+        notifier.sendEmail(f"COMPLETE!", f"All {totalGenerations} have been completed.")
     sys.stdout.flush()
 
 
 if __name__ == "__main__":
-    status = Status(socket.gethostname())
-    database = Database(datetime.datetime.now(pytz.timezone('America/Denver')).strftime('%a_%b_%d_%I:%M:%S_%p_%Y'))
+    # --- OUTPUT OPTIONS ---
+    displayStatus = True
+    storeInDatabase = True
+    notify = True
+    # ----------------------
+
+    if displayStatus:
+        status = Status(socket.gethostname())
+    if storeInDatabase:
+        database = Database(datetime.datetime.now(pytz.timezone('America/Denver')).strftime('%a_%b_%d_%I:%M:%S_%p_%Y'))
+    if notify:
+        with open("credentials.json", "r") as f:
+            credentials = json.load(f)
+        notifier = Notifier(email=credentials["email"], password=credentials["password"], recipients=["michael.xu1816@gmail.com"])
+
     try:
-        main(status, database)
+        main(status, database, notifier)
         # cProfile.run("main()", sort="cumtime")
     except:
         traceback.print_exc()
-        status.terminate()
+        if displayStatus:
+            status.terminate()
