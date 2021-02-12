@@ -8,6 +8,7 @@ import pytz
 import socket
 import cProfile
 import json
+import traceback
 
 import InitSetUp
 import OutputManager
@@ -96,7 +97,7 @@ def main(status: Status, database: Database):
     # -------------------------
 
     print(f"----- Start time: {getTime()} -----\n")
-    setUpTuple = InitSetUp.run(sumoNetworkName, individualRunsPerGen)
+    setUpTuple = InitSetUp.run(sumoNetworkName, individualRunsPerGen, useShoutahead)
     simRunner = DriverEV(sumoCmd, setUpTuple, maxGreenPhaseTime, maxYellowPhaseTime, maxSimulationTime,
                          maxGreenAndYellowPhaseTime_UDRule, maxRedPhaseTime_UDRule, assignGreenPhaseToSingleWaitingPhase_UDRule, useShoutahead)
     generations = 1
@@ -202,5 +203,5 @@ if __name__ == "__main__":
         main(status, database)
         # cProfile.run("main()", sort="cumtime")
     except:
+        traceback.print_exc()
         status.terminate()
-        print("end")
