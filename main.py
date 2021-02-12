@@ -167,7 +167,7 @@ def main(status: Status, database: Database):
             ap.normalizeIndividualsFitnesses()  # Normalize the fitness values of each Individual in an agent pool for breeding purposes
 
         if generations + 1 < totalGenerations:
-            EvolutionaryLearner.createNewGeneration(setUpTuple[2], database, useShoutahead)
+            EvolutionaryLearner.createNewGeneration(setUpTuple[2], database, useShoutahead)  # Update agent pools with a new generation of individuals
             for ap in setUpTuple[2]:
                 for i in ap.getIndividualsSet():
                     i.resetSelectedCount()

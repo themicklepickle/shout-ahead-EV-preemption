@@ -15,9 +15,6 @@ if TYPE_CHECKING:
     from AgentPool import AgentPool
     from Database import Database
 
-# Determine whether to use shoutahead or not
-global useShoutahead
-useShoutahead = True
 
 # Best runtime in seconds by the SUMO traffic light algorithm
 global bestSUMORuntime
@@ -132,8 +129,10 @@ def createNewGeneration(agentPools: List[AgentPool], database: Database, useShou
         for _ in range(int(numOfIndividualsToMutate*len(newGeneration))):
             individualToMutate = newGeneration[randrange(len(newGeneration))]
             # Simulate deepcopy() without using deepcopy() because it is slooooow and mutate copied Individual
-            newGeneration.append(mutate(Individual(individualToMutate.getID(), individualToMutate.getAgentPool(),
-                                                   individualToMutate.getRS(), individualToMutate.getRSint(), individualToMutate.getRSev())))
+            newGeneration.append(mutate(
+                Individual(individualToMutate.getID(), individualToMutate.getAgentPool(), individualToMutate.getRS(), individualToMutate.getRSint(), individualToMutate.getRSev()),
+                useShoutahead
+            ))
 
         # Output agent pool
         agentPoolData = [i.getJSON() for i in newGeneration]
@@ -143,7 +142,7 @@ def createNewGeneration(agentPools: List[AgentPool], database: Database, useShou
 
 
 # CREATE INDIVIDUALS WITH RANDOM RULES POPULATING THEIR RULE SETS BEFORE FIRST RUN
-def initIndividuals(agentPool: AgentPool):
+def initIndividuals(agentPool: AgentPool, useShoutahead: bool):
     individuals: List[Individual] = []
     for i in range(maxIndividuals):
         RS: List[Rule] = []  # RS is a rule set with no shout-ahead predicates
@@ -212,7 +211,7 @@ def createRandomRule(agentPool: AgentPool, ruleType: Literal[-1, 0, 1, 2]):
 
 
 # CREATE A CHILD RULE BY BREEDING TWO PARENT RULES
-def crossover(indiv1: Individual, indiv2: Individual, useShoutahead):
+def crossover(indiv1: Individual, indiv2: Individual, useShoutahead: bool):
     identifier = str(indiv1.getID()) + "." + str(indiv2.getID())
     identifier = identifier[-4:]  # Memory saving line
     agentPool = indiv1.getAgentPool()
@@ -251,7 +250,7 @@ def crossover(indiv1: Individual, indiv2: Individual, useShoutahead):
         superRSint = removeDuplicateRules(superRSint)
         while len(superRSint) < maxRulesInNewGenerationSet:
             superRSint.append(createRandomRule(agentPool, 1))
-        superRSint.sort(key=lambda x: x.getWeight(), reverse=True)  # yikes Christian
+        superRSint.sort(key=lambda x: x.getWeight(), reverse=True)
         newRSint = superRSint[0:maxRules]
 
         # Ensure the same rule with different weights haven't been added to rule set. If they have, keep the one with the higher weight and mutate the other
@@ -309,7 +308,7 @@ def crossover(indiv1: Individual, indiv2: Individual, useShoutahead):
     return newIndividual
 
 
-def mutate(individual: Individual):
+def mutate(individual: Individual, useShoutahead: bool):
     agentPool = individual.getAgentPool()
 
     # --- RS ---
@@ -498,7 +497,8 @@ def getSumRuleWeights(agentPools: List[AgentPool]) -> float:
         individuals = ap.getIndividualsSet()
         # For each individual, sum all their rule weights
         for i in individuals:
-            weightSum += (sum(rule.getWeight() for rule in i.getRS()) + sum(rule.getWeight() for rule in i.getRSev)) / 2  # TODO: do something better than just average
+            ruleSet = i.getRS() + i.getRSev()
+            weightSum += sum(rule.getWeight() for rule in ruleSet)
 
     if weightSum == 0:
         weightSum = 2.2250738585072014e-308  # Smallest number besides 0 in Python

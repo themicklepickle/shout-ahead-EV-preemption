@@ -9,7 +9,7 @@ if TYPE_CHECKING:
     from Rule import Rule
 
 
-def run(sumoNetworkName: str, minIndividualRunsPerGen: int):
+def run(sumoNetworkName: str, minIndividualRunsPerGen: int, useShoutahead: bool):
     userDefinedRules: List[Rule] = []
     edgePartners: Dict[str, List[str]] = {}
 
@@ -31,6 +31,7 @@ def run(sumoNetworkName: str, minIndividualRunsPerGen: int):
     lanes: List[str] = []
     trafficLights: List[TrafficLight] = []
     tlPhases: Dict[str, List[str]] = {}
+
     # Parse file to gather information about traffic lights, and instantiate their objects
     for x in f:
         # Create an action set dictionary for each traffic light
@@ -132,11 +133,11 @@ def run(sumoNetworkName: str, minIndividualRunsPerGen: int):
 
     # Finish the initialization of the agent pools
     for ap in agentPools:
-        ap.finishSetUp()
+        ap.finishSetUp(useShoutahead)
 
     return (userDefinedRules, trafficLights, agentPools)
 
 
 # main entry point
 if __name__ == "__main__":
-    run("simpleNetwork.net.xml", 5)
+    run("simpleNetwork.net.xml", 5, True)
