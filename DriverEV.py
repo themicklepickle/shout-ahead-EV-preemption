@@ -365,7 +365,7 @@ class DriverEV(Driver):
                 for veh in state[lane]:
                     if "_EV" in veh:
                         vehID = veh.split("_")[0]
-                        speed = self.vehicleSpeeds(vehID)
+                        speed = self.vehicleSpeeds[vehID]
                         distance = traci.lane.getLength(lane) - traci.vehicle.getLanePosition(vehID)
                         EVsInLane.append(EmergencyVehicle(veh, speed, distance, lane))
 
