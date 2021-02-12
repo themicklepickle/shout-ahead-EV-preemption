@@ -33,7 +33,7 @@ def getTime():
     return datetime.datetime.now(pytz.timezone('America/Denver')).strftime('%a %b %d %I:%M:%S %p %Y')
 
 
-def main(status: Status, database: Database, notifier):
+def main(status: Status, database: Database, notifier: Notifier):
     # --- TRAINING OPTIONS ---
     gui = False
     totalGenerations = 50
@@ -91,6 +91,11 @@ def main(status: Status, database: Database, notifier):
                 "maxGreenPhaseTime": maxGreenPhaseTime,
                 "maxYellowPhaseTime": maxYellowPhaseTime,
                 "maxSimulationTime": maxSimulationTime,
+            },
+            "output": {
+                "displayStatus": bool(status),
+                "storeInDatabase": bool(database),
+                "notify": bool(notifier)
             }
         })
 
@@ -209,14 +214,11 @@ if __name__ == "__main__":
     notify = True
     # ----------------------
 
-    if displayStatus:
-        status = Status(socket.gethostname())
-    if storeInDatabase:
-        database = Database(datetime.datetime.now(pytz.timezone('America/Denver')).strftime('%a_%b_%d_%I:%M:%S_%p_%Y'))
-    if notify:
-        with open("credentials.json", "r") as f:
-            credentials = json.load(f)
-        notifier = Notifier(email=credentials["email"], password=credentials["password"], recipients=["michael.xu1816@gmail.com"])
+    status = Status(socket.gethostname()) if displayStatus else None
+    database = Database(datetime.datetime.now(pytz.timezone('America/Denver')).strftime('%a_%b_%d_%I:%M:%S_%p_%Y')) if storeInDatabase else None
+    with open("credentials.json", "r") as f:
+        credentials = json.load(f)
+    notifier = Notifier(email=credentials["email"], password=credentials["password"], recipients=["michael.xu1816@gmail.com"]) if notify else None
 
     try:
         main(status, database, notifier)
