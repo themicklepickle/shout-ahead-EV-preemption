@@ -31,6 +31,10 @@ class Driver:
         self.maxRedPhaseTime_UDRule = maxRedPhaseTime_UDRule
         self.assignGreenPhaseToSingleWaitingPhase_UDRule = assignGreenPhaseToSingleWaitingPhase
         self.useShoutahead = useShoutahead
+        self.state = {}
+        self.leadingEV = {}
+        self.TLControllingLane = {}
+        self.leftTurnLanes = []
 
     # RETURNS A DICTIONARY WITH KEYS OF VEHIDs WAITING AT AN INTERSECTION AND THEIR WAITING TIME AS VALUES
     def carsWaiting(self, trafficLight: TrafficLight) -> Dict[str, float]:

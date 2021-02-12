@@ -36,6 +36,14 @@ class DriverEV(Driver):
         rule: Union[Rule, Literal[-1]] = -1
         nextRule: Union[Rule, Literal[-1]] = -1
 
+        # run functions to setup state
+        self.constructTLControllingLaneDict(trafficLights)
+        self.constructLeftTurnLanesDict(trafficLights)
+
+        # get state and leading EV
+        self.calculateState(trafficLights)
+        self.calculateLeadingEV(trafficLights)
+
         # Assign each traffic light an individual from their agent pool for this simulation run, and a starting rule
         for tl in trafficLights:
             tl.assignIndividual()
@@ -85,6 +93,10 @@ class DriverEV(Driver):
             step += 1
             if (step - 1) % 5 != 0:
                 continue
+
+            # get state and leading EV
+            self.calculateState(trafficLights)
+            self.calculateLeadingEV(trafficLights)
 
             for tl in trafficLights:
 
@@ -273,50 +285,58 @@ class DriverEV(Driver):
         # Returns all the agent pools to the main module
         return self.setUpTuple[2]
 
-    def getState(self, trafficLight: TrafficLight) -> Dict[str, List[str]]:
-        state = {}
-        leftTurnLane = ""
-        for lane in trafficLight.getLanes():
-            state[lane] = []
+    def constructTLControllingLaneDict(self, trafficLights: List[TrafficLight]) -> None:
+        for tl in trafficLights:
+            for lane in tl.getLanes():
+                self.TLControllingLane[lane] = tl
 
-        # Loop to determine which vehicles are waiting at an intersection
+    def constructLeftTurnLanesDict(self, trafficLights: List[TrafficLight]) -> None:
+        maxLaneNum = 0
+        for tl in trafficLights:
+            for lane in tl.getLanes():
+                if "_LTL" in lane:
+                    if int(lane.split("_")[2]) > maxLaneNum:
+                        self.leftTurnLanes.append(lane)
+
+    def resetState(self, trafficLights: List[TrafficLight]) -> None:
+        for tl in trafficLights:
+            self.state[tl] = {}
+            for lane in tl.getLanes():
+                self.state[tl][lane] = []
+
+    def calculateState(self, trafficLights: List[TrafficLight]) -> None:
+        self.resetState(trafficLights)
+
+        # loop through vehicles and assign them to the proper lane and traffic light with the appropriate identifier
         for vehID in traci.vehicle.getIDList():
             laneID = traci.vehicle.getLaneID(vehID)
-            tlLanes = trafficLight.getLanes()
+
+            # ignore vehicles in lanes that are not controlled by traffic lights
+            if laneID not in self.TLControllingLane:
+                continue
+
             identifer = ""
 
-            # Operate only on vehicles in a lane controlled by traffic light
-            if laneID in tlLanes:
-                # Determine left turn lane if it exists
-                if "_LTL" in laneID:
-                    maxLaneNum = 0
-                    for lane in tlLanes:
-                        if lane == laneID:
-                            laneSplit = lane.split("_")
-                            if int(laneSplit[2]) > maxLaneNum:
-                                leftTurnLane = lane
+            # If vehicle is stopped, append relevant identifier to it
+            if traci.vehicle.getSpeed(vehID) == 0:
+                if laneID in self.leftTurnLanes:
+                    identifer += "_Stopped_L"
+                else:
+                    identifer += "_Stopped_S"
 
-                # If vehicle is stopped, append relevant identifier to it
-                if traci.vehicle.getSpeed(vehID) == 0:
-                    if leftTurnLane == laneID:
-                        identifer += "_Stopped_L"
-                    else:
-                        identifer += "_Stopped_S"
+            # If the vehicle is an EV, append relevant identifers to it
+            # NOTE: EVs are not included in predicates for stopped vehicles, so the identifers are overidden
+            if traci.vehicle.getVehicleClass(vehID.split("_")[0]) == "emergency":
+                if laneID in self.leftTurnLanes:
+                    identifer += "_EV_L"
+                else:
+                    identifer += "_EV_S"
 
-#------------------------------------ EV IDENTIFIER ------------------------------------#
-                # If the vehicle is an EV, append relevant identifers to it
-                # NOTE: EVs are not included in predicates for stopped vehicles, so the identifers are overidden
-                if traci.vehicle.getVehicleClass(vehID.split("_")[0]) == "emergency":
-                    if leftTurnLane == laneID:
-                        identifer += "_EV_L"
-                    else:
-                        identifer += "_EV_S"
+            tl = self.TLControllingLane[laneID]
+            self.state[tl][laneID].append(vehID + identifer)
 
-#---------------------------------- EV IDENTIFIER END ----------------------------------#
-
-                state[laneID].append(vehID + identifer)  # TODO: check that the vehID is the bare number
-
-        return state
+    def getState(self, trafficLight: TrafficLight) -> Dict[str, List[str]]:
+        return self.state[trafficLight]
 
 #----------------------- EV PREDICATES AND REINFORCEMENT LEARNING ----------------------#
 
@@ -358,20 +378,21 @@ class DriverEV(Driver):
 
         return EVs
 
+    def calculateLeadingEV(self, trafficLights: List[TrafficLight]) -> None:
+        for tl in trafficLights:
+            EVs = self.getEVs(tl)
+
+            if EVs == []:
+                self.leadingEV[tl] = None
+            else:
+                self.leadingEV[tl] = EVs[0]
+
     # GET LEADING EMERGENCY VEHICLE AMONG ALL LANES
     def getLeadingEV(self, trafficLight: TrafficLight) -> EmergencyVehicle:
-        EVs = self.getEVs(trafficLight)
-
-        if EVs == []:
-            return None
-        else:
-            return EVs[0]
+        return self.leadingEV[trafficLight]
 #---------------------------------- EV PREDICATES END ----------------------------------#
 
-
 #------------------------------ EV EVOLUTIONARY LEARNING -------------------------------#
-
-
     def getEVSpeedsList(self, trafficLight: TrafficLight) -> List[int]:
         EVs = self.getEVs(trafficLight)
         EVSpeedsList = [EV.getSpeed() for EV in EVs]
