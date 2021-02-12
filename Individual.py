@@ -174,7 +174,8 @@ class Individual:
 
     # RETURN SUM OF ALL WEIGHTS IN A RULE SET
     def getSumRuleWeights(self) -> float:
-        self.ruleWeightSum = (sum(rule.getWeight() for rule in self.getRS()) + sum(rule.getWeight() for rule in self.getRSev())) / 2  # TODO: do something better than just average
+        ruleSet = self.getRS() + self.getRSev()
+        self.ruleWeightSum = sum(rule.getWeight() for rule in ruleSet)
 
         return self.ruleWeightSum
 
@@ -217,7 +218,7 @@ class Individual:
 
                 # Individually calculate probabilities
                 for rule in rsRest:
-                    probability = self.getRuleProbabilityRest(rule, sumOfWeights)
+                    probability = self.getRuleProbabilityRest(rule, probabilities, sumOfWeights, rsRest)
                     rules.append(rule)
                     probabilities.append(probability)
 
@@ -251,11 +252,11 @@ class Individual:
         # If rsRest contains elements too, calculate their probabilities
         if len(rsRest) > 0:
             # Acquire sum of weights in rsRest
-            sumOfWeights = self.getSumOfWeights(rsMax)
+            sumOfWeights = self.getSumOfWeights(rsRest)
 
             # If sum of weights is 0, assign a weight based on the available probability left
             if sumOfWeights == 0:
-                probability = (1-sum(probabilities))/len(rsRest)
+                probability = (1 - sum(probabilities)) / len(rsRest)
 
                 # If sum of weights is 0, assign equal part of the remaining probability to each rule
                 for rule in rsRest:
@@ -265,11 +266,11 @@ class Individual:
                 # If weights do not sum to 0, normalize them between 0 and 1 (0.1 and 1.1 technically) and calculate their probabilities
                 weightsList = self.getWeightsList(rsRest)
                 self.normalizeWeights(rsRest, weightsList)
-                sumOfWeights = self.getSumOfWeights(rsRest)
+                sumOfWeights = self.getSumOfWeights(self.getNormalizedWeightsList(rsRest))
 
                 # Individually calculate probabilities
                 for rule in rsRest:
-                    probability = self.getRuleProbabilityRest(rule, sumOfWeights)  # TODO: fix this
+                    probability = self.getRuleProbabilityRest(rule, probabilities, sumOfWeights, rsRest)
                     rules.append(rule)
                     probabilities.append(probability)
 
@@ -299,7 +300,7 @@ class Individual:
         return ((1 - epsilon) * (weight / (weight * len(rsMax))))
 
     # RETURN PROBABILITY OF SELECTION FOR A RULE IN rsRest
-    def getRuleProbabilityRest(self, rule: Rule, sumOfWeights):
+    def getRuleProbabilityRest(self, rule: Rule, probabilities: List[int], sumOfWeights: float, rsRest: List[Rule]):
         weight = rule.getNormalizedWeight()
 
         return epsilon * (weight / sumOfWeights)

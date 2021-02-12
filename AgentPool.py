@@ -46,8 +46,8 @@ class AgentPool:
     def updateIndividualsSet(self, individuals: List[Individual]):
         self.individuals = individuals
 
-    def initIndividuals(self):
-        self.individuals = EvolutionaryLearner.initIndividuals(self)
+    def initIndividuals(self, useShoutahead):
+        self.individuals = EvolutionaryLearner.initIndividuals(self, useShoutahead)
 
     def getAssignedTrafficLights(self):
         return self.trafficLightsAssigned
@@ -68,11 +68,11 @@ class AgentPool:
     def addDoNothingAction(self):
         self.actionSet.append("DoNothing")
 
-    # COMPLETES THE INITIALIZATION OF AGENT POOL COMPONENTS THAT REQUIRE ALL AGENT POOLS TO BE INITIALIZED FIRST
-    def finishSetUp(self):
-        self.coopPredicates = self.initCoopPredicates()  # Store Observations of communicated intentions here since they are agent specific
+        # COMPLETES THE INITIALIZATION OF AGENT POOL COMPONENTS THAT REQUIRE ALL AGENT POOLS TO BE INITIALIZED FIRST
+    def finishSetUp(self, useShoutahead):
+        self.coopPredicates = self.initCoopPredicates()                 # Store Observations of communicated intentions here since they are agent specific
         self.EVPredicates = self.initEVPredicates()
-        self.initIndividuals()  # Populate Agent Pool's own rule set with random rules
+        self.initIndividuals(useShoutahead)                                          # Populate Agent Pool's own rule set with random rules
         for tl in self.trafficLightsAssigned:
             tl.initPhaseTimeSpentInRedArray()
 

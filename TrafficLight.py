@@ -17,7 +17,6 @@ class TrafficLight:
 
     # Probability of choosing rule from RS vs RSint as defined in "Learning cooperative behaviour for the shout-ahead architecture" (2014)
     global pCoop
-    global assignedIndividual
     global maxIntentionRecievedTime
     maxIntentionRecievedTime = 40
     pCoop = 0.5
