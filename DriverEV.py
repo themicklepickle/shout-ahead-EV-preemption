@@ -100,8 +100,7 @@ class DriverEV(Driver):
 
             for tl in trafficLights:
 
-                # USER DEFINED RULE CHECK
-                # -------------------------------------------------------
+                # --- USER DEFINED RULE CHECK ---
                 if self.assignGreenPhaseToSingleWaitingPhase_UDRule:
                     applied = self.checkAssignGreenPhaseToSingleWaitingPhaseRule(tl)
                     if applied is True:
@@ -116,9 +115,7 @@ class DriverEV(Driver):
                     applied = self.checkMaxRedPhaseTimeRule(tl)
                     if applied is True:
                         continue
-
-                # END USER DEFINED RULE CHECK
-                # -------------------------------------------------------
+                # -------------------------------
 
                 tl.updateTimeInCurrentPhase(5)
 
@@ -128,7 +125,7 @@ class DriverEV(Driver):
                     self.applyUserDefinedRuleAction(tl, traci.trafficlight.getPhaseName(tl.getName()), nextRule)
                     tl.resetTimeInCurrentPhase()
 
-                    # USER DEFINED RULE CHECK
+                    # --- USER DEFINED RULE CHECK ---
                     if self.maxGreenAndYellow_UDRule:
                         self.checkMaxGreenAndYellowPhaseRule(tl, nextRule)
 
@@ -137,6 +134,7 @@ class DriverEV(Driver):
 
                     if self.maxRedPhaseTime_UDRule:
                         self.checkMaxRedPhaseTimeRule(tl)
+                    # -------------------------------
 
                     # update evolutionary learning attributes
                     tl.getAssignedIndividual().updateMeanEVSpeed(self.getEVSpeedsList(tl))
@@ -241,12 +239,12 @@ class DriverEV(Driver):
                         elif nextRule.getType() == 1:
                             numOfRSintRulesApplied += 1
                         elif nextRule.getType() == 2:
-                            print(nextRule)
-                            print(oldRule)
-                            print()
+                            # print(nextRule)
+                            # print(oldRule)
+                            # print()
                             numOfRSevRulesApplied += 1
 
-                # USER DEFINED RULE CHECK
+                # --- USER DEFINED RULE CHECK ---
                 if self.maxGreenAndYellow_UDRule:
                     self.checkMaxGreenAndYellowPhaseRule(tl, nextRule)
 
@@ -255,6 +253,7 @@ class DriverEV(Driver):
 
                 if self.maxRedPhaseTime_UDRule:
                     self.checkMaxRedPhaseTimeRule(tl)
+                # -------------------------------
 
                 # update evolutionary learning attributes
                 tl.getAssignedIndividual().updateMeanEVSpeed(self.getEVSpeedsList(tl))
@@ -339,7 +338,6 @@ class DriverEV(Driver):
         return self.state[trafficLight]
 
 #----------------------- EV PREDICATES AND REINFORCEMENT LEARNING ----------------------#
-
     # DETERMINE WHETHER OR NOT AN EMERGENCY VEHICLE IS APPROACHING
     def getIsEVApproaching(self, trafficLight: TrafficLight) -> bool:
         state = self.getState(trafficLight)
@@ -509,10 +507,6 @@ class DriverEV(Driver):
             return parameters
 
 #------------------------------------ EV PREDICATES ------------------------------------#
-
-        elif "isEVApproaching" == predicate:
-            return self.getIsEVApproaching(trafficLight)
-
         elif "EVDistanceToIntersection" == predicate:
             leadingEV = self.getLeadingEV(trafficLight)
             return leadingEV.getDistance() if leadingEV is not None else -1
@@ -527,7 +521,6 @@ class DriverEV(Driver):
 
         else:
             raise Exception("Undefined predicate:", predicate)
-
 #---------------------------------- EV PREDICATES END ----------------------------------#
 
     # RETURNS RULES THAT ARE APPLICABLE AT A GIVEN TIME AND STATE
