@@ -308,7 +308,7 @@ class DriverEV(Driver):
     def calculateState(self, trafficLights: List[TrafficLight]) -> None:
         self.resetState(trafficLights)
 
-        # loop through vehicles and assign them to the proper lane and traffic light with the appropriate identifier
+        # loop through all vehicles in simulation
         for vehID in traci.vehicle.getIDList():
             laneID = traci.vehicle.getLaneID(vehID)
 
@@ -316,6 +316,10 @@ class DriverEV(Driver):
             if laneID not in self.TLControllingLane:
                 continue
 
+            # store vehicle waiting time
+            self.waitingTimes[vehID] = traci.vehicle.getWaitingTime(vehID)
+
+            # add appropriate identifier to vehicles
             identifer = ""
 
             # If vehicle is stopped, append relevant identifier to it
@@ -326,7 +330,7 @@ class DriverEV(Driver):
                     identifer += "_Stopped_S"
 
             # If the vehicle is an EV, append relevant identifers to it
-            # NOTE: EVs are not included in predicates for stopped vehicles, so the identifers are overidden
+            # NOTE: EVs are not included in predicates for stopped vehicles, so the identifers are overidden (NOT TRUE ANYMORE)
             if traci.vehicle.getVehicleClass(vehID.split("_")[0]) == "emergency":
                 if laneID in self.leftTurnLanes:
                     identifer += "_EV_L"
@@ -425,8 +429,8 @@ class DriverEV(Driver):
                         if "_Stopped_S" in veh:
                             vehIDSplit = veh.split("_")
                             vehID = vehIDSplit[0]
-                            if traci.vehicle.getWaitingTime(vehID) > maxWaitTime:
-                                maxWaitTime = traci.vehicle.getWaitingTime(vehID)
+                            if self.waitingTimes[vehID] > maxWaitTime:
+                                maxWaitTime = self.waitingTimes[vehID]
             return maxWaitTime
 
         elif "longestTimeWaitedToTurnLeft" == predicate:
@@ -440,8 +444,8 @@ class DriverEV(Driver):
                         if "_Stopped_L" in veh:
                             vehIDSplit = veh.split("_")
                             vehID = vehIDSplit[0]
-                            if traci.vehicle.getWaitingTime(vehID) > maxWaitTime:
-                                maxWaitTime = traci.vehicle.getWaitingTime(vehID)
+                            if self.waitingTimes[vehID] > maxWaitTime:
+                                maxWaitTime = self.waitingTimes[vehID]
             return maxWaitTime
 
         elif "numCarsWaitingToProceedStraight" == predicate:
@@ -454,7 +458,7 @@ class DriverEV(Driver):
                         if "_Stopped_S" in veh:
                             vehIDSplit = veh.split("_")
                             vehID = vehIDSplit[0]
-                            if traci.vehicle.getWaitingTime(vehID) > 0:
+                            if self.waitingTimes[vehID] > 0:
                                 carsWaiting += 1
             return carsWaiting
 
@@ -468,7 +472,7 @@ class DriverEV(Driver):
                         if "_Stopped_L" in veh:
                             vehIDSplit = veh.split("_")
                             vehID = vehIDSplit[0]
-                            if traci.vehicle.getWaitingTime(vehID) > 0:
+                            if self.waitingTimes[vehID] > 0:
                                 carsWaiting += 1
 
             return carsWaiting
