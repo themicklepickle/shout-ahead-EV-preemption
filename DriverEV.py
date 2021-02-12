@@ -161,7 +161,7 @@ class DriverEV(Driver):
 
                     leadingEV = self.getLeadingEV(tl)
                     EVs = self.getEVs(tl)
-                    EVIsStopped: bool = traci.vehicle.getWaitingTime(leadingEV.getID().split("_")[0]) > 0  # TODO: maybe do this with speed instead
+                    EVIsStopped: bool = traci.vehicle.getSpeed(leadingEV.getID().split("_")[0]) == 0
 
                     # Only evaluate EV parameters for the reinforcement learning if there is an EV this step and an EV the previous step
                     if leadingEVBefore is None:
@@ -403,7 +403,7 @@ class DriverEV(Driver):
         EVs = self.getEVs(trafficLight)
         numEVStops = 0
         for EV in EVs:
-            if traci.vehicle.getWaitingTime(EV.getID().split("_")[0]) > 0:
+            if traci.vehicle.getSpeed(EV.getID().split("_")[0]) == 0:
                 numEVStops += 1
 
         return numEVStops
