@@ -161,7 +161,7 @@ class DriverEV(Driver):
 
                     leadingEV = self.getLeadingEV(tl)
                     EVs = self.getEVs(tl)
-                    EVIsStopped: bool = traci.vehicle.getSpeed(leadingEV.getID().split("_")[0]) == 0
+                    EVIsStopped: bool = self.vehicleSpeeds[leadingEV.getID().split("_")[0]] == 0
 
                     # Only evaluate EV parameters for the reinforcement learning if there is an EV this step and an EV the previous step
                     if leadingEVBefore is None:
@@ -316,14 +316,15 @@ class DriverEV(Driver):
             if laneID not in self.TLControllingLane:
                 continue
 
-            # store vehicle waiting time
-            self.waitingTimes[vehID] = traci.vehicle.getWaitingTime(vehID)
+            # store vehicle attributes
+            self.vehicleWaitingTimes[vehID] = traci.vehicle.getWaitingTime(vehID)
+            self.vehicleSpeeds[vehID] = traci.vehicle.getSpeed(vehID)
 
             # add appropriate identifier to vehicles
             identifer = ""
 
             # If vehicle is stopped, append relevant identifier to it
-            if traci.vehicle.getSpeed(vehID) == 0:
+            if self.vehicleSpeeds[vehID] == 0:
                 if laneID in self.leftTurnLanes:
                     identifer += "_Stopped_L"
                 else:
@@ -364,7 +365,7 @@ class DriverEV(Driver):
                 for veh in state[lane]:
                     if "_EV" in veh:
                         vehID = veh.split("_")[0]
-                        speed = traci.vehicle.getSpeed(vehID)
+                        speed = self.vehicleSpeeds(vehID)
                         distance = traci.lane.getLength(lane) - traci.vehicle.getLanePosition(vehID)
                         EVsInLane.append(EmergencyVehicle(veh, speed, distance, lane))
 
@@ -411,7 +412,7 @@ class DriverEV(Driver):
         EVs = self.getEVs(trafficLight)
         numEVStops = 0
         for EV in EVs:
-            if traci.vehicle.getSpeed(EV.getID().split("_")[0]) == 0:
+            if self.vehicleSpeeds[EV.getID().split("_")[0]] == 0:
                 numEVStops += 1
 
         return numEVStops
@@ -429,8 +430,8 @@ class DriverEV(Driver):
                         if "_Stopped_S" in veh:
                             vehIDSplit = veh.split("_")
                             vehID = vehIDSplit[0]
-                            if self.waitingTimes[vehID] > maxWaitTime:
-                                maxWaitTime = self.waitingTimes[vehID]
+                            if self.vehicleWaitingTimes[vehID] > maxWaitTime:
+                                maxWaitTime = self.vehicleWaitingTimes[vehID]
             return maxWaitTime
 
         elif "longestTimeWaitedToTurnLeft" == predicate:
@@ -444,8 +445,8 @@ class DriverEV(Driver):
                         if "_Stopped_L" in veh:
                             vehIDSplit = veh.split("_")
                             vehID = vehIDSplit[0]
-                            if self.waitingTimes[vehID] > maxWaitTime:
-                                maxWaitTime = self.waitingTimes[vehID]
+                            if self.vehicleWaitingTimes[vehID] > maxWaitTime:
+                                maxWaitTime = self.vehicleWaitingTimes[vehID]
             return maxWaitTime
 
         elif "numCarsWaitingToProceedStraight" == predicate:
@@ -458,7 +459,7 @@ class DriverEV(Driver):
                         if "_Stopped_S" in veh:
                             vehIDSplit = veh.split("_")
                             vehID = vehIDSplit[0]
-                            if self.waitingTimes[vehID] > 0:
+                            if self.vehicleWaitingTimes[vehID] > 0:
                                 carsWaiting += 1
             return carsWaiting
 
@@ -472,7 +473,7 @@ class DriverEV(Driver):
                         if "_Stopped_L" in veh:
                             vehIDSplit = veh.split("_")
                             vehID = vehIDSplit[0]
-                            if self.waitingTimes[vehID] > 0:
+                            if self.vehicleWaitingTimes[vehID] > 0:
                                 carsWaiting += 1
 
             return carsWaiting
