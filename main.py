@@ -222,7 +222,7 @@ if __name__ == "__main__":
 
     try:
         main(status, database, notifier)
-        # cProfile.run("main()", sort="cumtime")
+        # cProfile.run("main(status, database, notifier)", sort="cumtime")
     except:
         traceback.print_exc()
         if displayStatus:
