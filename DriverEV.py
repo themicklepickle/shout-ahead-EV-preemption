@@ -166,22 +166,22 @@ class DriverEV(Driver):
                     # Only evaluate EV parameters for the reinforcement learning if there is an EV this step and an EV the previous step
                     if leadingEVBefore is None:
                         EVChangeInSpeed = None
-                        EVChangeInTrafficDensity = None
+                        EVChangeInQueue = None
                     elif leadingEVBefore.getID() == leadingEV.getID():
                         EVChangeInSpeed = leadingEV.getSpeed() - leadingEVBefore.getSpeed()
-                        EVChangeInTrafficDensity = leadingEV.getTrafficDensity() - leadingEVBefore.getTrafficDensity()
+                        EVChangeInQueue = leadingEV.getQueue() - leadingEVBefore.getQueue()
                     elif tl.existedBefore(leadingEV.getID()):
                         leadingEVBefore = tl.getEV(leadingEV.getID())
                         EVChangeInSpeed = leadingEV.getSpeed() - leadingEVBefore.getSpeed()
-                        EVChangeInTrafficDensity = leadingEV.getTrafficDensity() - leadingEVBefore.getTrafficDensity()
+                        EVChangeInQueue = leadingEV.getQueue() - leadingEVBefore.getQueue()
                     else:
                         EVChangeInSpeed = None
-                        EVChangeInTrafficDensity = None
+                        EVChangeInQueue = None
                 else:
                     leadingEV = None
                     EVs = None
                     EVChangeInSpeed = None
-                    EVChangeInTrafficDensity = None
+                    EVChangeInQueue = None
                     EVIsStopped = False
 
                 # Determine if the rule should be chosen from RS or RSev
@@ -221,7 +221,7 @@ class DriverEV(Driver):
                                     ),
                                     len(carsWaitingAfter) - len(carsWaitingBefore),
                                     EVChangeInSpeed,
-                                    EVChangeInTrafficDensity,
+                                    EVChangeInQueue,
                                     EVIsStopped
                                 )
                             )
