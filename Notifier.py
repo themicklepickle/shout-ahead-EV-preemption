@@ -65,15 +65,15 @@ class Notifier:
             message += f"The top individual has a fitness of {topIndividual.getFitness()}"
 
             message += "\n\nRS:\n"
-            for rule in [r for r in topIndividual.getRS() if r.weight() != 0]:
+            for rule in [r for r in topIndividual.getRS() if r.getWeight() != 0]:
                 message += str(rule)
 
             message += "\n\nRSint:\n"
-            for rule in [r for r in topIndividual.getRSint() if r.weight() != 0]:
+            for rule in [r for r in topIndividual.getRSint() if r.getWeight() != 0]:
                 message += str(rule)
 
             message += "\n\nRSev:\n"
-            for rule in [r for r in topIndividual.getRSev() if r.weight() != 0]:
+            for rule in [r for r in topIndividual.getRSev() if r.getWeight() != 0]:
                 message += str(rule)
 
             message += "*******\n"

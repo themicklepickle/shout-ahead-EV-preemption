@@ -148,7 +148,8 @@ def main(status: Status, database: Database, notifier: Notifier):
             print(f"----- Episode {episode+1} of GENERATION {generations} of {totalGenerations} -----")
             print(f"Generation start time: {genStart}")
             print(f"The average generation runtime is {sum(generationRuntimes) / generations}")
-            print(f"The average episode runtime is {sum(episodeRuntimes) / episodeRuntimes}")
+            if len(episodeRuntimes) > 0:
+                print(f"The average episode runtime is {sum(episodeRuntimes) / len(episodeRuntimes)}")
             if status:
                 status.update("episode", episode+1)
             start = timeit.default_timer()
@@ -198,7 +199,7 @@ def main(status: Status, database: Database, notifier: Notifier):
         if database:
             OutputManager.run(setUpTuple[2], generationRuntimes, episodeRuntimes, database)
         if notifier:
-            notifier.run(setUpTuple[2], generationRuntimes, episodeRuntimes, generations, totalGenerations)
+            notifier.run(setUpTuple[2], generationRuntimes, episodeRuntimes, totalGenerations)
 
         generations += 1
 
