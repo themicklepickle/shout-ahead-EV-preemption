@@ -52,8 +52,8 @@ def main(status: Status, database: Database, notifier: Notifier):
     sumoNetworkName = f"{folderName}/simpleNetwork.net.xml"
     maxGreenPhaseTime = 225
     maxYellowPhaseTime = 5
-    maxSimulationTime = 10000
-    maxSimulationTime_5_15 = 6000
+    maxSimulationTime = 7000
+    maxSimulationTime_5_15 = 5000
     maxSimulationTime_15 = 4000
     # -----------------------------
 
