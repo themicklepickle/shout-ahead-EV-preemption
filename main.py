@@ -182,7 +182,7 @@ def main(status: Status, database: Database, notifier: Notifier):
                 for i in ap.getIndividualsSet():
                     i.resetSelectedCount()
                     i.resetAggregateVehicleWaitTime()
-                    i.resetMeanEVSpeed()
+                    i.resetAverageEVSpeed()
                     i.resetEVStops()
             sys.stdout.flush()
         elif database:

@@ -142,7 +142,7 @@ class DriverEV(Driver):
 
                     # update evolutionary learning attributes if there is at least one EV approaching
                     if isEVApproaching:
-                        tl.getAssignedIndividual().updateMeanEVSpeed(self.getEVSpeedsList(tl))
+                        tl.getAssignedIndividual().updateAverageEVSpeed(self.getEVSpeedsList(tl))
                         tl.getAssignedIndividual().updateEVStops(self.getNumEVStops(tl))
 
                     # Update traffic light
