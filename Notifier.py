@@ -13,16 +13,17 @@ if TYPE_CHECKING:
 
 
 class Notifier:
-    def __init__(self, email: str, password: str, recipients: List[str]) -> None:
+    def __init__(self, email: str, password: str, recipients: List[str], id: str) -> None:
         self.email = email
         self.password = password
         self.recipients = recipients
+        self.id = id
 
     def sendEmail(self, subject: str, content: str) -> None:
         port = 465
         context = ssl.create_default_context()
         message = MIMEMultipart("alternative")
-        message["Subject"] = f"ASP VM: {subject}"
+        message["Subject"] = f"ASP VM: {self.id} {subject}"
         message["From"] = self.email
 
         message.attach(MIMEText(content, "plain"))
@@ -32,15 +33,20 @@ class Notifier:
                 message['To'] = recipient
                 server.sendmail(self.email, recipient, message.as_string())
 
-    def run(self, agentPools: List[AgentPool], avgGenTime: float, totalGenTime: float, generations: int, totalGenerations: int):
-        avgGenRuntime = avgGenTime
-        finalGenRuntime = totalGenTime
+    def run(self, agentPools: List[AgentPool], generationRuntimes: List[float], episodeRuntimes: List[float], totalGenerations: int):
+        genTime = generationRuntimes[-1]
+        averageGenTime = sum(generationRuntimes) / len(generationRuntimes)
+        generations = len(generationRuntimes)
+        averageEpisodeTime = sum(episodeRuntimes) / len(episodeRuntimes)
+        episodes = len(episodeRuntimes)
 
         # Create new output file and add generation runtime information
         message = ""
         message += f"Generation {generations} Stats\n\n"
-        message += f"Generation runtime: {finalGenRuntime}\n"
-        message += f"Average Generation runtime: {avgGenRuntime}"
+        message += f"Generation runtime: {genTime}\n"
+        message += f"Average generation runtime: {averageGenTime}"
+        message += f"Average episode runtime: {averageEpisodeTime}"
+        message += f"Episodes: {episodes}"
         message += "\n---------------------------\n\n"
         message += "Best Individuals per Agent Pool\n"
 
@@ -59,15 +65,15 @@ class Notifier:
             message += f"The top individual has a fitness of {topIndividual.getFitness()}"
 
             message += "\n\nRS:\n"
-            for rule in topIndividual.getRS():
+            for rule in [r for r in topIndividual.getRS() if r.weight() != 0]:
                 message += str(rule)
 
             message += "\n\nRSint:\n"
-            for rule in topIndividual.getRSint():
+            for rule in [r for r in topIndividual.getRSint() if r.weight() != 0]:
                 message += str(rule)
 
             message += "\n\nRSev:\n"
-            for rule in topIndividual.getRSev():
+            for rule in [r for r in topIndividual.getRSev() if r.weight() != 0]:
                 message += str(rule)
 
             message += "*******\n"

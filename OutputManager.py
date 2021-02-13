@@ -9,14 +9,24 @@ if TYPE_CHECKING:
     from Database import Database
 
 
-def run(agentPools: List[AgentPool], avgGenTime: float, totalGenTime: float, database: Database):
-    avgGenRuntime = avgGenTime
-    finalGenRuntime = totalGenTime
+def run(agentPools: List[AgentPool], generationRuntimes: List[float], episodeRuntimes: List[float], database: Database):
+    genTime = generationRuntimes[-1]
+    averageGenTime = sum(generationRuntimes) / len(generationRuntimes)
+    generations = len(generationRuntimes)
+    averageEpisodeTime = sum(episodeRuntimes) / len(episodeRuntimes)
+    episodes = len(episodeRuntimes)
 
     # Create new output file and add generation runtime information
     outputData = {
-        "finalGenRunTime": finalGenRuntime,
-        "averageGenRunTime": avgGenRuntime
+        "stats": {
+            "genTime": genTime,
+            "averageGenTime": averageGenTime,
+            "averageEpisodeTime": averageEpisodeTime,
+            "generations": generations,
+            "episodes": episodes,
+            "generationRuntimes": generationRuntimes,
+            "episodeRuntimes": episodeRuntimes
+        }
     }
     bestIndividuals = {}
 

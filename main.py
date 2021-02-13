@@ -189,16 +189,16 @@ def main(status: Status, database: Database, notifier: Notifier):
                     i.resetEVStops()
             sys.stdout.flush()
         elif database:
-            OutputManager.run(setUpTuple[2], sum(generationRuntimes) / len(generationRuntimes), sum(generationRuntimes), database)
+            OutputManager.run(setUpTuple[2], generationRuntimes, episodeRuntimes, database)
             print("Output file created.")
 
         print(f"Generation start time: {genStart} ----- End time: {getTime()}")
         generationRuntimes.append(time.time() - startTime)
 
         if database:
-            OutputManager.run(setUpTuple[2], sum(generationRuntimes) / len(generationRuntimes), sum(generationRuntimes), database)
+            OutputManager.run(setUpTuple[2], generationRuntimes, episodeRuntimes, database)
         if notifier:
-            notifier.run(setUpTuple[2], sum(generationRuntimes) / len(generationRuntimes), sum(generationRuntimes), generations, totalGenerations)
+            notifier.run(setUpTuple[2], generationRuntimes, episodeRuntimes, generations, totalGenerations)
 
         generations += 1
 
@@ -222,7 +222,7 @@ if __name__ == "__main__":
     database = Database(datetime.datetime.now(pytz.timezone('America/Denver')).strftime('%a_%b_%d_%I:%M:%S_%p_%Y')) if storeInDatabase else None
     with open("credentials.json", "r") as f:
         credentials = json.load(f)
-    notifier = Notifier(email=credentials["email"], password=credentials["password"], recipients=["michael.xu1816@gmail.com"]) if notify else None
+    notifier = Notifier(credentials["email"], credentials["password"], ["michael.xu1816@gmail.com"], socket.gethostname()) if notify else None
 
     try:
         main(status, database, notifier)
