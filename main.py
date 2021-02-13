@@ -47,7 +47,7 @@ def main(status: Status, database: Database, notifier: Notifier):
     # ----------------------------------
 
     # --- SIMULATION ATTRIBUTES ---
-    folderName = "EV Traffic Flow 300"
+    folderName = "EV Traffic Flow 225"
     useShoutahead = True
     sumoNetworkName = f"{folderName}/simpleNetwork.net.xml"
     maxGreenPhaseTime = 225
