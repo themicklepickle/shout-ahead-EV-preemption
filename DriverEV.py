@@ -279,8 +279,8 @@ class DriverEV(Driver):
             individual = tl.getAssignedIndividual()
             individual.updateLastRunTime(simRunTime)
             individual.updateFitness(EvolutionaryLearner.rFit(individual, simRunTime), EvolutionaryLearner.EVrFit(individual))
-            print(tl.getName())
-            print([r for r in tl.getAssignedIndividual().getRSev() if r.getWeight() != 0])
+            # print(tl.getName())
+            # print([r for r in tl.getAssignedIndividual().getRSev() if r.getWeight() != 0])
         traci.close()  # End simulation
 
         # Returns all the agent pools to the main module
