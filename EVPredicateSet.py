@@ -15,52 +15,24 @@ def EVTrafficDensity_0(trafficDensity: float):
     return trafficDensity == 0
 
 
-def EVTrafficDensity_0_2(trafficDensity: float):
-    return 0 < trafficDensity <= 2
+def EVTrafficDensity_0_15(trafficDensity: float):
+    return 0 < trafficDensity <= 15
 
 
-def EVTrafficDensity_2_5(trafficDensity: float):
-    return 2 < trafficDensity <= 5
+def EVTrafficDensity_15_45(trafficDensity: float):
+    return 15 < trafficDensity <= 45
 
 
-def EVTrafficDensity_5_10(trafficDensity: float):
-    return 5 < trafficDensity <= 10
-
-
-def EVTrafficDensity_10_15(trafficDensity: float):
-    return 10 < trafficDensity <= 15
-
-
-def EVTrafficDensity_15_25(trafficDensity: float):
-    return 15 < trafficDensity <= 25
-
-
-def EVTrafficDensity_25_35(trafficDensity: float):
-    return 25 < trafficDensity <= 35
-
-
-def EVTrafficDensity_35_45(trafficDensity: float):
-    return 35 < trafficDensity <= 45
-
-
-def EVTrafficDensity_45_60(trafficDensity: float):
-    return 45 < trafficDensity <= 60
-
-
-def EVTrafficDensity_60_90(trafficDensity: float):
-    return 60 < trafficDensity <= 90
+def EVTrafficDensity_45_90(trafficDensity: float):
+    return 45 < trafficDensity <= 90
 
 
 def EVTrafficDensity_90_120(trafficDensity: float):
     return 90 < trafficDensity <= 120
 
 
-def EVTrafficDensity_120_150(trafficDensity: float):
-    return 120 < trafficDensity <= 150
-
-
-def EVTrafficDensity_150(trafficDensity: float):
-    return trafficDensity > 150
+def EVTrafficDensity_120(trafficDensity: float):
+    return trafficDensity > 120
 #----------------------------- end -----------------------------#
 
 

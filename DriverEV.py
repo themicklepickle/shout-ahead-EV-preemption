@@ -142,7 +142,7 @@ class DriverEV(Driver):
 
                     # update evolutionary learning attributes if there is at least one EV approaching
                     if isEVApproaching:
-                        tl.getAssignedIndividual().updateMeanEVSpeed(self.getEVSpeedsList(tl))
+                        tl.getAssignedIndividual().updateAverageEVSpeed(self.getEVSpeedsList(tl))
                         tl.getAssignedIndividual().updateEVStops(self.getNumEVStops(tl))
 
                     # Update traffic light
@@ -162,7 +162,7 @@ class DriverEV(Driver):
 
                     leadingEV = self.getLeadingEV(tl)
                     EVs = self.getEVs(tl)
-                    EVIsStopped: bool = self.vehicleSpeeds[leadingEV.getID().split("_")[0]] == 0
+                    EVIsStopped: bool = leadingEV.getSpeed() == 0
 
                     # Only evaluate EV parameters for the reinforcement learning if there is an EV this step and an EV the previous step
                     if leadingEVBefore is None:
@@ -360,30 +360,29 @@ class DriverEV(Driver):
     def calculateEVs(self, trafficLights: List[TrafficLight]) -> None:
         for tl in trafficLights:
             state = self.getState(tl)
-            EVs = []
+            self.EVs[tl] = []
 
             for lane in state:
-                EVsInLane = []
+                vehicles = []
                 for veh in state[lane]:
-                    if "_EV" in veh:
-                        vehID = veh.split("_")[0]
-                        speed = self.vehicleSpeeds[vehID]
-                        distance = traci.lane.getLength(lane) - traci.vehicle.getLanePosition(vehID)
-                        EVsInLane.append(EmergencyVehicle(veh, speed, distance, lane))
+                    vehID = veh.split("_")[0]
+                    vehicles.append({
+                        "name": veh,
+                        "distance": traci.lane.getLength(lane) - traci.vehicle.getLanePosition(vehID)
+                    })
 
-                # Sort EVs based on their distance to the intersection
-                EVsInLane.sort(key=lambda EV: EV.getDistance())
+                # Sort vehicles based on their distance to the intersection
+                vehicles.sort(key=lambda veh: veh["distance"])
 
                 # Obtain queue length ahead based on the vehicle's index in the list
-                for i, EV in enumerate(EVsInLane):
-                    EV.setQueue(i)
+                for i, veh in enumerate(vehicles):
+                    if "_EV" in veh["name"]:
+                        vehID = veh["name"].split("_")[0]
+                        speed = self.vehicleSpeeds[vehID]
+                        distance = veh["distance"]
+                        self.EVs[tl].append(EmergencyVehicle(veh["name"], speed, distance, lane, i))
 
-                # Add EVs in lane to EV list
-                EVs += EVsInLane
-
-            EVs.sort(key=lambda EV: EV.getDistance())
-
-            self.EVs[tl] = EVs
+            self.EVs[tl].sort(key=lambda EV: EV.getDistance())
 
     # GET A LIST OF ALL EMERGENCY VEHICLES
     def getEVs(self, trafficLight: TrafficLight) -> List[EmergencyVehicle]:
