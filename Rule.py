@@ -29,7 +29,7 @@ class Rule:
     def getJSON(self):
         return {
             "type": self.type,
-            "contions": self.conditions,
+            "conditions": self.conditions,
             "action": self.action,
             "agentPool": self.agentPool.getID(),
             "weight": self.weight,
