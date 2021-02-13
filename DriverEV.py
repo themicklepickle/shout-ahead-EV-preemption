@@ -92,7 +92,7 @@ class DriverEV(Driver):
 
             # Traffic Light agents reevaluate their state every 5 seconds
             step += 1
-            if (step - 1) % 5 != 0:
+            if step % 5 != 0:
                 continue
 
             # get state and EVs
@@ -166,22 +166,22 @@ class DriverEV(Driver):
                     # Only evaluate EV parameters for the reinforcement learning if there is an EV this step and an EV the previous step
                     if leadingEVBefore is None:
                         EVChangeInSpeed = None
-                        EVChangeInTrafficDensity = None
+                        EVChangeInQueue = None
                     elif leadingEVBefore.getID() == leadingEV.getID():
                         EVChangeInSpeed = leadingEV.getSpeed() - leadingEVBefore.getSpeed()
-                        EVChangeInTrafficDensity = leadingEV.getTrafficDensity() - leadingEVBefore.getTrafficDensity()
+                        EVChangeInQueue = leadingEV.getQueue() - leadingEVBefore.getQueue()
                     elif tl.existedBefore(leadingEV.getID()):
                         leadingEVBefore = tl.getEV(leadingEV.getID())
                         EVChangeInSpeed = leadingEV.getSpeed() - leadingEVBefore.getSpeed()
-                        EVChangeInTrafficDensity = leadingEV.getTrafficDensity() - leadingEVBefore.getTrafficDensity()
+                        EVChangeInQueue = leadingEV.getQueue() - leadingEVBefore.getQueue()
                     else:
                         EVChangeInSpeed = None
-                        EVChangeInTrafficDensity = None
+                        EVChangeInQueue = None
                 else:
                     leadingEV = None
                     EVs = None
                     EVChangeInSpeed = None
-                    EVChangeInTrafficDensity = None
+                    EVChangeInQueue = None
                     EVIsStopped = False
 
                 # Determine if the rule should be chosen from RS or RSev
@@ -221,7 +221,7 @@ class DriverEV(Driver):
                                     ),
                                     len(carsWaitingAfter) - len(carsWaitingBefore),
                                     EVChangeInSpeed,
-                                    EVChangeInTrafficDensity,
+                                    EVChangeInQueue,
                                     EVIsStopped
                                 )
                             )
@@ -279,8 +279,8 @@ class DriverEV(Driver):
             individual = tl.getAssignedIndividual()
             individual.updateLastRunTime(simRunTime)
             individual.updateFitness(EvolutionaryLearner.rFit(individual, simRunTime), EvolutionaryLearner.EVrFit(individual))
-            print(tl.getName())
-            print([r for r in tl.getAssignedIndividual().getRSev() if r.getWeight() != 0])
+            # print(tl.getName())
+            # print([r for r in tl.getAssignedIndividual().getRSev() if r.getWeight() != 0])
         traci.close()  # End simulation
 
         # Returns all the agent pools to the main module

@@ -17,31 +17,23 @@ penaltyMultiplier = -0.05
 
 # EV reinforcement learning factors
 global EVSpeedFactor
-global EVTrafficDensityFactor
+global EVQueueFactor
 global EVIsStoppedPenalty
 EVSpeedFactor = 0.1
-EVTrafficDensityFactor = 1
+EVQueueFactor = 1
 EVIsStoppedPenalty = -1
 
 
-def updatedWeight(rule: Rule, nextRule: Rule, throughputRatio: float, waitTimeReducedRatio: float, intersectionQueueDifference: int, EVChangeInSpeed: float, EVChangeInTrafficDensity: float, EVIsStopped: bool) -> float:
+def updatedWeight(rule: Rule, nextRule: Rule, throughputRatio: float, waitTimeReducedRatio: float, intersectionQueueDifference: int, EVChangeInSpeed: float, EVChangeInQueue: int, EVIsStopped: bool) -> float:
     # Returns the updated weight based on the Sarsa learning method
-    updatedWeight = rule.getWeight() + (learningFactor * (determineReward(throughputRatio, waitTimeReducedRatio, EVChangeInSpeed, EVChangeInTrafficDensity) +
+    updatedWeight = rule.getWeight() + (learningFactor * (determineReward(throughputRatio, waitTimeReducedRatio, EVChangeInSpeed, EVChangeInQueue) +
                                                           (discountRate * nextRule.getWeight() - rule.getWeight()))) + (penaltyMultiplier * determinePenalty(intersectionQueueDifference, EVIsStopped))
-
-    # if rule.getType() == 2:
-    #     print(rule)
-    #     print("throughputRatio", throughputFactor * throughputRatio)
-    #     print("waitTimeReducedRatio", waitTimeReducedFactor * waitTimeReducedRatio)
-    #     print("EVChangeInSpeed", EVSpeedFactor * EVChangeInSpeed)
-    #     print("EVChangeInTrafficDenisty", EVTrafficDensityFactor, EVChangeInTrafficDensity)
-    #     print("updatedWeight", updatedWeight)
 
     return updatedWeight * 0.0001  # Numbers are reduced by 99.99% to keep them managable
 
 
 # Function to determine the reward
-def determineReward(throughputRatio: float, waitTimeReducedRatio: float, EVChangeInSpeed: float, EVChangeInTrafficDensity: float):
+def determineReward(throughputRatio: float, waitTimeReducedRatio: float, EVChangeInSpeed: float, EVChangeInQueue: int):
     reward = 0
 
     reward += throughputFactor * throughputRatio
@@ -49,8 +41,8 @@ def determineReward(throughputRatio: float, waitTimeReducedRatio: float, EVChang
 
     if EVChangeInSpeed is not None:
         reward += EVSpeedFactor * EVChangeInSpeed
-    if EVChangeInTrafficDensity is not None:
-        reward += EVTrafficDensityFactor * EVChangeInTrafficDensity
+    if EVChangeInQueue is not None:
+        reward -= EVQueueFactor * EVChangeInQueue
 
     return reward
 

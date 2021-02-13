@@ -98,8 +98,8 @@ def EVrFit(individual: Individual) -> float:
     """FITNESS FUNCTION FOR AN INDIVIDUAL AFTER ONE SIMULATION RUN/EPISODE FOR EV PARAMETERS"""
     fitness = 0
 
-    print("mean EV speed:", individual.getMeanEVSpeed())
-    print("EV stops:", individual.getEVStops())
+    # print("mean EV speed:", individual.getMeanEVSpeed())
+    # print("EV stops:", individual.getEVStops())
     fitness += meanEVSpeedFactor * individual.getMeanEVSpeed()
     fitness += EVStopsFactor * (EVStopFitnessPenalty * individual.getEVStops())
 
