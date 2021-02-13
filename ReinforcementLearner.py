@@ -19,7 +19,7 @@ penaltyMultiplier = -0.05
 global EVSpeedFactor
 global EVTrafficDensityFactor
 global EVIsStoppedPenalty
-EVSpeedFactor = 0.1
+EVSpeedFactor = 1
 EVTrafficDensityFactor = 1
 EVIsStoppedPenalty = -1
 
@@ -33,9 +33,11 @@ def updatedWeight(rule: Rule, nextRule: Rule, throughputRatio: float, waitTimeRe
     #     print(rule)
     #     print("throughputRatio", throughputFactor * throughputRatio)
     #     print("waitTimeReducedRatio", waitTimeReducedFactor * waitTimeReducedRatio)
-    #     print("EVChangeInSpeed", EVSpeedFactor * EVChangeInSpeed)
-    #     print("EVChangeInTrafficDenisty", EVTrafficDensityFactor, EVChangeInTrafficDensity)
-    #     print("updatedWeight", updatedWeight)
+    #     if EVChangeInSpeed is not None:
+    #         print("EVChangeInSpeed", EVSpeedFactor * EVChangeInSpeed)
+    #     if EVChangeInTrafficDensity is not None:
+    #         print("EVChangeInTrafficDenisty", EVTrafficDensityFactor, EVChangeInTrafficDensity)
+    #     print("updatedWeight", updatedWeight * 0.0001)
 
     return updatedWeight * 0.0001  # Numbers are reduced by 99.99% to keep them managable
 
@@ -50,7 +52,7 @@ def determineReward(throughputRatio: float, waitTimeReducedRatio: float, EVChang
     if EVChangeInSpeed is not None:
         reward += EVSpeedFactor * EVChangeInSpeed
     if EVChangeInTrafficDensity is not None:
-        reward += EVTrafficDensityFactor * EVChangeInTrafficDensity
+        reward -= EVTrafficDensityFactor * EVChangeInTrafficDensity
 
     return reward
 
