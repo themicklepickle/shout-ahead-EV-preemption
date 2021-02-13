@@ -125,6 +125,7 @@ def main(status: Status, database: Database, notifier: Notifier):
         if status:
             status.update("generation", generations)
         sys.stdout.flush()
+        episodeRuntimes = []
 
         # Prepare for next simulation run
         allIndividualsTested = False
@@ -147,12 +148,14 @@ def main(status: Status, database: Database, notifier: Notifier):
             print(f"----- Episode {episode+1} of GENERATION {generations} of {totalGenerations} -----")
             print(f"Generation start time: {genStart}")
             print(f"The average generation runtime is {sum(generationRuntimes) / generations}")
+            print(f"The average episode runtime is {sum(episodeRuntimes) / episodeRuntimes}")
             if status:
                 status.update("episode", episode+1)
             start = timeit.default_timer()
             resultingAgentPools = simRunner.run()  # run the simulation
             stop = timeit.default_timer()
             print(f"Time: {round(stop - start, 1)}")
+            episodeRuntimes.append(stop - start)
             sys.stdout.flush()
 
             episode += 1
@@ -186,16 +189,16 @@ def main(status: Status, database: Database, notifier: Notifier):
                     i.resetEVStops()
             sys.stdout.flush()
         elif database:
-            OutputManager.run(setUpTuple[2], sum(generationRuntimes)/50, (sum(generationRuntimes)/50)*50, database)
+            OutputManager.run(setUpTuple[2], sum(generationRuntimes) / len(generationRuntimes), sum(generationRuntimes), database)
             print("Output file created.")
 
         print(f"Generation start time: {genStart} ----- End time: {getTime()}")
         generationRuntimes.append(time.time() - startTime)
 
         if database:
-            OutputManager.run(setUpTuple[2], sum(generationRuntimes)/50, (sum(generationRuntimes)/50)*50, database)
+            OutputManager.run(setUpTuple[2], sum(generationRuntimes) / len(generationRuntimes), sum(generationRuntimes), database)
         if notifier:
-            notifier.run(setUpTuple[2], sum(generationRuntimes)/50, (sum(generationRuntimes)/50)*50, generations, totalGenerations)
+            notifier.run(setUpTuple[2], sum(generationRuntimes) / len(generationRuntimes), sum(generationRuntimes), generations, totalGenerations)
 
         generations += 1
 
