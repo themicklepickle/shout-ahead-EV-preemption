@@ -61,11 +61,11 @@ maxEVRulesInNewGenerationSet = 20
 # EV fitness parameters
 global EVStopFitnessPenalty
 global EVStopsFactor
-global meanEVSpeedFactor
+global averageEVSpeedFactor
 
 EVStopFitnessPenalty = -1  # Penalty applied to fitness for every EV stop
 EVStopsFactor = 1
-meanEVSpeedFactor = 10
+averageEVSpeedFactor = 10
 
 
 def rFit(individual: Individual, simTime: int) -> float:
@@ -98,9 +98,7 @@ def EVrFit(individual: Individual) -> float:
     """FITNESS FUNCTION FOR AN INDIVIDUAL AFTER ONE SIMULATION RUN/EPISODE FOR EV PARAMETERS"""
     fitness = 0
 
-    # print("mean EV speed:", individual.getMeanEVSpeed())
-    # print("EV stops:", individual.getEVStops())
-    fitness += meanEVSpeedFactor * individual.getMeanEVSpeed()
+    fitness += averageEVSpeedFactor * individual.getAverageEVSpeed()
     fitness += EVStopsFactor * (EVStopFitnessPenalty * individual.getEVStops())
 
     return fitness

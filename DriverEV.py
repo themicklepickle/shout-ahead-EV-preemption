@@ -404,17 +404,18 @@ class DriverEV(Driver):
 #---------------------------------- EV PREDICATES END ----------------------------------#
 
 #------------------------------ EV EVOLUTIONARY LEARNING -------------------------------#
-    def getEVSpeedsList(self, trafficLight: TrafficLight) -> List[int]:
+    def getAverageEVSpeed(self, trafficLight: TrafficLight) -> List[int]:
         EVs = self.getEVs(trafficLight)
         EVSpeedsList = [EV.getSpeed() for EV in EVs]
+        averageEVSpeed = sum(EVSpeedsList) / len(EVSpeedsList)
 
-        return EVSpeedsList
+        return averageEVSpeed
 
     def getNumEVStops(self, trafficLight: TrafficLight) -> int:
         EVs = self.getEVs(trafficLight)
         numEVStops = 0
         for EV in EVs:
-            if self.vehicleSpeeds[EV.getID().split("_")[0]] == 0:
+            if EV.getSpeed() == 0:
                 numEVStops += 1
 
         return numEVStops
