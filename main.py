@@ -55,7 +55,6 @@ def main(status: Status, database: Database, notifier: Notifier):
     maxSimulationTime = 10000
     maxSimulationTime_5_15 = 6000
     maxSimulationTime_15 = 4000
-    runTimeSet = []
     # -----------------------------
 
     # --- SUMO BINARY SETUP ---
@@ -91,6 +90,8 @@ def main(status: Status, database: Database, notifier: Notifier):
                 "maxGreenPhaseTime": maxGreenPhaseTime,
                 "maxYellowPhaseTime": maxYellowPhaseTime,
                 "maxSimulationTime": maxSimulationTime,
+                "maxSimulationTime_5_15": maxSimulationTime_5_15,
+                "maxSimulationTime_15": maxSimulationTime_15,
             },
             "output": {
                 "displayStatus": bool(status),
@@ -169,7 +170,7 @@ def main(status: Status, database: Database, notifier: Notifier):
                 for ap in resultingAgentPools:
                     for i in ap.getIndividualsSet():
                         continue
-            allIndividualsTested = True  # Uncomment for quick testing
+            # allIndividualsTested = True  # Uncomment for quick testing
 
         # Prepare individuals for the next run through
         for ap in setUpTuple[2]:
