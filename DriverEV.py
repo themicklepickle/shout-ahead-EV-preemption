@@ -92,7 +92,7 @@ class DriverEV(Driver):
 
             # Traffic Light agents reevaluate their state every 5 seconds
             step += 1
-            if (step - 1) % 5 != 0:
+            if step % 5 != 0:
                 continue
 
             # get state and EVs
