@@ -31,6 +31,13 @@ class Driver:
         self.maxRedPhaseTime_UDRule = maxRedPhaseTime_UDRule
         self.assignGreenPhaseToSingleWaitingPhase_UDRule = assignGreenPhaseToSingleWaitingPhase
         self.useShoutahead = useShoutahead
+        self.state = {}
+        self.leadingEV = {}
+        self.TLControllingLane = {}
+        self.leftTurnLanes = []
+        self.EVs = {}
+        self.vehicleWaitingTimes = {}
+        self.vehicleSpeeds = {}
 
     # RETURNS A DICTIONARY WITH KEYS OF VEHIDs WAITING AT AN INTERSECTION AND THEIR WAITING TIME AS VALUES
     def carsWaiting(self, trafficLight: TrafficLight) -> Dict[str, float]:
@@ -40,7 +47,7 @@ class Driver:
         for lanes in state:
             for veh in state[lanes]:
                 vehID = veh.split("_")
-                carsWaiting[vehID[0]] = traci.vehicle.getAccumulatedWaitingTime(wehID[0])
+                carsWaiting[vehID[0]] = traci.vehicle.getAccumulatedWaitingTime(vehID[0])
 
         return carsWaiting
 

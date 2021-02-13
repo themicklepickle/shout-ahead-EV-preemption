@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from random import randrange
 
+import PredicateSet
 import CoopPredicateSet
 import EVPredicateSet
 import EvolutionaryLearner as EvolutionaryLearner
@@ -25,8 +26,10 @@ class AgentPool:
         self.individuals: List[Individual] = []
         self.minIndividualRunsPerGen = minIndividualRunsPerGen
         self.individualsNeedingRuns: List[Individual]
-        self.coopPredicates: List[str]
-        self.EVPredicates: List[str]
+        self.RSPredicates: List[str]
+        self.RSintPredicates: List[str]
+        self.RSevPredicates: List[str]
+        self.EVLanePredicates: List[str]
 
     def getID(self):
         return self.id
@@ -34,11 +37,17 @@ class AgentPool:
     def getActionSet(self):
         return self.actionSet
 
-    def getCoopPredicates(self):
-        return self.coopPredicates
+    def getRSPredicates(self):
+        return self.RSPredicates
 
-    def getEVPredicates(self):
-        return self.EVPredicates
+    def getRSintPredicates(self):
+        return self.RSintPredicates
+
+    def getRSevPredicates(self):
+        return self.RSevPredicates
+
+    def getEVLanePredicates(self):
+        return self.EVLanePredicates
 
     def getIndividualsSet(self):
         return self.individuals
@@ -70,9 +79,12 @@ class AgentPool:
 
         # COMPLETES THE INITIALIZATION OF AGENT POOL COMPONENTS THAT REQUIRE ALL AGENT POOLS TO BE INITIALIZED FIRST
     def finishSetUp(self, useShoutahead):
-        self.coopPredicates = self.initCoopPredicates()                 # Store Observations of communicated intentions here since they are agent specific
-        self.EVPredicates = self.initEVPredicates()
-        self.initIndividuals(useShoutahead)                                          # Populate Agent Pool's own rule set with random rules
+        self.RSPredicates = PredicateSet.getPredicateSet()
+        self.RSintPredicates = CoopPredicateSet.getPredicateSet(self)
+        self.RSevPredicates = EVPredicateSet.getPredicateSet()
+        self.EVLanePredicates = EVPredicateSet.getAgentSpecificPredicates(self)
+
+        self.initIndividuals(useShoutahead)  # Populate Agent Pool's own rule set with random rules
         for tl in self.trafficLightsAssigned:
             tl.initPhaseTimeSpentInRedArray()
 
@@ -91,18 +103,17 @@ class AgentPool:
         else:
             return self.individualsNeedingRuns[randrange(0, len(self.individualsNeedingRuns))]
 
-    # RETURN RANDOM PREDICATE FROM coopPredicate LIST FOR A RULE IN RSint
+    def getRandomRSPredicate(self):
+        return self.RSPredicates[randrange(len(self.RSPredicates))]
+
     def getRandomRSintPredicate(self):
-        return self.coopPredicates[randrange(len(self.coopPredicates))]
+        return self.RSintPredicates[randrange(len(self.RSintPredicates))]
 
     def getRandomRSevPredicate(self):
-        return self.EVPredicates[randrange(len(self.EVPredicates))]
+        return self.RSevPredicates[randrange(len(self.RSevPredicates))]
 
-    def initCoopPredicates(self):
-        return CoopPredicateSet.getPredicateSet(self)
-
-    def initEVPredicates(self):
-        return EVPredicateSet.getPredicateSet(self)
+    def getRandomEVLanePredicate(self):
+        return self.EVLanePredicates[randrange(len(self.EVLanePredicates))]
 
     def getBestIndividual(self):
         bestIndivList = sorted(self.individuals, key=lambda x: x.getFitness())

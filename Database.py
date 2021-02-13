@@ -14,7 +14,7 @@ class Database:
         })
 
     def setGeneration(self, generation) -> None:
-        self.generation += generation
+        self.generation = generation
 
     def updateAgentPool(self, id: str, agentPoolData: dict) -> None:
         requests.post(self.url + "updateAgentPool", json={

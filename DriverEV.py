@@ -36,6 +36,15 @@ class DriverEV(Driver):
         rule: Union[Rule, Literal[-1]] = -1
         nextRule: Union[Rule, Literal[-1]] = -1
 
+        # run functions to setup state
+        self.constructTLControllingLaneDict(trafficLights)
+        self.constructLeftTurnLanesDict(trafficLights)
+
+        # get state and EVs
+        self.calculateState(trafficLights)
+        self.calculateEVs(trafficLights)
+        self.calculateLeadingEV(trafficLights)
+
         # Assign each traffic light an individual from their agent pool for this simulation run, and a starting rule
         for tl in trafficLights:
             tl.assignIndividual()
@@ -86,10 +95,14 @@ class DriverEV(Driver):
             if (step - 1) % 5 != 0:
                 continue
 
+            # get state and EVs
+            self.calculateState(trafficLights)
+            self.calculateEVs(trafficLights)
+            self.calculateLeadingEV(trafficLights)
+
             for tl in trafficLights:
 
-                # USER DEFINED RULE CHECK
-                # -------------------------------------------------------
+                # --- USER DEFINED RULE CHECK ---
                 if self.assignGreenPhaseToSingleWaitingPhase_UDRule:
                     applied = self.checkAssignGreenPhaseToSingleWaitingPhaseRule(tl)
                     if applied is True:
@@ -104,9 +117,7 @@ class DriverEV(Driver):
                     applied = self.checkMaxRedPhaseTimeRule(tl)
                     if applied is True:
                         continue
-
-                # END USER DEFINED RULE CHECK
-                # -------------------------------------------------------
+                # -------------------------------
 
                 tl.updateTimeInCurrentPhase(5)
 
@@ -116,7 +127,7 @@ class DriverEV(Driver):
                     self.applyUserDefinedRuleAction(tl, traci.trafficlight.getPhaseName(tl.getName()), nextRule)
                     tl.resetTimeInCurrentPhase()
 
-                    # USER DEFINED RULE CHECK
+                    # --- USER DEFINED RULE CHECK ---
                     if self.maxGreenAndYellow_UDRule:
                         self.checkMaxGreenAndYellowPhaseRule(tl, nextRule)
 
@@ -125,6 +136,7 @@ class DriverEV(Driver):
 
                     if self.maxRedPhaseTime_UDRule:
                         self.checkMaxRedPhaseTimeRule(tl)
+                    # -------------------------------
 
                     # update evolutionary learning attributes
                     tl.getAssignedIndividual().updateMeanEVSpeed(self.getEVSpeedsList(tl))
@@ -149,7 +161,7 @@ class DriverEV(Driver):
 
                     leadingEV = self.getLeadingEV(tl)
                     EVs = self.getEVs(tl)
-                    EVIsStopped: bool = traci.vehicle.getWaitingTime(leadingEV.getID().split("_")[0]) > 0  # TODO: maybe do this with speed instead
+                    EVIsStopped: bool = self.vehicleSpeeds[leadingEV.getID().split("_")[0]] == 0
 
                     # Only evaluate EV parameters for the reinforcement learning if there is an EV this step and an EV the previous step
                     if leadingEVBefore is None:
@@ -229,12 +241,12 @@ class DriverEV(Driver):
                         elif nextRule.getType() == 1:
                             numOfRSintRulesApplied += 1
                         elif nextRule.getType() == 2:
-                            print(nextRule)
-                            print(oldRule)
-                            print()
+                            # print(nextRule)
+                            # print(oldRule)
+                            # print()
                             numOfRSevRulesApplied += 1
 
-                # USER DEFINED RULE CHECK
+                # --- USER DEFINED RULE CHECK ---
                 if self.maxGreenAndYellow_UDRule:
                     self.checkMaxGreenAndYellowPhaseRule(tl, nextRule)
 
@@ -243,6 +255,7 @@ class DriverEV(Driver):
 
                 if self.maxRedPhaseTime_UDRule:
                     self.checkMaxRedPhaseTimeRule(tl)
+                # -------------------------------
 
                 # update evolutionary learning attributes
                 tl.getAssignedIndividual().updateMeanEVSpeed(self.getEVSpeedsList(tl))
@@ -273,53 +286,65 @@ class DriverEV(Driver):
         # Returns all the agent pools to the main module
         return self.setUpTuple[2]
 
-    def getState(self, trafficLight: TrafficLight) -> Dict[str, List[str]]:
-        state = {}
-        leftTurnLane = ""
-        for lane in trafficLight.getLanes():
-            state[lane] = []
+    def constructTLControllingLaneDict(self, trafficLights: List[TrafficLight]) -> None:
+        for tl in trafficLights:
+            for lane in tl.getLanes():
+                self.TLControllingLane[lane] = tl
 
-        # Loop to determine which vehicles are waiting at an intersection
+    def constructLeftTurnLanesDict(self, trafficLights: List[TrafficLight]) -> None:
+        maxLaneNum = 0
+        for tl in trafficLights:
+            for lane in tl.getLanes():
+                if "_LTL" in lane:
+                    if int(lane.split("_")[2]) > maxLaneNum:
+                        self.leftTurnLanes.append(lane)
+
+    def resetState(self, trafficLights: List[TrafficLight]) -> None:
+        for tl in trafficLights:
+            self.state[tl] = {}
+            for lane in tl.getLanes():
+                self.state[tl][lane] = []
+
+    def calculateState(self, trafficLights: List[TrafficLight]) -> None:
+        self.resetState(trafficLights)
+
+        # loop through all vehicles in simulation
         for vehID in traci.vehicle.getIDList():
             laneID = traci.vehicle.getLaneID(vehID)
-            tlLanes = trafficLight.getLanes()
+
+            # ignore vehicles in lanes that are not controlled by traffic lights
+            if laneID not in self.TLControllingLane:
+                continue
+
+            # store vehicle attributes
+            self.vehicleWaitingTimes[vehID] = traci.vehicle.getWaitingTime(vehID)
+            self.vehicleSpeeds[vehID] = traci.vehicle.getSpeed(vehID)
+
+            # add appropriate identifier to vehicles
             identifer = ""
 
-            # Operate only on vehicles in a lane controlled by traffic light
-            if laneID in tlLanes:
-                # Determine left turn lane if it exists
-                if "_LTL" in laneID:
-                    maxLaneNum = 0
-                    for lane in tlLanes:
-                        if lane == laneID:
-                            laneSplit = lane.split("_")
-                            if int(laneSplit[2]) > maxLaneNum:
-                                leftTurnLane = lane
+            # If vehicle is stopped, append relevant identifier to it
+            if self.vehicleSpeeds[vehID] == 0:
+                if laneID in self.leftTurnLanes:
+                    identifer += "_Stopped_L"
+                else:
+                    identifer += "_Stopped_S"
 
-                # If vehicle is stopped, append relevant identifier to it
-                if traci.vehicle.getSpeed(vehID) == 0:
-                    if leftTurnLane == laneID:
-                        identifer += "_Stopped_L"
-                    else:
-                        identifer += "_Stopped_S"
+            # If the vehicle is an EV, append relevant identifers to it
+            # NOTE: EVs are not included in predicates for stopped vehicles, so the identifers are overidden (NOT TRUE ANYMORE)
+            if traci.vehicle.getVehicleClass(vehID.split("_")[0]) == "emergency":
+                if laneID in self.leftTurnLanes:
+                    identifer += "_EV_L"
+                else:
+                    identifer += "_EV_S"
 
-#------------------------------------ EV IDENTIFIER ------------------------------------#
-                # If the vehicle is an EV, append relevant identifers to it
-                # NOTE: EVs are not included in predicates for stopped vehicles, so the identifers are overidden
-                if traci.vehicle.getVehicleClass(vehID.split("_")[0]) == "emergency":
-                    if leftTurnLane == laneID:
-                        identifer += "_EV_L"
-                    else:
-                        identifer += "_EV_S"
+            tl = self.TLControllingLane[laneID]
+            self.state[tl][laneID].append(vehID + identifer)
 
-#---------------------------------- EV IDENTIFIER END ----------------------------------#
-
-                state[laneID].append(vehID + identifer)  # TODO: check that the vehID is the bare number
-
-        return state
+    def getState(self, trafficLight: TrafficLight) -> Dict[str, List[str]]:
+        return self.state[trafficLight]
 
 #----------------------- EV PREDICATES AND REINFORCEMENT LEARNING ----------------------#
-
     # DETERMINE WHETHER OR NOT AN EMERGENCY VEHICLE IS APPROACHING
     def getIsEVApproaching(self, trafficLight: TrafficLight) -> bool:
         state = self.getState(trafficLight)
@@ -330,48 +355,53 @@ class DriverEV(Driver):
 
         return False  # Return False if no EVs were found
 
+    def calculateEVs(self, trafficLights: List[TrafficLight]) -> None:
+        for tl in trafficLights:
+            state = self.getState(tl)
+            EVs = []
+
+            for lane in state:
+                EVsInLane = []
+                for veh in state[lane]:
+                    if "_EV" in veh:
+                        vehID = veh.split("_")[0]
+                        speed = self.vehicleSpeeds[vehID]
+                        distance = traci.lane.getLength(lane) - traci.vehicle.getLanePosition(vehID)
+                        EVsInLane.append(EmergencyVehicle(veh, speed, distance, lane))
+
+                # Sort EVs based on their distance to the intersection
+                EVsInLane.sort(key=lambda EV: EV.getDistance())
+
+                # Obtain queue length ahead based on the vehicle's index in the list
+                for i, EV in enumerate(EVsInLane):
+                    EV.setQueue(i)
+
+                # Add EVs in lane to EV list
+                EVs += EVsInLane
+
+            EVs.sort(key=lambda EV: EV.getDistance())
+
+            self.EVs[tl] = EVs
+
     # GET A LIST OF ALL EMERGENCY VEHICLES
     def getEVs(self, trafficLight: TrafficLight) -> List[EmergencyVehicle]:
-        state = self.getState(trafficLight)
-        EVs = []
+        return self.EVs[trafficLight]
 
-        for lane in state:
-            EVsInLane = []
-            for veh in state[lane]:
-                if "_EV" in veh:
-                    vehID = veh.split("_")[0]
-                    speed = traci.vehicle.getSpeed(vehID)
-                    distance = traci.lane.getLength(lane) - traci.vehicle.getLanePosition(vehID)
-                    EVsInLane.append(EmergencyVehicle(veh, speed, distance, lane))
+    def calculateLeadingEV(self, trafficLights: List[TrafficLight]) -> None:
+        for tl in trafficLights:
+            EVs = self.getEVs(tl)
 
-            # Sort EVs based on their distance to the intersection
-            EVsInLane.sort(key=lambda EV: EV.getDistance())
-
-            # Obtain queue length ahead based on the vehicle's index in the list
-            for i, EV in enumerate(EVsInLane):
-                EV.setQueue(i)
-
-            # Add EVs in lane to EV list
-            EVs += EVsInLane
-
-        EVs.sort(key=lambda EV: EV.getDistance())
-
-        return EVs
+            if EVs == []:
+                self.leadingEV[tl] = None
+            else:
+                self.leadingEV[tl] = EVs[0]
 
     # GET LEADING EMERGENCY VEHICLE AMONG ALL LANES
     def getLeadingEV(self, trafficLight: TrafficLight) -> EmergencyVehicle:
-        EVs = self.getEVs(trafficLight)
-
-        if EVs == []:
-            return None
-        else:
-            return EVs[0]
+        return self.leadingEV[trafficLight]
 #---------------------------------- EV PREDICATES END ----------------------------------#
 
-
 #------------------------------ EV EVOLUTIONARY LEARNING -------------------------------#
-
-
     def getEVSpeedsList(self, trafficLight: TrafficLight) -> List[int]:
         EVs = self.getEVs(trafficLight)
         EVSpeedsList = [EV.getSpeed() for EV in EVs]
@@ -382,7 +412,7 @@ class DriverEV(Driver):
         EVs = self.getEVs(trafficLight)
         numEVStops = 0
         for EV in EVs:
-            if traci.vehicle.getWaitingTime(EV.getID().split("_")[0]) > 0:
+            if self.vehicleSpeeds[EV.getID().split("_")[0]] == 0:
                 numEVStops += 1
 
         return numEVStops
@@ -400,8 +430,8 @@ class DriverEV(Driver):
                         if "_Stopped_S" in veh:
                             vehIDSplit = veh.split("_")
                             vehID = vehIDSplit[0]
-                            if traci.vehicle.getWaitingTime(vehID) > maxWaitTime:
-                                maxWaitTime = traci.vehicle.getWaitingTime(vehID)
+                            if self.vehicleWaitingTimes[vehID] > maxWaitTime:
+                                maxWaitTime = self.vehicleWaitingTimes[vehID]
             return maxWaitTime
 
         elif "longestTimeWaitedToTurnLeft" == predicate:
@@ -415,8 +445,8 @@ class DriverEV(Driver):
                         if "_Stopped_L" in veh:
                             vehIDSplit = veh.split("_")
                             vehID = vehIDSplit[0]
-                            if traci.vehicle.getWaitingTime(vehID) > maxWaitTime:
-                                maxWaitTime = traci.vehicle.getWaitingTime(vehID)
+                            if self.vehicleWaitingTimes[vehID] > maxWaitTime:
+                                maxWaitTime = self.vehicleWaitingTimes[vehID]
             return maxWaitTime
 
         elif "numCarsWaitingToProceedStraight" == predicate:
@@ -429,7 +459,7 @@ class DriverEV(Driver):
                         if "_Stopped_S" in veh:
                             vehIDSplit = veh.split("_")
                             vehID = vehIDSplit[0]
-                            if traci.vehicle.getWaitingTime(vehID) > 0:
+                            if self.vehicleWaitingTimes[vehID] > 0:
                                 carsWaiting += 1
             return carsWaiting
 
@@ -443,7 +473,7 @@ class DriverEV(Driver):
                         if "_Stopped_L" in veh:
                             vehIDSplit = veh.split("_")
                             vehID = vehIDSplit[0]
-                            if traci.vehicle.getWaitingTime(vehID) > 0:
+                            if self.vehicleWaitingTimes[vehID] > 0:
                                 carsWaiting += 1
 
             return carsWaiting
@@ -488,10 +518,6 @@ class DriverEV(Driver):
             return parameters
 
 #------------------------------------ EV PREDICATES ------------------------------------#
-
-        elif "isEVApproaching" == predicate:
-            return self.getIsEVApproaching(trafficLight)
-
         elif "EVDistanceToIntersection" == predicate:
             leadingEV = self.getLeadingEV(trafficLight)
             return leadingEV.getDistance() if leadingEV is not None else -1
@@ -506,7 +532,6 @@ class DriverEV(Driver):
 
         else:
             raise Exception("Undefined predicate:", predicate)
-
 #---------------------------------- EV PREDICATES END ----------------------------------#
 
     # RETURNS RULES THAT ARE APPLICABLE AT A GIVEN TIME AND STATE
@@ -565,9 +590,9 @@ class DriverEV(Driver):
 
             if "leadingEVLane" == predicate:
                 predCall = getattr(EVPredicateSet, "lanePredicate")(cond, self.getPredicateParameters(trafficLight, predicate))
-            elif cond in PredicateSet.getPredicateList():
+            elif cond in rule.getAgentPool().getRSPredicates():
                 predCall = getattr(PredicateSet, cond)(self.getPredicateParameters(trafficLight, predicate))
-            elif cond in EVPredicateSet.getPredicateSet(trafficLight.getAgentPool()):
+            elif cond in rule.getAgentPool().getRSevPredicates():
                 predCall = getattr(EVPredicateSet, cond)(self.getPredicateParameters(trafficLight, predicate))
             else:
                 raise Exception("Undefined condition:", cond)

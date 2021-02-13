@@ -31,7 +31,7 @@ class Rule:
             "type": self.type,
             "contions": self.conditions,
             "action": self.action,
-            "agentPool": self.agentPool,
+            "agentPool": self.agentPool.getID(),
             "weight": self.weight,
             "timesSelected": self.timesSelected,
             "normalizedWeight": self.normalizedWeight,
