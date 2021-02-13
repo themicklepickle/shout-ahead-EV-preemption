@@ -162,7 +162,7 @@ class DriverEV(Driver):
 
                     leadingEV = self.getLeadingEV(tl)
                     EVs = self.getEVs(tl)
-                    EVIsStopped: bool = self.vehicleSpeeds[leadingEV.getID().split("_")[0]] == 0
+                    EVIsStopped: bool = leadingEV.getSpeed() == 0
 
                     # Only evaluate EV parameters for the reinforcement learning if there is an EV this step and an EV the previous step
                     if leadingEVBefore is None:
