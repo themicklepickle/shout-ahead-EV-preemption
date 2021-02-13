@@ -170,7 +170,7 @@ def createRandomRule(agentPool: AgentPool, ruleType: Literal[-1, 0, 1, 2]):
     if ruleType == 0:
         # Set conditions of rules as a random amount of random predicates
         for _ in range(randint(1, maxRulePredicates)):
-            newCond = PredicateSet.getRandomPredicate()
+            newCond = agentPool.getRandomRSPredicate()
             if checkValidCond(newCond, conditions):
                 conditions.append(newCond)
 
@@ -186,18 +186,18 @@ def createRandomRule(agentPool: AgentPool, ruleType: Literal[-1, 0, 1, 2]):
     # RSev rule
     elif ruleType == 2:
         # Ensure that at least one of the conditions is relating to an EV
-        newCond = EVPredicateSet.getRandomPredicate(agentPool)  # Pick a new predicate from the EV predicate set
+        newCond = agentPool.getRandomRSevPredicate()  # Pick a new predicate from the EV predicate set
         conditions.append(newCond)  # No need to check the validity of the rule because this is the first rule
 
         # Add a lane predicate
-        conditions.append(EVPredicateSet.getRandomLanePredicate(agentPool))
+        conditions.append(agentPool.getRandomEVLanePredicate())
 
         # Set conditions of rules as a random amount of random predicates
         for _ in range(randint(1, maxEVRulePredicates - 2)):
             if random() < EVPredicateProbability:
-                newCond = EVPredicateSet.getRandomPredicate(agentPool)
+                newCond = agentPool.getRandomRSevPredicate()
             else:
-                newCond = PredicateSet.getRandomPredicate()
+                newCond = agentPool.getRandomRSPredicate()
             if checkValidCond(newCond, conditions):
                 conditions.append(newCond)
 
@@ -335,7 +335,7 @@ def mutate(individual: Individual, useShoutahead: bool):
 
 
 # MUTATES A RULE A RANDOM NUMBER OF TIMES (MAX MUTATIONS IS USER-DEFINED)
-def mutateRule(rule):
+def mutateRule(rule: Rule):
     agentPool = rule.getAgentPool()
     ruleCond = rule.getConditions()
 
@@ -354,7 +354,7 @@ def mutateRule(rule):
         if rule.getType() == 0:
             numCondToAdd = randint(1, maxRulePredicates - len(ruleCond))
             for _ in range(numCondToAdd):
-                newPredicate = PredicateSet.getRandomPredicate()
+                newPredicate = agentPool.getRandomRSPredicate()
                 # If new random predicate is valid, append it to the conditions list
                 if checkValidCond(newPredicate, ruleCond):
                     ruleCond.append(newPredicate)
@@ -363,7 +363,7 @@ def mutateRule(rule):
         elif rule.getType() == 1:
             numCondToAdd = randint(1, maxRulePredicates - len(ruleCond))
             for _ in range(numCondToAdd):
-                newPredicate = CoopPredicateSet.getRandomPredicate(agentPool)
+                newPredicate = agentPool.getRandomRSintPredicate()
                 # If new random predicate is valid, append it to the conditions list
                 if checkValidCond(newPredicate, ruleCond):
                     ruleCond.append(newPredicate)
@@ -374,9 +374,9 @@ def mutateRule(rule):
 
             for _ in range(numCondToAdd):
                 if random() < EVPredicateProbability:
-                    newPredicate = EVPredicateSet.getRandomPredicate(agentPool)
+                    newPredicate = agentPool.getRandomRSevPredicate()
                 else:
-                    newPredicate = PredicateSet.getRandomPredicate()
+                    newPredicate = agentPool.getRandomRSPredicate()
                 # If new random predicate is valid, append it to the conditions list
                 if checkValidCond(newPredicate, ruleCond):
                     ruleCond.append(newPredicate)
@@ -385,7 +385,7 @@ def mutateRule(rule):
             if not EVPredicateExists(ruleCond):
                 if len(ruleCond) == maxEVRulePredicates:
                     del ruleCond[randrange(len(ruleCond))]  # Remove an element if the max number of rule predicates has already been reached
-                ruleCond.append(EVPredicateSet.getRandomPredicate(agentPool))
+                ruleCond.append(agentPool.getRandomRSevPredicate())
 
             # Ensure that a EV lane predicate exists in the rule
             if not EVLanePredicateExists(ruleCond):
@@ -401,7 +401,7 @@ def mutateRule(rule):
                     # If nothing was removed, then it means that all conditions were EV predicates, so a random one can be removed
                     if not removed:
                         ruleCond[randrange(len(ruleCond))]
-                ruleCond.append(EVPredicateSet.getRandomLanePredicate(agentPool))
+                ruleCond.append(agentPool.getRandomEVLanePredicate())
 
     rule.setConditions(ruleCond)  # set rule's new conditions
     rule.setAction(agentPool.getActionSet()[randrange(0, len(agentPool.getActionSet()))])

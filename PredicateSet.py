@@ -359,12 +359,12 @@ def maxYellowPhaseTimeReached(phase: str, timeInPhase: float, maxTime: int):
 
 
 # RETURN LIST OF PREDICATE FUNCTIONS
-def getPredicateList() -> List[str]:
+def getPredicateSet() -> List[str]:
     thisModule = sys.modules[__name__]  # Get reference to this module for next operation
     methodsDict = dict(inspect.getmembers(thisModule, predicate=inspect.isfunction))  # Get a dictionary with all methods (predicates) in this module
 
     # Remove all methods that are not predicates from dictionary
-    methodsDict.pop("getPredicateList")
+    methodsDict.pop("getPredicateSet")
     methodsDict.pop("getRandomPredicate")
     methodsDict.pop("run")
 
@@ -373,21 +373,21 @@ def getPredicateList() -> List[str]:
     methodsDict.pop("maxYellowPhaseTimeReached")
 
     # Seperate methods/predicates from rest of data in dictionary into a list
-    predicateList = []
+    predicateSet = []
     for predicate in methodsDict:
-        predicateList.append(predicate)
+        predicateSet.append(predicate)
 
-    return predicateList
+    return predicateSet
 
 
 # RETURN RANDOM PREDICATE FROM LIST OF PREDICATE FUNCTIONS
 def getRandomPredicate() -> str:
-    predicateList = getPredicateList()
-    return (predicateList[randrange(len(predicateList))])
+    predicateSet = getPredicateSet()
+    return (predicateSet[randrange(len(predicateSet))])
 
 
 def run() -> None:
-    print("\nThe predicate list is:", getPredicateList())
+    print("\nThe predicate list is:", getPredicateSet())
 
 
 if __name__ == "__main__":

@@ -92,7 +92,7 @@ def lanePredicate(predicate: str, leadingEVLane: str):
 
 
 # RETURN LIST OF PREDICATE FUNCTIONS
-def getPredicateSet(agentPool: AgentPool, includeLanePredicates: bool = True):
+def getPredicateSet():
     # Get reference to this module for next operation
     thisModule = sys.modules[__name__]
     # Get a dictionary with all methods (predicates) in this module
@@ -106,31 +106,26 @@ def getPredicateSet(agentPool: AgentPool, includeLanePredicates: bool = True):
     methodsDict.pop("getPredicateTypes")
 
     # Seperate methods/predicates from rest of data in dictionary into a list
-    predicateList: List[str] = []
+    predicateSet: List[str] = []
     for predicate in methodsDict:
-        predicateList.append(predicate)
+        predicateSet.append(predicate)
 
-    if includeLanePredicates:
-        predicateList += getAgentSpecificPredicates(agentPool)
-
-    return predicateList
+    return predicateSet
 
 
 # GET THE TYPES OF PREDICATES
-def getPredicateTypes(includeLanePredicates: bool = False) -> List[str]:
+def getPredicateTypes() -> List[str]:
     predicateTypes = [
         "EVTrafficDensity",
         "EVDistanceToIntersection"
     ]
-    if includeLanePredicates:
-        predicateTypes.append("leadingEVLane")
     return predicateTypes
 
 
 # RETURN RANDOM PREDICATE FROM LIST OF PREDICATE FUNCTIONS
 def getRandomPredicate(agentPool: AgentPool):
-    predicateList = getPredicateSet(agentPool, False)
-    return (predicateList[randrange(len(predicateList))])
+    predicateSet = getPredicateSet(agentPool, False)
+    return (predicateSet[randrange(len(predicateSet))])
 
 
 def getAgentSpecificPredicates(agentPool: AgentPool):

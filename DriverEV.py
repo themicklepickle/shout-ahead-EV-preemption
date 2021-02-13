@@ -590,9 +590,9 @@ class DriverEV(Driver):
 
             if "leadingEVLane" == predicate:
                 predCall = getattr(EVPredicateSet, "lanePredicate")(cond, self.getPredicateParameters(trafficLight, predicate))
-            elif cond in PredicateSet.getPredicateList():
+            elif cond in rule.getAgentPool().getRSPredicates():
                 predCall = getattr(PredicateSet, cond)(self.getPredicateParameters(trafficLight, predicate))
-            elif cond in EVPredicateSet.getPredicateSet(trafficLight.getAgentPool()):
+            elif cond in rule.getAgentPool().getRSevPredicates():
                 predCall = getattr(EVPredicateSet, cond)(self.getPredicateParameters(trafficLight, predicate))
             else:
                 raise Exception("Undefined condition:", cond)

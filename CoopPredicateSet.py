@@ -55,18 +55,18 @@ def getPredicateSet(agentPool: AgentPool):
     methodsDict.pop("getAgentSpecificPredicates")
 
     # Seperate methods/predicates from rest of data in dictionary into a list
-    predicateList: List[str] = []
+    predicateSet: List[str] = []
     for predicate in methodsDict:
-        predicateList.append(predicate)
+        predicateSet.append(predicate)
 
-    predicateList = predicateList + getAgentSpecificPredicates(agentPool)
+    predicateSet = predicateSet + getAgentSpecificPredicates(agentPool)
 
-    return predicateList
+    return predicateSet
 
 
 # RETURN LIST OF PREDICATE FUNCTIONS FROM AN INPUT FILE
 def getPredicateSetFromFile(file: str):
-    predicateList: List[str] = []
+    predicateSet: List[str] = []
     f = open(file, "r")  # Open desired file
     for x in f:
         if "//" in x:
@@ -75,16 +75,16 @@ def getPredicateSetFromFile(file: str):
             continue
         else:
             pred = x.split("\n")
-            predicateList.append(pred[0])
+            predicateSet.append(pred[0])
     f.close()
 
-    return predicateList
+    return predicateSet
 
 
 # RETURN RANDOM PREDICATE FROM LIST OF PREDICATE FUNCTIONS
 def getRandomPredicate(agentPool: AgentPool):
-    predicateList = getPredicateSet(agentPool)
-    return predicateList[randrange(len(predicateList))]
+    predicateSet = getPredicateSet(agentPool)
+    return predicateSet[randrange(len(predicateSet))]
 
 
 def getAgentSpecificPredicates(agentPool: AgentPool):
