@@ -182,12 +182,6 @@ def main(status: Status, database: Database, notifier: Notifier):
 
         if generations + 1 < totalGenerations:
             EvolutionaryLearner.createNewGeneration(setUpTuple[2], useShoutahead, database)  # Update agent pools with a new generation of individuals
-            for ap in setUpTuple[2]:
-                for i in ap.getIndividualsSet():
-                    i.resetSelectedCount()
-                    i.resetAggregateVehicleWaitTime()
-                    i.resetAverageEVSpeed()
-                    i.resetEVStops()
             sys.stdout.flush()
         elif database:
             OutputManager.run(setUpTuple[2], generationRuntimes, episodeRuntimes, database)
@@ -200,6 +194,13 @@ def main(status: Status, database: Database, notifier: Notifier):
             OutputManager.run(setUpTuple[2], generationRuntimes, episodeRuntimes, database)
         if notifier:
             notifier.run(setUpTuple[2], generationRuntimes, episodeRuntimes, totalGenerations)
+
+        for ap in setUpTuple[2]:
+            for i in ap.getIndividualsSet():
+                i.resetSelectedCount()
+                i.resetAggregateVehicleWaitTime()
+                i.resetAverageEVSpeed()
+                i.resetEVStops()
 
         generations += 1
 
