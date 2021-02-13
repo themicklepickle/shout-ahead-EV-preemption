@@ -10,6 +10,9 @@ class EmergencyVehicle:
     def __str__(self) -> str:
         return f"ID: {self.ID}\n" + f"speed: {self.speed}\n" + f"distance: {self.distance}\n" + f"lane: {self.lane}\n" + f"queue: {self.queue}\n" + f"traffic density: {self.trafficDensity}\n"
 
+    def __repr__(self) -> str:
+        return f"ID: {self.ID}\n" + f"speed: {self.speed}\n" + f"distance: {self.distance}\n" + f"lane: {self.lane}\n" + f"queue: {self.queue}\n" + f"traffic density: {self.trafficDensity}\n"
+
     def getID(self):
         return self.ID
 
