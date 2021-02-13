@@ -1,8 +1,6 @@
 from __future__ import annotations
 
-import statistics
 from numpy.random import choice
-from random import randrange
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
@@ -33,8 +31,8 @@ class Individual:
         self.ruleWeightSum: float = 0
         self.aggregateVehicleWaitTime: float = 0
         self.fitnessRuleApplicationPenalty: float = 0      # A penalty applied to the fitness of an Individual when its rule aren't applied, or result in negative outcomes, in a simulation
-        self.meanEVSpeedsList: List[float] = []
-        self.meanEVSpeed: float = 0
+        self.averageEVSpeedsList: List[float] = []
+        self.averageEVSpeed: float = 0
         self.EVStops: int = 0
 
     def __str__(self) -> str:
@@ -60,8 +58,8 @@ class Individual:
             "ruleWeightSum": self.ruleWeightSum,
             "aggregateVehicleWaitTime": self.aggregateVehicleWaitTime,
             "fitnessRuleApplicationPenalty": self.fitnessRuleApplicationPenalty,
-            "meanEVSpeedList": self.meanEVSpeedsList,
-            "meanEVSpeed": self.meanEVSpeed,
+            "averageEVSpeedsList": self.averageEVSpeedsList,
+            "averageEVSpeed": self.averageEVSpeed,
             "EVStops": self.EVStops
         }
 
@@ -112,7 +110,7 @@ class Individual:
         # Reset values for next simulation run
         self.fitnessRuleApplicationPenalty = 0
         self.resetEVStops()
-        self.resetMeanEVSpeed()
+        self.resetAverageEVSpeed()
 
         # Calculate fitness
         if sum(self.runFitnessResults) == 0:
@@ -149,18 +147,16 @@ class Individual:
         self.aggregateVehicleWaitTime = 0
 
     # ----------- EVs ----------- #
-    def getMeanEVSpeed(self):
-        return self.meanEVSpeed
+    def getAverageEVSpeed(self):
+        return self.averageEVSpeed
 
-    def updateMeanEVSpeed(self, EVSpeedsList: List[float]):
-        if EVSpeedsList == []:
-            return
-        self.meanEVSpeedsList.append(statistics.mean(EVSpeedsList))
-        self.meanEVSpeed = statistics.mean(self.meanEVSpeedsList)
+    def updateAverageEVSpeed(self, averageEVSpeed: float):
+        self.averageEVSpeedsList.append(averageEVSpeed)
+        self.averageEVSpeed = sum(self.averageEVSpeedsList) / len(self.averageEVSpeedsList)
 
-    def resetMeanEVSpeed(self):
-        self.meanEVSpeedsList = []
-        self.meanEVSpeed = 0
+    def resetAverageEVSpeed(self):
+        self.averageEVSpeedsList = []
+        self.averageEVSpeed = 0
 
     def getEVStops(self):
         return self.EVStops

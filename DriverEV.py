@@ -121,6 +121,8 @@ class DriverEV(Driver):
 
                 tl.updateTimeInCurrentPhase(5)
 
+                isEVApproaching = self.getIsEVApproaching(tl)
+
                 # Check if a user-defined rule can be applied
                 nextRule = self.applicableUserDefinedRule(tl, userDefinedRules)
                 if nextRule:
@@ -138,9 +140,10 @@ class DriverEV(Driver):
                         self.checkMaxRedPhaseTimeRule(tl)
                     # -------------------------------
 
-                    # update evolutionary learning attributes
-                    tl.getAssignedIndividual().updateMeanEVSpeed(self.getEVSpeedsList(tl))
-                    tl.getAssignedIndividual().updateEVStops(self.getNumEVStops(tl))
+                    # update evolutionary learning attributes if there is at least one EV approaching
+                    if isEVApproaching:
+                        tl.getAssignedIndividual().updateMeanEVSpeed(self.getEVSpeedsList(tl))
+                        tl.getAssignedIndividual().updateEVStops(self.getNumEVStops(tl))
 
                     # Update traffic light
                     tl.setCurrentRule(nextRule)
@@ -152,8 +155,6 @@ class DriverEV(Driver):
                 # If no user-defined rules can be applied, get a rule from Agent Pool
                 carsWaitingBefore = tl.getCarsWaiting()
                 carsWaitingAfter = self.carsWaiting(tl)
-
-                isEVApproaching = self.getIsEVApproaching(tl)
 
                 # Get EV reinforcement learning parameters
                 if isEVApproaching:
@@ -257,9 +258,10 @@ class DriverEV(Driver):
                     self.checkMaxRedPhaseTimeRule(tl)
                 # -------------------------------
 
-                # update evolutionary learning attributes
-                tl.getAssignedIndividual().updateMeanEVSpeed(self.getEVSpeedsList(tl))
-                tl.getAssignedIndividual().updateEVStops(self.getNumEVStops(tl))  # TODO: come back to this and make it only if an EV is approaching
+                # update evolutionary learning attributes if there is at least one EV approaching
+                if isEVApproaching:
+                    tl.getAssignedIndividual().updateAverageEVSpeed(self.getAverageEVSpeed(tl))
+                    tl.getAssignedIndividual().updateEVStops(self.getNumEVStops(tl))
 
                 # Update attributes within the tl itself
                 tl.setCurrentRule(nextRule)
@@ -402,17 +404,18 @@ class DriverEV(Driver):
 #---------------------------------- EV PREDICATES END ----------------------------------#
 
 #------------------------------ EV EVOLUTIONARY LEARNING -------------------------------#
-    def getEVSpeedsList(self, trafficLight: TrafficLight) -> List[int]:
+    def getAverageEVSpeed(self, trafficLight: TrafficLight) -> List[int]:
         EVs = self.getEVs(trafficLight)
         EVSpeedsList = [EV.getSpeed() for EV in EVs]
+        averageEVSpeed = sum(EVSpeedsList) / len(EVSpeedsList)
 
-        return EVSpeedsList
+        return averageEVSpeed
 
     def getNumEVStops(self, trafficLight: TrafficLight) -> int:
         EVs = self.getEVs(trafficLight)
         numEVStops = 0
         for EV in EVs:
-            if self.vehicleSpeeds[EV.getID().split("_")[0]] == 0:
+            if EV.getSpeed() == 0:
                 numEVStops += 1
 
         return numEVStops
