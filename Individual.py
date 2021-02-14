@@ -34,6 +34,7 @@ class Individual:
         self.averageEVSpeedsList: List[float] = []
         self.averageEVSpeed: float = 0
         self.EVStops: int = 0
+        self.history = []
 
     def __str__(self) -> str:
         return str(self.id)
@@ -57,10 +58,7 @@ class Individual:
             "runFitnessResults": self.runFitnessResults,
             "ruleWeightSum": self.ruleWeightSum,
             "aggregateVehicleWaitTime": self.aggregateVehicleWaitTime,
-            "fitnessRuleApplicationPenalty": self.fitnessRuleApplicationPenalty,
-            "averageEVSpeedsList": self.averageEVSpeedsList,
-            "averageEVSpeed": self.averageEVSpeed,
-            "EVStops": self.EVStops
+            "history": self.history
         }
 
     # RETURN INDIVIDUAL IDENTIFIER
@@ -102,15 +100,28 @@ class Individual:
     def getNegatedFitness(self):
         return self.fitness * -1
 
+    def storeHistory(self):
+        self.history.append({
+            "fitnessRuleApplicationPenalty": self.fitnessRuleApplicationPenalty,
+            "EVStops": self.EVStops,
+            "averageEVSpeed": self.averageEVSpeed,
+            "averageEVSpeedsList": self.averageEVSpeedsList,
+        })
+
+    def resetIndividual(self):
+        # Reset values for next simulation run
+        self.fitnessRuleApplicationPenalty = 0
+        self.resetEVStops()
+        self.resetAverageEVSpeed()
+
     # UPDATE INDIVIDUAL'S FITNESS SCORE
     def updateFitness(self, fitness: float, EVFitness: float):
         # Add run fitness plus rule application penalty minus EV fitness to master rFit list
         self.runFitnessResults.append(fitness + self.fitnessRuleApplicationPenalty - EVFitness)  # minus EV fitness cause we are trying to minimize fitness values
 
-        # Reset values for next simulation run
-        self.fitnessRuleApplicationPenalty = 0
-        self.resetEVStops()
-        self.resetAverageEVSpeed()
+        # Reset values for next simulation run after storing them
+        self.storeHistory()
+        self.resetIndividual()
 
         # Calculate fitness
         if sum(self.runFitnessResults) == 0:
