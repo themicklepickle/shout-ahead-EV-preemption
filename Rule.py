@@ -9,7 +9,11 @@ if TYPE_CHECKING:
 class Rule:
 
     def __init__(self, ruleType: Literal[-1, 0, 1, 2], conditions: List[str], action: int, agentPool: AgentPool):
-        # Either -1, 0, 1, or 2: -1 indicates a userDefinedRule, 0 indicates a rule for RS, 1 indicates a rule for RSint, and 2 indicates a rule for RSev
+        # Rule types:
+        #   -1: user-defined
+        #    0: RS
+        #    1: RSint
+        #    2: RSev
         self.type: Literal[-1, 0, 1, 2] = ruleType
         self.conditions = conditions        # Set of predicates that determine if rule is true
         self.action = action                # Action to carry out if all conditions are true
@@ -21,15 +25,17 @@ class Rule:
         self.setDoNothingFlag()             # Used by Driver to determine if action is "Do nothing", which cannot be applied in the simulator
 
     def __str__(self):
-        return f"\n{', '.join(self.getConditions())}\n  type: {self.getType()}\n  action: {self.getAction()}\n  weight: {self.getWeight()}"
+        conditions = ', '.join(self.getConditions())
+        return "\n" + "\n   ".join([conditions, self.getWeight(), self.getAction(), self.getType()]) + "\n"
 
     def __repr__(self):
-        return f"\n{', '.join(self.getConditions())}\n  type: {self.getType()}\n  action: {self.getAction()}\n  weight: {self.getWeight()}"
+        conditions = ', '.join(self.getConditions())
+        return "\n" + "\n    ".join([conditions, self.getWeight(), self.getAction(), self.getType()]) + "\n"
 
     def getJSON(self):
         return {
             "type": self.type,
-            "contions": self.conditions,
+            "conditions": self.conditions,
             "action": self.action,
             "agentPool": self.agentPool.getID(),
             "weight": self.weight,

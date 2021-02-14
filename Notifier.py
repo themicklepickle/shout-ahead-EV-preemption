@@ -13,16 +13,17 @@ if TYPE_CHECKING:
 
 
 class Notifier:
-    def __init__(self, email: str, password: str, recipients: List[str]) -> None:
+    def __init__(self, email: str, password: str, recipients: List[str], id: str) -> None:
         self.email = email
         self.password = password
         self.recipients = recipients
+        self.id = id
 
     def sendEmail(self, subject: str, content: str) -> None:
         port = 465
         context = ssl.create_default_context()
         message = MIMEMultipart("alternative")
-        message["Subject"] = f"ASP VM: {subject}"
+        message["Subject"] = f"ASP VM: {self.id} {subject}"
         message["From"] = self.email
 
         message.attach(MIMEText(content, "plain"))
@@ -32,17 +33,22 @@ class Notifier:
                 message['To'] = recipient
                 server.sendmail(self.email, recipient, message.as_string())
 
-    def run(self, agentPools: List[AgentPool], avgGenTime: float, totalGenTime: float, generations: int, totalGenerations: int):
-        avgGenRuntime = avgGenTime
-        finalGenRuntime = totalGenTime
+    def run(self, agentPools: List[AgentPool], generationRuntimes: List[float], episodeRuntimes: List[float], totalGenerations: int):
+        genTime = generationRuntimes[-1]
+        averageGenTime = sum(generationRuntimes) / len(generationRuntimes)
+        generations = len(generationRuntimes)
+        averageEpisodeTime = sum(episodeRuntimes) / len(episodeRuntimes)
+        episodes = len(episodeRuntimes)
 
         # Create new output file and add generation runtime information
         message = ""
         message += f"Generation {generations} Stats\n\n"
-        message += f"Generation runtime: {finalGenRuntime}\n"
-        message += f"Average Generation runtime: {avgGenRuntime}"
+        message += f"Generation runtime: {genTime}\n"
+        message += f"Average generation runtime: {averageGenTime}\n"
+        message += f"Average episode runtime: {averageEpisodeTime}\n"
+        message += f"Episodes: {episodes}\n"
         message += "\n---------------------------\n\n"
-        message += "Best Individuals per Agent Pool\n"
+        message += "Best Individuals per Agent Pool\n\n"
 
         for ap in agentPools:
             actionSet = ""
@@ -50,26 +56,24 @@ class Notifier:
                 actionSet += f"{a}, "
             actionSet += ap.getActionSet()[-1]
 
-            message += f"Agent Pool {ap.getID()}\n"
-            message += f"This agent pool has an action set of: {', '.join(ap.getActionSet())}\n"
+            message += f"ID: {ap.getID()}\n"
+            message += f"Action set: {', '.join(ap.getActionSet())}\n"
 
             individuals = ap.getIndividualsSet()
-            individuals.sort
             topIndividual = min(individuals, key=attrgetter('fitness'))
-            message += f"The top individual has a fitness of {topIndividual.getFitness()}"
+            message += f"Top individual fitness: {topIndividual.getFitness()}"
 
-            message += "\n\nRS:\n"
-            for rule in topIndividual.getRS():
-                message += str(rule)
-
-            message += "\n\nRSint:\n"
-            for rule in topIndividual.getRSint():
-                message += str(rule)
-
-            message += "\n\nRSev:\n"
-            for rule in topIndividual.getRSev():
-                message += str(rule)
-
-            message += "*******\n"
+            nonZeroRules = {
+                "RS": [str(r) for r in topIndividual.getRS() if r.getWeight() != 0],
+                "RSint": [str(r) for r in topIndividual.getRSint() if r.getWeight() != 0],
+                "RSev": [str(r) for r in topIndividual.getRSev() if r.getWeight() != 0],
+            }
+            for ruleSet in nonZeroRules:
+                if nonZeroRules[ruleSet] == []:
+                    continue
+                message += f"\n\n{ruleSet}\n"
+                for rule in nonZeroRules[ruleSet]:
+                    message += rule
+            message += "\n\n*************************\n\n"
 
         self.sendEmail(f"Gen {generations} of {totalGenerations} complete!", message)

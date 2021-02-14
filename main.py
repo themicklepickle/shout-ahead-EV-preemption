@@ -47,13 +47,13 @@ def main(status: Status, database: Database, notifier: Notifier):
     # ----------------------------------
 
     # --- SIMULATION ATTRIBUTES ---
-    folderName = "EV Traffic Flow 300"
+    folderName = "EV Traffic Flow 225"
     useShoutahead = True
     sumoNetworkName = f"{folderName}/simpleNetwork.net.xml"
     maxGreenPhaseTime = 225
     maxYellowPhaseTime = 5
-    maxSimulationTime = 10000
-    maxSimulationTime_5_15 = 6000
+    maxSimulationTime = 7000
+    maxSimulationTime_5_15 = 5000
     maxSimulationTime_15 = 4000
     # -----------------------------
 
@@ -125,6 +125,7 @@ def main(status: Status, database: Database, notifier: Notifier):
         if status:
             status.update("generation", generations)
         sys.stdout.flush()
+        episodeRuntimes = []
 
         # Prepare for next simulation run
         allIndividualsTested = False
@@ -147,12 +148,15 @@ def main(status: Status, database: Database, notifier: Notifier):
             print(f"----- Episode {episode+1} of GENERATION {generations} of {totalGenerations} -----")
             print(f"Generation start time: {genStart}")
             print(f"The average generation runtime is {sum(generationRuntimes) / generations}")
+            if len(episodeRuntimes) > 0:
+                print(f"The average episode runtime is {sum(episodeRuntimes) / len(episodeRuntimes)}")
             if status:
                 status.update("episode", episode+1)
             start = timeit.default_timer()
             resultingAgentPools = simRunner.run()  # run the simulation
             stop = timeit.default_timer()
             print(f"Time: {round(stop - start, 1)}")
+            episodeRuntimes.append(stop - start)
             sys.stdout.flush()
 
             episode += 1
@@ -178,24 +182,25 @@ def main(status: Status, database: Database, notifier: Notifier):
 
         if generations + 1 < totalGenerations:
             EvolutionaryLearner.createNewGeneration(setUpTuple[2], useShoutahead, database)  # Update agent pools with a new generation of individuals
-            for ap in setUpTuple[2]:
-                for i in ap.getIndividualsSet():
-                    i.resetSelectedCount()
-                    i.resetAggregateVehicleWaitTime()
-                    i.resetAverageEVSpeed()
-                    i.resetEVStops()
             sys.stdout.flush()
         elif database:
-            OutputManager.run(setUpTuple[2], sum(generationRuntimes)/50, (sum(generationRuntimes)/50)*50, database)
+            OutputManager.run(setUpTuple[2], generationRuntimes, episodeRuntimes, database)
             print("Output file created.")
 
         print(f"Generation start time: {genStart} ----- End time: {getTime()}")
         generationRuntimes.append(time.time() - startTime)
 
         if database:
-            OutputManager.run(setUpTuple[2], sum(generationRuntimes)/50, (sum(generationRuntimes)/50)*50, database)
+            OutputManager.run(setUpTuple[2], generationRuntimes, episodeRuntimes, database)
         if notifier:
-            notifier.run(setUpTuple[2], sum(generationRuntimes)/50, (sum(generationRuntimes)/50)*50, generations, totalGenerations)
+            notifier.run(setUpTuple[2], generationRuntimes, episodeRuntimes, totalGenerations)
+
+        for ap in setUpTuple[2]:
+            for i in ap.getIndividualsSet():
+                i.resetSelectedCount()
+                i.resetAggregateVehicleWaitTime()
+                i.resetAverageEVSpeed()
+                i.resetEVStops()
 
         generations += 1
 
@@ -219,7 +224,7 @@ if __name__ == "__main__":
     database = Database(datetime.datetime.now(pytz.timezone('America/Denver')).strftime('%a_%b_%d_%I:%M:%S_%p_%Y')) if storeInDatabase else None
     with open("credentials.json", "r") as f:
         credentials = json.load(f)
-    notifier = Notifier(email=credentials["email"], password=credentials["password"], recipients=["michael.xu1816@gmail.com"]) if notify else None
+    notifier = Notifier(credentials["email"], credentials["password"], ["michael.xu1816@gmail.com"], socket.gethostname()) if notify else None
 
     try:
         main(status, database, notifier)

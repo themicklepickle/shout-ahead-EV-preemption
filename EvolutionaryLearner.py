@@ -108,6 +108,11 @@ def createNewGeneration(agentPools: List[AgentPool],  useShoutahead: bool, datab
     """CREATES NEW GENERATION AFTER A SIMULATION RUN AND UPDATES AGENT POOLS' INDIVIDUAL SET WITH NEW GEN"""
     print("Creating a new Generation.")
     for ap in agentPools:
+        # Output old agent pool
+        if database:
+            agentPoolData = [i.getJSON() for i in ap.getIndividualsSet()]
+            database.updateAgentPool(ap.getID(), agentPoolData, "old")
+
         individuals = ap.getIndividualsSet()
         individuals.sort(key=lambda x: x.getFitness(), reverse=False)
 
@@ -115,8 +120,8 @@ def createNewGeneration(agentPools: List[AgentPool],  useShoutahead: bool, datab
         newGeneration = individuals[0:lastIndex]
         numOfSurvivingIndividuals = len(newGeneration)
 
-        print("max indivs is " + str(maxIndividuals) + " num of suervivng indivs is " + str(numOfSurvivingIndividuals) + " and num of indivs to mutate is " +
-              str(numOfIndividualsToMutate) + "and the final result is" + str((maxIndividuals-numOfSurvivingIndividuals)-(maxIndividuals*numOfIndividualsToMutate)))
+        print(f"max indivs is {maxIndividuals}, num of surviving indivs is {numOfSurvivingIndividuals}, num of indivs to mutate is {numOfIndividualsToMutate} " +
+              f"and the final result is {(maxIndividuals-numOfSurvivingIndividuals)-(maxIndividuals*numOfIndividualsToMutate)}")
         # Create however many children possible to also leave room for max number of mutations
         for _ in range(int((maxIndividuals-numOfSurvivingIndividuals)-(maxIndividuals*numOfIndividualsToMutate))):
             parent1 = chooseFirstParent(newGeneration)
@@ -128,16 +133,17 @@ def createNewGeneration(agentPools: List[AgentPool],  useShoutahead: bool, datab
             individualToMutate = newGeneration[randrange(len(newGeneration))]
             # Simulate deepcopy() without using deepcopy() because it is slooooow and mutate copied Individual
             newGeneration.append(mutate(
-                Individual(individualToMutate.getID(), individualToMutate.getAgentPool(), individualToMutate.getRS(), individualToMutate.getRSint(), individualToMutate.getRSev()),
+                Individual(individualToMutate.getID(), individualToMutate.getAgentPool(),
+                           individualToMutate.getRS(), individualToMutate.getRSint(), individualToMutate.getRSev()),
                 useShoutahead
             ))
 
         ap.updateIndividualsSet(newGeneration)
 
-        # Output agent pool
+        # Output new agent pool
         if database:
             agentPoolData = [i.getJSON() for i in newGeneration]
-            database.updateAgentPool(ap.getID(), agentPoolData)
+            database.updateAgentPool(ap.getID(), agentPoolData, "new")
 
 
 # CREATE INDIVIDUALS WITH RANDOM RULES POPULATING THEIR RULE SETS BEFORE FIRST RUN
