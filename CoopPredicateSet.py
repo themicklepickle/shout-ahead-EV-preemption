@@ -96,6 +96,6 @@ def getAgentSpecificPredicates(agentPool: AgentPool):
                 pred = partner.getName() + "_" + action
                 customPredicates.append(pred)
             # EV approaching partner intersection predicates
-            pred = partner.getName() + "_" + "EVApproaching"
+            pred = f"EVApproachingPartner_{partner.getName()}"
             customPredicates.append(pred)
     return customPredicates

@@ -3,14 +3,12 @@ from __future__ import annotations
 import traci
 
 import PredicateSet
-import CoopPredicateSet
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from typing import Union, Dict, List, Tuple
     from AgentPool import AgentPool
     from TrafficLight import TrafficLight
-    from Intention import Intention
     from Rule import Rule
 
 
@@ -106,39 +104,6 @@ class Driver:
         else:
             return throughputWaitTime / totalWaitTime
 
-    # EVALUATE RULE VALIDITY (fEval)
-    def evaluateCoopRule(self, trafficLight: TrafficLight, rule: Rule) -> bool:
-        if rule.getType() == 0:
-            return self.evaluateRule(trafficLight, rule)
-        if rule.getType() == 2:
-            return self.evaluateEVRule(trafficLight, rule)
-
-        intentions = trafficLight.getCommunicatedIntentions()
-
-        for x in intentions:
-            for i in intentions[x]:
-                # For each condition, its parameters are acquired and the condition predicate is evaluated
-                for cond in rule.getConditions():
-                    predicate = cond.split("_")[0]
-
-                    if any(x.getName() == predicate for x in self.setUpTuple[1]):
-                        parameters = [cond, i]
-                    else:
-                        parameters = self.getCoopPredicateParameters(
-                            trafficLight, predicate, i)
-
-                    if isinstance(parameters, int) or isinstance(parameters, float) or isinstance(parameters, str):
-                        predCall = getattr(CoopPredicateSet, cond)(parameters)  # Construct predicate fuction call
-                    else:
-                        # Construct predicate fuction call for custom predicates (they are of form TLname_action but are handled by the same predicate in CoopPredicateSet)
-                        predCall = getattr(CoopPredicateSet, "customPredicate")(parameters[0], parameters[1])
-
-                    # Determine validity of predicate
-                    if predCall == False:
-                        return False
-
-        return True  # if all predicates return true, evaluate rule as True
-
     # DETERMINE IF ANY USER DEFINED RULES ARE APPLICABLE
     def applicableUserDefinedRule(self, trafficLight: TrafficLight, userDefinedRules: List[Rule]) -> Union[Rule, bool]:
         # Evaluate each user define rule
@@ -169,20 +134,7 @@ class Driver:
             else:
                 traci.trafficlight.setPhase(trafficLight.getName(), traci.trafficlight.getPhase(trafficLight.getName()) + 1)
 
-    # PROVIDE SIMULATION RELEVANT PARAMETERS
-    def getCoopPredicateParameters(self, trafficLight: TrafficLight, predicate: str, intention: Intention) -> Union[int, Tuple[str, Intention]]:
-        if "timeSinceCommunication" == predicate:
-            timeSent = intention.getTime()
-            return traci.simulation.getTime() - timeSent
-
-        elif "intendedActionIs" == predicate:
-            return intention.getAction()
-
-        else:       # equivalent to: elif "customPredicate" == predicate:
-            return (str(intention.getTrafficLight().getName()) + "_" + intention.getAction(), intention)
-
 # ------------------USER DEFINED RULE FUNCTIONS -------------------
-
     # MAX GREEN OR YELLOW PHASE REACHED UD RULE
     def checkMaxGreenAndYellowPhaseRule(self, tl: TrafficLight, nextRule: Rule) -> bool:
         if "G" in traci.trafficlight.getPhaseName(tl.getName()):
