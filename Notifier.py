@@ -44,11 +44,11 @@ class Notifier:
         message = ""
         message += f"Generation {generations} Stats\n\n"
         message += f"Generation runtime: {genTime}\n"
-        message += f"Average generation runtime: {averageGenTime}"
-        message += f"Average episode runtime: {averageEpisodeTime}"
-        message += f"Episodes: {episodes}"
+        message += f"Average generation runtime: {averageGenTime}\n"
+        message += f"Average episode runtime: {averageEpisodeTime}\n"
+        message += f"Episodes: {episodes}\n"
         message += "\n---------------------------\n\n"
-        message += "Best Individuals per Agent Pool\n"
+        message += "Best Individuals per Agent Pool\n\n"
 
         for ap in agentPools:
             actionSet = ""
@@ -56,26 +56,24 @@ class Notifier:
                 actionSet += f"{a}, "
             actionSet += ap.getActionSet()[-1]
 
-            message += f"Agent Pool {ap.getID()}\n"
-            message += f"This agent pool has an action set of: {', '.join(ap.getActionSet())}\n"
+            message += f"ID: {ap.getID()}\n"
+            message += f"Action set: {', '.join(ap.getActionSet())}\n"
 
             individuals = ap.getIndividualsSet()
-            individuals.sort
             topIndividual = min(individuals, key=attrgetter('fitness'))
-            message += f"The top individual has a fitness of {topIndividual.getFitness()}"
+            message += f"Top individual fitness: {topIndividual.getFitness()}"
 
-            message += "\n\nRS:\n"
-            for rule in [r for r in topIndividual.getRS() if r.getWeight() != 0]:
-                message += str(rule)
-
-            message += "\n\nRSint:\n"
-            for rule in [r for r in topIndividual.getRSint() if r.getWeight() != 0]:
-                message += str(rule)
-
-            message += "\n\nRSev:\n"
-            for rule in [r for r in topIndividual.getRSev() if r.getWeight() != 0]:
-                message += str(rule)
-
-            message += "*******\n"
+            nonZeroRules = {
+                "RS": [str(r) for r in topIndividual.getRS() if r.getWeight() != 0],
+                "RSint": [str(r) for r in topIndividual.getRSint() if r.getWeight() != 0],
+                "RSev": [str(r) for r in topIndividual.getRSev() if r.getWeight() != 0],
+            }
+            for ruleSet in nonZeroRules:
+                if nonZeroRules[ruleSet] == []:
+                    continue
+                message += f"\n\n{ruleSet}\n"
+                for rule in nonZeroRules[ruleSet]:
+                    message += rule
+            message += "\n\n*************************\n\n"
 
         self.sendEmail(f"Gen {generations} of {totalGenerations} complete!", message)
