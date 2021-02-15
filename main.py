@@ -36,6 +36,7 @@ def getTime():
 def main(status: Status, database: Database, notifier: Notifier):
     # --- TRAINING OPTIONS ---
     gui = True
+    useShoutahead = True
     totalGenerations = 50
     individualRunsPerGen = 3  # Min number of training runs an individual gets per generation
     # ------------------------
@@ -48,7 +49,6 @@ def main(status: Status, database: Database, notifier: Notifier):
 
     # --- SIMULATION ATTRIBUTES ---
     folderName = "EV Traffic Flow 225"
-    useShoutahead = True
     sumoNetworkName = f"{folderName}/simpleNetwork.net.xml"
     maxGreenPhaseTime = 225
     maxYellowPhaseTime = 5
@@ -75,6 +75,7 @@ def main(status: Status, database: Database, notifier: Notifier):
             "deviceName": socket.gethostname(),
             "trainingOptions": {
                 "gui": gui,
+                "useShoutahead": useShoutahead,
                 "totalGenerations": totalGenerations,
                 "individualRunsPerGen": individualRunsPerGen,
             },
@@ -85,7 +86,6 @@ def main(status: Status, database: Database, notifier: Notifier):
 
             },
             "simulationAttributes": {
-                "useShoutahead": useShoutahead,
                 "sumoNetworkName": sumoNetworkName,
                 "maxGreenPhaseTime": maxGreenPhaseTime,
                 "maxYellowPhaseTime": maxYellowPhaseTime,
