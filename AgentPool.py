@@ -78,9 +78,9 @@ class AgentPool:
         self.actionSet.append("DoNothing")
 
         # COMPLETES THE INITIALIZATION OF AGENT POOL COMPONENTS THAT REQUIRE ALL AGENT POOLS TO BE INITIALIZED FIRST
-    def finishSetUp(self, useShoutahead):
+    def finishSetUp(self, useShoutahead: bool, useEVCoopPredicates: bool):
         self.RSPredicates = PredicateSet.getPredicateSet()
-        self.RSintPredicates = CoopPredicateSet.getPredicateSet(self)
+        self.RSintPredicates = CoopPredicateSet.getPredicateSet(self, useEVCoopPredicates)
         self.RSevPredicates = EVPredicateSet.getPredicateSet()
         self.EVLanePredicates = EVPredicateSet.getAgentSpecificPredicates(self)
 

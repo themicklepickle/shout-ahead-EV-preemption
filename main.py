@@ -37,6 +37,7 @@ def main(status: Status, database: Database, notifier: Notifier):
     # --- TRAINING OPTIONS ---
     gui = True
     useShoutahead = True
+    useEVCoopPredicates = True
     totalGenerations = 50
     individualRunsPerGen = 3  # Min number of training runs an individual gets per generation
     # ------------------------
@@ -76,6 +77,7 @@ def main(status: Status, database: Database, notifier: Notifier):
             "trainingOptions": {
                 "gui": gui,
                 "useShoutahead": useShoutahead,
+                "useEVCoopPredicates": useEVCoopPredicates,
                 "totalGenerations": totalGenerations,
                 "individualRunsPerGen": individualRunsPerGen,
             },
@@ -103,7 +105,7 @@ def main(status: Status, database: Database, notifier: Notifier):
     # -------------------------
 
     print(f"----- Start time: {getTime()} -----\n")
-    setUpTuple = InitSetUp.run(sumoNetworkName, individualRunsPerGen, useShoutahead)
+    setUpTuple = InitSetUp.run(sumoNetworkName, individualRunsPerGen, useShoutahead, useEVCoopPredicates)
     simRunner = DriverEV(sumoCmd, setUpTuple, maxGreenPhaseTime, maxYellowPhaseTime, maxSimulationTime,
                          maxGreenAndYellowPhaseTime_UDRule, maxRedPhaseTime_UDRule, assignGreenPhaseToSingleWaitingPhase_UDRule, useShoutahead)
     generations = 1

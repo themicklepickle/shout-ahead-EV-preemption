@@ -45,7 +45,7 @@ def customPredicate(predicate: str, intention: Intention) -> bool:
 
 
 # RETURN LIST OF PREDICATE FUNCTIONS AS DEFINED ABOVE
-def getPredicateSet(agentPool: AgentPool):
+def getPredicateSet(agentPool: AgentPool, useEVCoopPredicates: bool):
     thisModule = sys.modules[__name__]  # Get reference to this module for next operation
     methodsDict = dict(inspect.getmembers(thisModule, predicate=inspect.isfunction))  # Get a dictionary with all methods (predicates) in this module
     # Remove all methods that are not predicates from dictionary
@@ -60,7 +60,9 @@ def getPredicateSet(agentPool: AgentPool):
     for predicate in methodsDict:
         predicateSet.append(predicate)
 
-    predicateSet = predicateSet + getAgentSpecificPredicates(agentPool)
+    predicateSet = predicateSet + getPartnerActionPredicates(agentPool)
+    if useEVCoopPredicates:
+        predicateSet += getEVApproachingPartnerPredicates(agentPool)
 
     return predicateSet
 
@@ -88,15 +90,21 @@ def getRandomPredicate(agentPool: AgentPool):
     return predicateSet[randrange(len(predicateSet))]
 
 
-def getAgentSpecificPredicates(agentPool: AgentPool):
+def getPartnerActionPredicates(agentPool: AgentPool):
     customPredicates: List[str] = []
     for tl in agentPool.getAssignedTrafficLights():
         for partner in tl.getCommunicationPartners():
-            # partner action predicates
             for action in partner.getAgentPool().getActionSet():
                 pred = partner.getName() + "_" + action
                 customPredicates.append(pred)
-            # EV approaching partner intersection predicates
+            customPredicates.append(pred)
+    return customPredicates
+
+
+def getEVApproachingPartnerPredicates(agentPool: AgentPool):
+    customPredicates: List[str] = []
+    for tl in agentPool.getAssignedTrafficLights():
+        for partner in tl.getCommunicationPartners():
             pred = f"EVApproachingPartner_{partner.getName()}"
             customPredicates.append(pred)
     return customPredicates
