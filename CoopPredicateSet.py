@@ -52,8 +52,9 @@ def getPredicateSet(agentPool: AgentPool, useEVCoopPredicates: bool):
     methodsDict.pop("getPredicateSet")
     methodsDict.pop("getRandomPredicate")
     methodsDict.pop("getPredicateSetFromFile")
-    methodsDict.pop("getAgentSpecificPredicates")
     methodsDict.pop("customPredicate")
+    methodsDict.pop("getPartnerActionPredicates")
+    methodsDict.pop("getEVApproachingPartnerPredicates")
 
     # Seperate methods/predicates from rest of data in dictionary into a list
     predicateSet: List[str] = []
@@ -82,12 +83,6 @@ def getPredicateSetFromFile(file: str):
     f.close()
 
     return predicateSet
-
-
-# RETURN RANDOM PREDICATE FROM LIST OF PREDICATE FUNCTIONS
-def getRandomPredicate(agentPool: AgentPool):
-    predicateSet = getPredicateSet(agentPool)
-    return predicateSet[randrange(len(predicateSet))]
 
 
 def getPartnerActionPredicates(agentPool: AgentPool):
