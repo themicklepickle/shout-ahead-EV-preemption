@@ -35,7 +35,7 @@ def getTime():
 
 def main(status: Status, database: Database, notifier: Notifier):
     # --- TRAINING OPTIONS ---
-    gui = True
+    gui = False
     useShoutahead = True
     useEVCoopPredicates = True
     totalGenerations = 50
@@ -217,9 +217,9 @@ def main(status: Status, database: Database, notifier: Notifier):
 
 if __name__ == "__main__":
     # --- OUTPUT OPTIONS ---
-    displayStatus = False
-    storeInDatabase = False
-    notify = False
+    displayStatus = True
+    storeInDatabase = True
+    notify = True
     # ----------------------
 
     status = Status(socket.gethostname()) if displayStatus else None
