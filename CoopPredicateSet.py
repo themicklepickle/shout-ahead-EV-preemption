@@ -50,7 +50,6 @@ def getPredicateSet(agentPool: AgentPool, useEVCoopPredicates: bool):
     methodsDict = dict(inspect.getmembers(thisModule, predicate=inspect.isfunction))  # Get a dictionary with all methods (predicates) in this module
     # Remove all methods that are not predicates from dictionary
     methodsDict.pop("getPredicateSet")
-    methodsDict.pop("getRandomPredicate")
     methodsDict.pop("getPredicateSetFromFile")
     methodsDict.pop("customPredicate")
     methodsDict.pop("getPartnerActionPredicates")
