@@ -26,11 +26,13 @@ class Rule:
 
     def __str__(self):
         conditions = ', '.join(self.getConditions())
-        return "\n" + "\n   ".join([conditions, self.getWeight(), self.getAction(), self.getType()]) + "\n"
+        weight = f"weight: {self.getWeight()}"
+        action = f"action: {self.getAction()}"
+        type_ = f"type: {self.getType()}"
+        return "\n" + "\n   ".join([conditions, weight, action, type_])
 
     def __repr__(self):
-        conditions = ', '.join(self.getConditions())
-        return "\n" + "\n    ".join([conditions, self.getWeight(), self.getAction(), self.getType()]) + "\n"
+        return str(self)
 
     def getJSON(self):
         return {
@@ -54,7 +56,7 @@ class Rule:
 
     # UPDATE RULE CONDITIONS
     def setConditions(self, conditions: List[str]):
-        self._conditions = conditions
+        self.conditions = conditions
 
     # GET RULE ACTION
     def getAction(self):
