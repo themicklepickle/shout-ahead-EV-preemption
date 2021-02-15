@@ -645,8 +645,6 @@ class DriverEV(Driver):
             return traci.simulation.getTime() - timeSent
         elif "intendedActionIs" == predicate:
             return intention.getAction()
-        elif "customPredicate" == predicate:
-            return (str(intention.getTrafficLight().getName()) + "_" + intention.getAction(), intention)
         elif "EVApproachingPartner" == predicate:
             partnerName = predicate.split("_", 1)[1]
             partnerTL = [tl for tl in self.setUpTuple[1] if tl.getName() == partnerName][0]
