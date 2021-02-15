@@ -53,6 +53,7 @@ def getPredicateSet(agentPool: AgentPool):
     methodsDict.pop("getRandomPredicate")
     methodsDict.pop("getPredicateSetFromFile")
     methodsDict.pop("getAgentSpecificPredicates")
+    methodsDict.pop("customPredicate")
 
     # Seperate methods/predicates from rest of data in dictionary into a list
     predicateSet: List[str] = []
