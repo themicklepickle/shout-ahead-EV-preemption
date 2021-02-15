@@ -4,6 +4,7 @@ import traci
 
 from Driver import Driver
 import PredicateSet
+import CoopPredicateSet
 import EVPredicateSet
 import EvolutionaryLearner
 import ReinforcementLearner
@@ -15,6 +16,7 @@ if TYPE_CHECKING:
     from Individual import Individual
     from TrafficLight import TrafficLight
     from Rule import Rule
+    from Intention import Intention
 
 # NOTE: vehID in DriverEV.py refers to only the first element of the split, in Driver.py vehID was the split tuple
 
@@ -603,3 +605,51 @@ class DriverEV(Driver):
                 return False
 
         return True
+
+    # EVALUATE RULE VALIDITY (fEval)
+    def evaluateCoopRule(self, trafficLight: TrafficLight, rule: Rule) -> bool:
+        if rule.getType() == 0:
+            return self.evaluateRule(trafficLight, rule)
+        if rule.getType() == 2:
+            return self.evaluateEVRule(trafficLight, rule)
+
+        intentions = trafficLight.getCommunicatedIntentions()
+
+        for x in intentions:
+            for i in intentions[x]:
+                # For each condition, its parameters are acquired and the condition predicate is evaluated
+                for cond in rule.getConditions():
+                    predicate = cond.split("_")[0]
+
+                    if any(x.getName() == predicate for x in self.setUpTuple[1]):
+                        parameters = [cond, i]
+                    else:
+                        parameters = self.getCoopPredicateParameters(predicate, i, cond)
+
+                    if "EVApproachingPartner" == predicate:
+                        predCall = self.getIsEVApproaching(parameters)
+                    elif isinstance(parameters, int) or isinstance(parameters, float) or isinstance(parameters, str):
+                        predCall = getattr(CoopPredicateSet, cond)(parameters)  # Construct predicate fuction call
+                    else:
+                        # Construct predicate fuction call for custom predicates (they are of form TLname_action but are handled by the same predicate in CoopPredicateSet)
+                        predCall = getattr(CoopPredicateSet, "customPredicate")(parameters[0], parameters[1])
+
+                    # Determine validity of predicate
+                    if predCall == False:
+                        return False
+
+        return True  # if all predicates return true, evaluate rule as True
+
+    # PROVIDE SIMULATION RELEVANT PARAMETERS
+    def getCoopPredicateParameters(self, predicate: str, intention: Intention, condition: str) -> Union[int, Tuple[str, Intention]]:
+        if "timeSinceCommunication" == predicate:
+            timeSent = intention.getTime()
+            return traci.simulation.getTime() - timeSent
+        elif "intendedActionIs" == predicate:
+            return intention.getAction()
+        elif "EVApproachingPartner" == predicate:
+            partnerName = condition.split("_", 1)[1]
+            partnerTL = [tl for tl in self.setUpTuple[1] if tl.getName() == partnerName][0]
+            return partnerTL
+        else:
+            raise Exception("Undefined predicate:", predicate)

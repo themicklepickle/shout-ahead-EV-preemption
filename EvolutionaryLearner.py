@@ -314,8 +314,6 @@ def crossover(indiv1: Individual, indiv2: Individual, useShoutahead: bool):
 
 
 def mutate(individual: Individual, useShoutahead: bool):
-    agentPool = individual.getAgentPool()
-
     # --- RS ---
     chosenRule = individual.getRS()[randrange(len(individual.getRS()))]
     newRule = mutateRule(chosenRule)
