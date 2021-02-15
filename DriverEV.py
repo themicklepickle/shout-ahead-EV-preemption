@@ -624,9 +624,11 @@ class DriverEV(Driver):
                     if any(x.getName() == predicate for x in self.setUpTuple[1]):
                         parameters = [cond, i]
                     else:
-                        parameters = self.getCoopPredicateParameters(trafficLight, predicate, i)
+                        parameters = self.getCoopPredicateParameters(predicate, i, cond)
 
-                    if isinstance(parameters, int) or isinstance(parameters, float) or isinstance(parameters, str):
+                    if "EVApproachingPartner" == predicate:
+                        predCall = self.getIsEVApproaching(parameters)
+                    elif isinstance(parameters, int) or isinstance(parameters, float) or isinstance(parameters, str):
                         predCall = getattr(CoopPredicateSet, cond)(parameters)  # Construct predicate fuction call
                     else:
                         # Construct predicate fuction call for custom predicates (they are of form TLname_action but are handled by the same predicate in CoopPredicateSet)
@@ -639,15 +641,15 @@ class DriverEV(Driver):
         return True  # if all predicates return true, evaluate rule as True
 
     # PROVIDE SIMULATION RELEVANT PARAMETERS
-    def getCoopPredicateParameters(self, trafficLight: TrafficLight, predicate: str, intention: Intention) -> Union[int, Tuple[str, Intention]]:
+    def getCoopPredicateParameters(self, predicate: str, intention: Intention, condition: str) -> Union[int, Tuple[str, Intention]]:
         if "timeSinceCommunication" == predicate:
             timeSent = intention.getTime()
             return traci.simulation.getTime() - timeSent
         elif "intendedActionIs" == predicate:
             return intention.getAction()
         elif "EVApproachingPartner" == predicate:
-            partnerName = predicate.split("_", 1)[1]
+            partnerName = condition.split("_", 1)[1]
             partnerTL = [tl for tl in self.setUpTuple[1] if tl.getName() == partnerName][0]
-            return self.getIsEVApproaching(partnerTL)
+            return partnerTL
         else:
             raise Exception("Undefined predicate:", predicate)

@@ -35,7 +35,7 @@ def getTime():
 
 def main(status: Status, database: Database, notifier: Notifier):
     # --- TRAINING OPTIONS ---
-    gui = False
+    gui = True
     totalGenerations = 50
     individualRunsPerGen = 3  # Min number of training runs an individual gets per generation
     # ------------------------
@@ -215,9 +215,9 @@ def main(status: Status, database: Database, notifier: Notifier):
 
 if __name__ == "__main__":
     # --- OUTPUT OPTIONS ---
-    displayStatus = True
-    storeInDatabase = True
-    notify = True
+    displayStatus = False
+    storeInDatabase = False
+    notify = False
     # ----------------------
 
     status = Status(socket.gethostname()) if displayStatus else None
