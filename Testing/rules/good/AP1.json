@@ -1,0 +1,180 @@
+{
+  "RS": [
+    {
+      "type": 0,
+      "conditions": [
+        "southNorthPhaseIs_Yellow",
+        "longestTimeWaitedToTurnLeft_300"
+      ],
+      "action": 2,
+      "weight": 0
+    },
+    {
+      "type": 0,
+      "conditions": [
+        "northSouthPhaseIsLeftTurn_Green",
+        "westEastPhaseIs_Green",
+        "numCarsWaitingToTurnLeft_9_12"
+      ],
+      "action": 3,
+      "weight": 0
+    },
+    {
+      "type": 0,
+      "conditions": [
+        "westEastPhaseIsLeftTurn_Yellow"
+      ],
+      "action": 4,
+      "weight": 0
+    },
+    {
+      "type": 0,
+      "conditions": [
+        "longestTimeWaitedToProceedStraight_270_300",
+        "horizontalPhaseIsLeftTurn_Green"
+      ],
+      "action": 3,
+      "weight": 0
+    },
+    {
+      "type": 0,
+      "conditions": [
+        "longestTimeWaitedToTurnLeft_180_210",
+        "numCarsWaitingToProceedStraight_15_25",
+        "longestTimeWaitedToProceedStraight_300"
+      ],
+      "action": 0,
+      "weight": 0
+    },
+    {
+      "type": 0,
+      "conditions": [
+        "longestTimeWaitedToProceedStraight_45_60"
+      ],
+      "action": 1,
+      "weight": 0
+    },
+    {
+      "type": 0,
+      "conditions": [
+        "westEastPhaseIs_Green",
+        "longestTimeWaitedToProceedStraight_240_270",
+        "numCarsWaitingToTurnLeft_6_9"
+      ],
+      "action": 2,
+      "weight": 0
+    }
+  ],
+  "RSint": [
+    {
+      "type": 1,
+      "conditions": [
+        "timeSinceCommunication_15_20"
+      ],
+      "action": 2,
+      "weight": 0
+    },
+    {
+      "type": 1,
+      "conditions": [
+        "timeSinceCommunication_20_25"
+      ],
+      "action": 4,
+      "weight": 0
+    },
+    {
+      "type": 1,
+      "conditions": [
+        "timeSinceCommunication_5_10"
+      ],
+      "action": 2,
+      "weight": 0
+    },
+    {
+      "type": 1,
+      "conditions": [
+        "timeSinceCommunication_10_15"
+      ],
+      "action": 3,
+      "weight": 0.0001016544857851793
+    },
+    {
+      "type": 1,
+      "conditions": [
+        "timeSinceCommunication_0"
+      ],
+      "action": 2,
+      "weight": 0
+    },
+    {
+      "type": 1,
+      "conditions": [
+        "timeSinceCommunication_0_5"
+      ],
+      "action": 3,
+      "weight": 0.00010001340321828505
+    }
+  ],
+  "RSev": [
+    {
+      "type": 2,
+      "conditions": [
+        "EVTrafficDensity_15_45",
+        "leadingEVLane_bend2T-intersection_LTL_1",
+        "timeSpentInCurrentPhase_60_90"
+      ],
+      "action": 3,
+      "weight": 0
+    },
+    {
+      "type": 2,
+      "conditions": [
+        "EVDistanceToIntersection_100_200",
+        "numCarsWaitingToTurnLeft_12_15",
+        "leadingEVLane_bend2T-intersection_LTL_1"
+      ],
+      "action": 2,
+      "weight": 0
+    },
+    {
+      "type": 2,
+      "conditions": [
+        "leadingEVLane_SEB2T-intersection_0",
+        "numCarsWaitingToProceedStraight_45",
+        "EVTrafficDensity_15_45"
+      ],
+      "action": 2,
+      "weight": 0
+    },
+    {
+      "type": 2,
+      "conditions": [
+        "EVTrafficDensity_45_90",
+        "leadingEVLane_SEB2T-intersection_1",
+        "timeSpentInCurrentPhase_180_210"
+      ],
+      "action": 1,
+      "weight": 0
+    },
+    {
+      "type": 2,
+      "conditions": [
+        "EVDistanceToIntersection_0_100",
+        "leadingEVLane_SEB2T-intersection_1",
+        "numCarsWaitingToTurnLeft_9_12"
+      ],
+      "action": 3,
+      "weight": 2.6256188322727137e-09
+    },
+    {
+      "type": 2,
+      "conditions": [
+        "leadingEVLane_SEB2T-intersection_0",
+        "EVDistanceToIntersection_0",
+        "eastWestPhaseIsLeftTurn_Yellow"
+      ],
+      "action": 2,
+      "weight": 0
+    }
+  ]
+}

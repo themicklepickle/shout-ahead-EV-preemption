@@ -1,0 +1,175 @@
+{
+  "RS": [
+    {
+      "type": 0,
+      "conditions": [
+        "numCarsWaitingToProceedStraight_25_35"
+      ],
+      "action": 3
+    },
+    {
+      "type": 0,
+      "conditions": [
+        "longestTimeWaitedToProceedStraight_90_120"
+      ],
+      "action": 1
+    },
+    {
+      "type": 0,
+      "conditions": [
+        "timeSpentInCurrentPhase_90_120",
+        "longestTimeWaitedToProceedStraight_210_240"
+      ],
+      "action": 4
+    },
+    {
+      "type": 0,
+      "conditions": [
+        "numCarsWaitingToProceedStraight_0_5",
+        "timeSpentInCurrentPhase_30_45",
+        "longestTimeWaitedToTurnLeft_270_300"
+      ],
+      "action": 6
+    },
+    {
+      "type": 0,
+      "conditions": [
+        "longestTimeWaitedToTurnLeft_30_45"
+      ],
+      "action": 2
+    },
+    {
+      "type": 0,
+      "conditions": [
+        "verticalPhaseIsLeftTurn_Green",
+        "westEastPhaseIsLeftTurn_Green",
+        "numCarsWaitingToProceedStraight_45"
+      ],
+      "action": 5
+    },
+    {
+      "type": 0,
+      "conditions": [
+        "numCarsWaitingToTurnLeft_15",
+        "verticalPhaseIs_Green",
+        "numCarsWaitingToTurnLeft_9_12"
+      ],
+      "action": 2
+    },
+    {
+      "type": 0,
+      "conditions": [
+        "numCarsWaitingToTurnLeft_9_12",
+        "timeSpentInCurrentPhase_270_300"
+      ],
+      "action": 6
+    },
+    {
+      "type": 0,
+      "conditions": [
+        "longestTimeWaitedToTurnLeft_90_120"
+      ],
+      "action": 0
+    },
+    {
+      "type": 0,
+      "conditions": [
+        "numCarsWaitingToProceedStraight_0_5",
+        "eastWestPhaseIs_Green",
+        "numCarsWaitingToProceedStraight_0",
+        "longestTimeWaitedToTurnLeft_300"
+      ],
+      "action": 1
+    }
+  ],
+  "RSint": [
+    {
+      "type": 1,
+      "conditions": [
+        "intendedActionIs_EW_SL_G",
+        "intendedActionIs_H_L_G",
+        "intendedActionIs_H_S_G",
+        "intendedActionIs_H_S_G",
+        "intendedActionIs_WE_SL_Y"
+      ],
+      "action": 4
+    },
+    {
+      "type": 1,
+      "conditions": [
+        "intendedActionIs_V_L_Y",
+        "intendedActionIs_H_L_Y",
+        "intendedActionIs_SN_SL_G"
+      ],
+      "action": 4
+    },
+    {
+      "type": 1,
+      "conditions": [
+        "timeSinceCommunication_0_5",
+        "timeSinceCommunication_15_20"
+      ],
+      "action": 1
+    },
+    {
+      "type": 1,
+      "conditions": [
+        "timeSinceCommunication_0"
+      ],
+      "action": 7
+    },
+    {
+      "type": 1,
+      "conditions": [
+        "intendedActionIs_EW_S_Y"
+      ],
+      "action": 5
+    },
+    {
+      "type": 1,
+      "conditions": [
+        "intendedActionIs_EW_S_G",
+        "intendedActionIs_SN_S_G",
+        "intendedActionIs_SN_L_Y"
+      ],
+      "action": 5
+    },
+    {
+      "type": 1,
+      "conditions": [
+        "intendedActionIs_WE_SL_Y",
+        "intendedActionIs_H_L_G",
+        "intendedActionIs_WE_L_Y"
+      ],
+      "action": 3
+    },
+    {
+      "type": 1,
+      "conditions": [
+        "intendedActionIs_WE_S_G",
+        "intendedActionIs_V_S_G",
+        "timeSinceCommunication_0_5",
+        "intendedActionIs_SN_S_G",
+        "intendedActionIs_NS_L_Y"
+      ],
+      "action": 3
+    },
+    {
+      "type": 1,
+      "conditions": [
+        "intendedActionIs_V_L_G",
+        "intendedActionIs_WE_L_Y",
+        "intendedActionIs_NS_S_Y"
+      ],
+      "action": 2
+    },
+    {
+      "type": 1,
+      "conditions": [
+        "intendedActionIs_EW_S_Y"
+      ],
+      "action": 1
+    }
+  ],
+  "RSev": []
+}

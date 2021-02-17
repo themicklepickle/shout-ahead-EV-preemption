@@ -1,0 +1,10 @@
+*.pyc
+__pycache__
+.DS_Store
+test.py
+trafficDensity.txt
+TODO.txt
+email.txt
+**/.vscode
+credentials.json
+**/Archive
