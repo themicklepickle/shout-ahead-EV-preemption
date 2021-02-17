@@ -1,0 +1,20 @@
+<additional> 
+    <tazs> 
+        <taz id="1" edges="four-arm2WB"> </taz> 
+        <taz id="2" edges="WB2four-arm"> </taz> 
+        <taz id="3" edges="NWB2four-arm"> </taz> 
+        <taz id="4" edges="four-arm2NWB"> </taz> 
+        <taz id="5" edges="four-arm2bend"> </taz>
+        <taz id="6" edges="bend2four-arm"> </taz> 
+        <taz id="7" edges="incoming2four-arm"> </taz> 
+        <taz id="8" edges="four-arm2incoming"> </taz> 
+        <taz id="9" edges="T2bend"> </taz> 
+        <taz id="10" edges="bend2T"> </taz> 
+        <taz id="11" edges="NEB2incoming"> </taz> 
+        <taz id="12" edges="T2incoming"> </taz> 
+        <taz id="13" edges="EB2incoming"> </taz> 
+        <taz id="14" edges="incoming2EB"> </taz>  
+        <taz id="15" edges="SEB2T"> </taz>    
+        <taz id="16" edges="T2SEB"> </taz>     
+    </tazs> 
+</additional>

@@ -43,9 +43,9 @@ def main(status: Status, database: Database, notifier: Notifier):
     # ------------------------
 
     # --- USER-DEFINED RULES TOGGLE ---
-    maxGreenAndYellowPhaseTime_UDRule = False
-    maxRedPhaseTime_UDRule = False
-    assignGreenPhaseToSingleWaitingPhase_UDRule = False
+    maxGreenAndYellowPhaseTime_UDRule = True
+    maxRedPhaseTime_UDRule = True
+    assignGreenPhaseToSingleWaitingPhase_UDRule = True
     # ----------------------------------
 
     # --- SIMULATION ATTRIBUTES ---
@@ -187,7 +187,7 @@ def main(status: Status, database: Database, notifier: Notifier):
             sys.stdout.flush()
         elif database:
             OutputManager.run(setUpTuple[2], generationRuntimes, episodeRuntimes, database)
-            print("Output file created.")
+            print("LEARNING COMPLETE!")
 
         print(f"Generation start time: {genStart} ----- End time: {getTime()}")
         generationRuntimes.append(time.time() - startTime)
@@ -212,6 +212,7 @@ def main(status: Status, database: Database, notifier: Notifier):
     print(f"This simulation began at: {simulationStartTime}")
     if notifier:
         notifier.sendEmail(f"COMPLETE!", f"All {totalGenerations} have been completed.")
+    status.terminate()
     sys.stdout.flush()
 
 

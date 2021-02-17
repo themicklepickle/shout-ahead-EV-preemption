@@ -56,6 +56,9 @@ class Individual:
             "normalizedFitness": self.normalizedFitness,
             "lastRunTime": self.lastRunTime,
             "runFitnessResults": self.runFitnessResults,
+            "ruleWeightSum": self.ruleWeightSum,
+            "aggregateVehicleWaitTime": self.aggregateVehicleWaitTime,
+            "history": self.history
         }
 
     # RETURN INDIVIDUAL IDENTIFIER
