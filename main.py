@@ -43,8 +43,8 @@ def main(status: Status, database: Database, notifier: Notifier):
     # ------------------------
 
     # --- USER-DEFINED RULES TOGGLE ---
-    maxGreenAndYellowPhaseTime_UDRule = True
-    maxRedPhaseTime_UDRule = True
+    maxGreenAndYellowPhaseTime_UDRule = False
+    maxRedPhaseTime_UDRule = False
     assignGreenPhaseToSingleWaitingPhase_UDRule = True
     # ----------------------------------
 
