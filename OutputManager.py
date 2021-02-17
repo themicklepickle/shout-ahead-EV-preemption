@@ -40,6 +40,10 @@ def run(agentPools: List[AgentPool], generationRuntimes: List[float], episodeRun
 
     database.storeOutput(outputData)
 
+    if database:
+        agentPoolData = [i.getJSON() for i in ap.getIndividualsSet()]
+        database.updateAgentPool(ap.getID(), agentPoolData, "new"
+
 
 if __name__ == "__main__":
     run()
