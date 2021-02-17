@@ -24,8 +24,6 @@ def run(agentPools: List[AgentPool], generationRuntimes: List[float], episodeRun
             "averageEpisodeTime": averageEpisodeTime,
             "generations": generations,
             "episodes": episodes,
-            "generationRuntimes": generationRuntimes,
-            "episodeRuntimes": episodeRuntimes
         }
     }
     bestIndividuals = {}
