@@ -84,8 +84,7 @@ def main(status: Status, database: Database, notifier: Notifier):
             "userDefinedRulesToggle": {
                 "maxGreenAndYellowPhaseTime_UDRule": maxGreenAndYellowPhaseTime_UDRule,
                 "maxRedPhaseTime_UDRule": maxRedPhaseTime_UDRule,
-                "assignGreenPhaseToSingleWaitingPhase_UDRule": assignGreenPhaseToSingleWaitingPhase_UDRule,
-
+                "assignGreenPhaseToSingleWaitingPhase_UDRule": assignGreenPhaseToSingleWaitingPhase_UDRule
             },
             "simulationAttributes": {
                 "sumoNetworkName": sumoNetworkName,
