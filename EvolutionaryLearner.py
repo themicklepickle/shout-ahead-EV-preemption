@@ -479,10 +479,7 @@ def rulesAreDuplicate(rule1: Rule, rule2: Rule):
     conds1 = rule1.getConditions()
     conds2 = rule2.getConditions()
 
-    act1 = rule1.getAction()
-    act2 = rule2.getAction()
-
-    if rule1 is rule2 or (set(conds1) == set(conds2) and act1 == act2):
+    if rule1 is rule2 or (set(conds1) == set(conds2)):
         return True
     else:
         return False
