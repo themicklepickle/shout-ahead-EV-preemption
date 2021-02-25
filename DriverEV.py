@@ -339,6 +339,10 @@ class DriverEV(Driver):
                     if int(lane.split("_")[2]) > maxLaneNum:
                         self.leftTurnLanes.append(lane)
 
+    def constructTimeSinceLastEVThroughDict(self, trafficLights: List[TrafficLight]) -> None:
+        for tl in trafficLights:
+            self.timeSinceLastEVThrough[tl.getName()] = -1
+
     def resetState(self, trafficLights: List[TrafficLight]) -> None:
         for tl in trafficLights:
             self.state[tl] = {}
