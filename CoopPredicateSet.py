@@ -38,7 +38,7 @@ def timeSinceCommunication_20_25(timeSinceCommunication: int):
 
 
 # EVALUATES VALIDITY OF A CUSTOM PREDICATE RELATIVE TO A COMMUNICATED INTENTION
-def customPredicate(predicate: str, intention: Intention) -> bool:
+def partnerAction(predicate: str, intention: Intention) -> bool:
     predicate = predicate.split("_", 1)
 
     return predicate[0] == intention.getTrafficLight().getName() and predicate[1] == intention.getAction()
@@ -51,7 +51,7 @@ def getPredicateSet(agentPool: AgentPool):
     # Remove all methods that are not predicates from dictionary
     methodsDict.pop("getPredicateSet")
     methodsDict.pop("getPredicateSetFromFile")
-    methodsDict.pop("customPredicate")
+    methodsDict.pop("partnerAction")
     methodsDict.pop("getPartnerActionPredicates")
 
     # Seperate methods/predicates from rest of data in dictionary into a list
