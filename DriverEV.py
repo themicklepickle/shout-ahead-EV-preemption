@@ -453,6 +453,9 @@ class DriverEV(Driver):
     def getLeadingEV(self, trafficLight: TrafficLight) -> EmergencyVehicle:
         return self.leadingEV[trafficLight.getName()]
 
+    def getTimeSinceLastEVThrough(self, trafficLight: TrafficLight) -> int:
+        return self.timeSinceLastEVThrough[trafficLight.getName()]
+
     def calculateTimeSinceLastEVThrough(self, trafficLights: List[TrafficLight]) -> None:
         for tl in trafficLights:
             EVs = self.getEVs(tl)
