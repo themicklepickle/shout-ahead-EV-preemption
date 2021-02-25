@@ -452,6 +452,19 @@ class DriverEV(Driver):
     # GET LEADING EMERGENCY VEHICLE AMONG ALL LANES
     def getLeadingEV(self, trafficLight: TrafficLight) -> EmergencyVehicle:
         return self.leadingEV[trafficLight.getName()]
+
+    def calculateTimeSinceLastEVThrough(self, trafficLights: List[TrafficLight]) -> None:
+        for tl in trafficLights:
+            EVs = self.getEVs(tl)
+            lastEVs = self.getLastEVs(tl)
+
+            diff = [EV for EV in lastEVs if not any(EV.getNumber() == i.getNumber() for i in EVs)]
+
+            if len(diff) > 0:
+                self.timeSinceLastEVThrough[tl.getName()] = 0
+            elif self.timeSinceLastEVThrough[tl.getName()] != -1:
+                self.timeSinceLastEVThrough[tl.getName()] += 5
+
 #---------------------------------- EV PREDICATES END ----------------------------------#
 
 #------------------------------ EV EVOLUTIONARY LEARNING -------------------------------#
