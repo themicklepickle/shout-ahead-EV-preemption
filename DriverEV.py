@@ -400,6 +400,13 @@ class DriverEV(Driver):
         return False  # Return False if no EVs were found
 
     def calculateEVs(self, trafficLights: List[TrafficLight]) -> None:
+        if self.lastEVs is None:
+            self.lastEVs = self.EVs
+        else:
+            self.lastEVs = {}
+            for tlName, EVList in self.EVs.items():
+                self.lastEVs[tlName] = list(EVList)
+
         for tl in trafficLights:
             state = self.getState(tl)
             self.EVs[tl.getName()] = []
@@ -424,11 +431,14 @@ class DriverEV(Driver):
                         distance = veh["distance"]
                         self.EVs[tl.getName()].append(EmergencyVehicle(veh["name"], speed, distance, lane, i))
 
-            self.EVs[tl].sort(key=lambda EV: EV.getDistance())
+            self.EVs[tl.getName()].sort(key=lambda EV: EV.getDistance())
 
     # GET A LIST OF ALL EMERGENCY VEHICLES
     def getEVs(self, trafficLight: TrafficLight) -> List[EmergencyVehicle]:
         return self.EVs[trafficLight.getName()]
+
+    def getLastEVs(self, trafficLight: TrafficLight) -> List[EmergencyVehicle]:
+        return self.lastEVs[trafficLight.getName()]
 
     def calculateLeadingEV(self, trafficLights: List[TrafficLight]) -> None:
         for tl in trafficLights:
