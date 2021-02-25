@@ -16,11 +16,12 @@ class Individual:
     defaultFitness = 10000.0
 
     # INTIALIZE OBJECT VARIABLES
-    def __init__(self, identifier: str, agentPool: AgentPool, RS: List[Rule], RSint: List[Rule], RSev: List[Rule]) -> None:
+    def __init__(self, identifier: str, agentPool: AgentPool, RS: List[Rule], RSint: List[Rule], RSev: List[Rule], RSev_int: List[Rule]) -> None:
         self.id = identifier
         self.RS = RS                                # Set of rules without observations of communicated intentions
         self.RSint = RSint                          # Set of rules with observations of communicated intentions
         self.RSev = RSev
+        self.RSev_int = RSev_int
         self.selectedCount = 0                      # Number of times individual has been chosen during a generation
         self.totalSelectedCount = 0                 # Total number of times individual has been chosen during a training period
         self.agentPool = agentPool                  # AgentPool name
@@ -49,6 +50,7 @@ class Individual:
             "RS": [rule.getJSON() for rule in self.RS],
             "RSint": [rule.getJSON() for rule in self.RSint],
             "RSev": [rule.getJSON() for rule in self.RSev],
+            "RSev_int": [rule.getJSON() for rule in self.RSev_int],
             "fitness": self.fitness,
             "agentPool": self.agentPool.getID(),
             "selectedCount": self.selectedCount,
@@ -58,39 +60,34 @@ class Individual:
             "runFitnessResults": self.runFitnessResults,
         }
 
-    # RETURN INDIVIDUAL IDENTIFIER
     def getID(self):
         return self.id
 
-    # RETURN INDIVIDUAL'S RULE SET
     def getRS(self):
         return self.RS
 
-    # RETURN INDIVIDUAL'S COOP RULE SET
     def getRSint(self):
         return self.RSint
 
-    # RETURN INDIVIDUAL'S EV RULE SET
     def getRSev(self):
         return self.RSev
 
-    # INCREMENT selectedCount BY ONE FOR EVOLUTIONARY LEARNING PURPOSES
+    def getRSev_int(self):
+        return self.RSev_int
+
     def selected(self):
         self.selectedCount += 1
         self.totalSelectedCount += 1
 
-    # RESET selectedCount TO ZERO
     def resetSelectedCount(self):
         self.selectedCount = 0
 
-    # RETURN selectedCount
     def getSelectedCount(self):
         return self.selectedCount
 
     def getTotalSelectedCount(self):
         return self.totalSelectedCount
 
-    # RETURN INDIVIDUAL'S FITNESS SCORE
     def getFitness(self):
         return self.fitness
 
@@ -111,7 +108,6 @@ class Individual:
         self.resetEVStops()
         self.resetAverageEVSpeed()
 
-    # UPDATE INDIVIDUAL'S FITNESS SCORE
     def updateFitness(self, fitness: float, EVFitness: float):
         # Add run fitness plus rule application penalty minus EV fitness to master rFit list
         self.runFitnessResults.append(fitness + self.fitnessRuleApplicationPenalty - EVFitness)  # minus EV fitness cause we are trying to minimize fitness values
@@ -134,11 +130,9 @@ class Individual:
     def setNormalizedFitness(self, fitnessValue: float):
         self.normalizedFitness = fitnessValue
 
-    # RETURN THE LENGTH OF THE LAST RUN THE INDIVIDUAL PARTICIPATED IN
     def getLastRunTime(self):
         return self.lastRunTime
 
-    # UPDATE THE LENGTH OF THE LAST RUN THE INDIVIDUAL PARTICIPATED IN
     def updateLastRunTime(self, runtime: float):
         self.lastRunTime = runtime
 
@@ -176,14 +170,12 @@ class Individual:
         self.EVStops = 0
     # ----------- END ----------- #
 
-    # RETURN SUM OF ALL WEIGHTS IN A RULE SET
     def getSumRuleWeights(self) -> float:
         ruleSet = self.getRS() + self.getRSev()
         self.ruleWeightSum = sum(rule.getWeight() for rule in ruleSet)
 
         return self.ruleWeightSum
 
-    # RETURN A RULE FROM RS BASED ON THEIR PROBABILITIES
     def selectRule(self, validRules: List[Rule]) -> Union[Rule, Literal[-1]]:
         if len(validRules) == 0:
             return -1
@@ -286,11 +278,9 @@ class Individual:
 
         return rule[0]  # Choice function returns an array, so we take the only element in it
 
-    # RETURN AGENT POOL THE INDIVIDUAL BELONGS TO
     def getAgentPool(self):
         return self.agentPool
 
-    # RETURN PROBABILITY OF SELECTION FOR A RULE IN rsMax
     def getRuleProbabilityMax(self, rule: Rule, rsMax: List[Rule], rsRest: List[Rule]) -> float:
         weight = rule.getWeight()
 
@@ -303,17 +293,14 @@ class Individual:
 
         return ((1 - epsilon) * (weight / (weight * len(rsMax))))
 
-    # RETURN PROBABILITY OF SELECTION FOR A RULE IN rsRest
     def getRuleProbabilityRest(self, rule: Rule, probabilities: List[int], sumOfWeights: float, rsRest: List[Rule]):
         weight = rule.getNormalizedWeight()
 
         return epsilon * (weight / sumOfWeights)
 
-    # RETURN SUM OF ALL WEIGHTS IN A RULE SET
     def getSumOfWeights(self, setOfRules: List[Rule]) -> float:
         return sum(rule.getNormalizedWeight() for rule in setOfRules)
 
-    # RETURN A LIST OF ALL WEIGHTS IN A LIST OF RULES
     def getWeightsList(self, setOfRules: List[Rule]) -> List[float]:
         weightsList: List[float] = []
         for r in setOfRules:
@@ -321,7 +308,6 @@ class Individual:
 
         return weightsList
 
-    # RETURN A LIST OF WEIGHTS NORMALIZED BETWEEN 0.1 AND 1.1
     def getNormalizedWeightsList(self, setOfRules: List[Rule]) -> List[float]:
         weightsList: List[float] = []
         for r in setOfRules:
@@ -329,12 +315,10 @@ class Individual:
 
         return weightsList
 
-    # NORMALIZE WEIGHTS BETWEEN 0.1 AND 1.1 (WEIGHTS ARE NORMALIZED BETWEEN 0 AND 1, AND 0.1 IS ADDED TO AVOID WEIGHTS OF 0)
     def normalizeWeights(self, setOfRules: List[Rule], weightsList: List[float]):
         for r in setOfRules:
             r.setNormalizedWeight(((r.getWeight() - min(weightsList)) / (max(weightsList) - min(weightsList))) + 0.1)
 
-    # SEPERATE RULES INTO rsMax AND rsRest
     def subDivideValidRules(self, validRules: List[Rule]) -> Tuple[List[Rule], List[Rule]]:
         rsMax: List[Rule] = []
         ruleWeights: List[float] = []
