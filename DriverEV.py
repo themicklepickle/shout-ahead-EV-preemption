@@ -331,7 +331,7 @@ class DriverEV(Driver):
             for lane in tl.getLanes():
                 self.TLControllingLane[lane] = tl
 
-    def constructLeftTurnLanesDict(self, trafficLights: List[TrafficLight]) -> None:
+    def constructLeftTurnLanesList(self, trafficLights: List[TrafficLight]) -> None:
         maxLaneNum = 0
         for tl in trafficLights:
             for lane in tl.getLanes():
