@@ -6,6 +6,7 @@ from Driver import Driver
 import PredicateSet
 import CoopPredicateSet
 import EVPredicateSet
+import EVCoopPredicateSet
 import EvolutionaryLearner
 import ReinforcementLearner
 from EmergencyVehicle import EmergencyVehicle
@@ -17,6 +18,7 @@ if TYPE_CHECKING:
     from TrafficLight import TrafficLight
     from Rule import Rule
     from Intention import Intention
+    from AgentPool import AgentPool
 
 # NOTE: vehID in DriverEV.py refers to only the first element of the split, in Driver.py vehID was the split tuple
 
@@ -67,17 +69,20 @@ class DriverEV(Driver):
 
         # run functions to setup state
         self.constructTLControllingLaneDict(trafficLights)
-        self.constructLeftTurnLanesDict(trafficLights)
+        self.constructLeftTurnLanesList(trafficLights)
+        self.constructTimeSinceLastEVThroughDict(trafficLights)
 
         # get state and EVs
         self.calculateState(trafficLights)
         self.calculateEVs(trafficLights)
         self.calculateLeadingEV(trafficLights)
+        self.calculateTimeSinceLastEVThrough(trafficLights)
 
         # Assign each traffic light an individual from their agent pool for this simulation run, and a starting rule
         for tl in trafficLights:
             tl.assignIndividual()
             tl.updateCurrentPhase(traci.trafficlight.getPhaseName(tl.getName()))
+            # print(tl.getAssignedIndividual().getRSev_int())
 
             rule = self.applicableUserDefinedRule(tl, userDefinedRules)  # Check user-defined rules
 
@@ -85,10 +90,10 @@ class DriverEV(Driver):
             if rule == False or rule is None:
                 # Determine if the rule should be chosen from RS or RSev
                 isEVApproaching = self.getIsEVApproaching(tl)
-                validRules = self.getValidRules(tl, tl.getAssignedIndividual())
+                validRS, validRSint, validRSev, validRSev_int = self.getValidRules(tl, tl.getAssignedIndividual())
 
                 # Get a rule from assigned Individual
-                rule = tl.getNextRule(validRules[0], validRules[1], validRules[2], isEVApproaching, traci.simulation.getTime())
+                rule = tl.getNextRule(validRS, validRSint, validRSev, validRSev_int, isEVApproaching, self.useEVCoopPredicates, traci.simulation.getTime())
 
                 # if no valid rule applicable, apply the Do Nothing rule.
                 if rule == -1:
@@ -128,6 +133,7 @@ class DriverEV(Driver):
             self.calculateState(trafficLights)
             self.calculateEVs(trafficLights)
             self.calculateLeadingEV(trafficLights)
+            self.calculateTimeSinceLastEVThrough(trafficLights)
 
             for tl in trafficLights:
 
@@ -209,20 +215,23 @@ class DriverEV(Driver):
                         EVChangeInQueue = None
                 else:
                     leadingEV = None
-                    EVs = None
+                    EVs = []
                     EVChangeInSpeed = None
                     EVChangeInQueue = None
                     EVIsStopped = False
 
-                # Determine if the rule should be chosen from RS or RSev
-                validRules = self.getValidRules(tl, tl.getAssignedIndividual())
+                validRS, validRSint, validRSev, validRSev_int = self.getValidRules(tl, tl.getAssignedIndividual())
 
-                if len(validRules[0]) == 0 and len(validRules[1]) == 0 and not isEVApproaching:
-                    nextRule = -1  # -1 is used to represent "no valid next rule"
-                elif len(validRules[2]) == 0 and len(validRules[1]) == 0 and isEVApproaching:
-                    nextRule = -1  # -1 is used to represent "no valid next rule"
+                if len(validRS) == 0 and len(validRSint) == 0 and not isEVApproaching and not self.useEVCoopPredicates:
+                    nextRule = -1
+                elif len(validRSev) == 0 and len(validRSint) == 0 and isEVApproaching and not self.useEVCoopPredicates:
+                    nextRule = -1
+                elif len(validRS) == 0 and len(validRSev_int) == 0 and not isEVApproaching and self.useEVCoopPredicates:
+                    nextRule = -1
+                elif len(validRSev) == 0 and len(validRSev_int) == 0 and isEVApproaching and self.useEVCoopPredicates:
+                    nextRule = -1
                 else:
-                    nextRule = tl.getNextRule(validRules[0], validRules[1], validRules[2], isEVApproaching, traci.simulation.getTime())  # Get a rule from assigned Individual
+                    nextRule = tl.getNextRule(validRS, validRSint, validRSev, validRSev_int, isEVApproaching, self.useEVCoopPredicates, traci.simulation.getTime())
 
                 if nextRule == -1:
                     tl.doNothing()  # Update traffic light's Do Nothing counter
