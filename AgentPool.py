@@ -60,8 +60,8 @@ class AgentPool:
     def updateIndividualsSet(self, individuals: List[Individual]):
         self.individuals = individuals
 
-    def initIndividuals(self, useShoutahead):
-        self.individuals = EvolutionaryLearner.initIndividuals(self, useShoutahead)
+    def initIndividuals(self, useShoutahead: bool, useEVCoopPredicates: bool):
+        self.individuals = EvolutionaryLearner.initIndividuals(self, useShoutahead, useEVCoopPredicates)
 
     def getAssignedTrafficLights(self):
         return self.trafficLightsAssigned
