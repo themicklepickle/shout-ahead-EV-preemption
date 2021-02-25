@@ -23,6 +23,32 @@ if TYPE_CHECKING:
 
 class DriverEV(Driver):
 
+    def __init__(self,
+                 sumoCmd: str,
+                 setUpTuple: Tuple[List[Rule], List[TrafficLight], List[AgentPool]],
+                 maxGreenPhaseTime: int, maxYellowPhaseTime: int, maxSimulationTime: int,
+                 maxGreenAndYellow_UDRule: bool, maxRedPhaseTime_UDRule: bool, assignGreenPhaseToSingleWaitingPhase: bool,
+                 useShoutahead: bool, useEVCoopPredicates: bool) -> None:
+        self.sumoCmd = sumoCmd
+        self.setUpTuple = setUpTuple
+        self.maxGreenPhaseTime = maxGreenPhaseTime
+        self.maxYellowPhaseTime = maxYellowPhaseTime
+        self.maxSimulationTime = maxSimulationTime
+        self.maxGreenAndYellow_UDRule = maxGreenAndYellow_UDRule
+        self.maxRedPhaseTime_UDRule = maxRedPhaseTime_UDRule
+        self.assignGreenPhaseToSingleWaitingPhase_UDRule = assignGreenPhaseToSingleWaitingPhase
+        self.useShoutahead = useShoutahead
+        self.useEVCoopPredicates = useEVCoopPredicates
+        self.state = {}
+        self.leadingEV = {}
+        self.TLControllingLane = {}
+        self.leftTurnLanes = []
+        self.EVs = {}
+        self.lastEVs = None
+        self.vehicleWaitingTimes = {}
+        self.vehicleSpeeds = {}
+        self.timeSinceLastEVThrough = {}
+
     # CONTAINS MAIN TRACI SIMULATION LOOP
     def run(self) -> None:
         numOfRSRulesApplied: int = 0
