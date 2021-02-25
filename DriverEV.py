@@ -54,6 +54,7 @@ class DriverEV(Driver):
         numOfRSRulesApplied: int = 0
         numOfRSintRulesApplied: int = 0
         numOfRSevRulesApplied: int = 0
+        numOfRSev_intRulesApplied: int = 0
 
         # Start SUMO. Comment out if running Driver as standalone module.
         traci.start(self.sumoCmd)
@@ -270,10 +271,9 @@ class DriverEV(Driver):
                         elif nextRule.getType() == 1:
                             numOfRSintRulesApplied += 1
                         elif nextRule.getType() == 2:
-                            # print(nextRule)
-                            # print(oldRule)
-                            # print()
                             numOfRSevRulesApplied += 1
+                        elif nextRule.getType() == 3:
+                            numOfRSev_intRulesApplied += 1
 
                 # --- USER DEFINED RULE CHECK ---
                 if self.maxGreenAndYellow_UDRule:
@@ -303,7 +303,8 @@ class DriverEV(Driver):
         print("Total applied rules")
         print(f"  RS: {numOfRSRulesApplied}")
         print(f"  RSint: {numOfRSintRulesApplied}")
-        print(f"  RSev: {numOfRSevRulesApplied}\n")
+        print(f"  RSev: {numOfRSevRulesApplied}")
+        print(f"  RSev_int: {numOfRSev_intRulesApplied}\n")
         for tl in trafficLights:
             tl.resetRecievedIntentions()
             individual = tl.getAssignedIndividual()
