@@ -59,12 +59,18 @@ def main(status: Status, database: Database, notifier: Notifier):
     # -----------------------------
 
     # --- SUMO BINARY SETUP ---
+    autoStart = True
+    autoQuit = True
     if gui == False:
         sumoBinary = checkBinary('sumo')
         sumoCmd = [sumoBinary, "-c", f"{folderName}/config_file.sumocfg", "--waiting-time-memory", "5", "--time-to-teleport", "-1"]
     else:
         sumoBinary = checkBinary('sumo-gui')
-        sumoCmd = [sumoBinary, "-c", f"{folderName}/config_file.sumocfg", "--waiting-time-memory", "5", "--time-to-teleport", "-1", "-Q", "true", "-S", "true"]
+        sumoCmd = [sumoBinary, "-c", f"{folderName}/config_file.sumocfg", "--waiting-time-memory", "5", "--time-to-teleport", "-1"]
+        if autoStart:
+            sumoCmd += ["-S", "true"]
+        if autoQuit:
+            sumoCmd += ["-Q", "true"]
     # -------------------------
 
     # --- OUTPUT MANAGEMENT ---
