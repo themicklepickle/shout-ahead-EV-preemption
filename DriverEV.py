@@ -345,9 +345,9 @@ class DriverEV(Driver):
 
     def resetState(self, trafficLights: List[TrafficLight]) -> None:
         for tl in trafficLights:
-            self.state[tl] = {}
+            self.state[tl.getName()] = {}
             for lane in tl.getLanes():
-                self.state[tl][lane] = []
+                self.state[tl.getName()][lane] = []
 
     def calculateState(self, trafficLights: List[TrafficLight]) -> None:
         self.resetState(trafficLights)
@@ -383,10 +383,10 @@ class DriverEV(Driver):
                     identifer += "_EV_S"
 
             tl = self.TLControllingLane[laneID]
-            self.state[tl][laneID].append(vehID + identifer)
+            self.state[tl.getName()][laneID].append(vehID + identifer)
 
     def getState(self, trafficLight: TrafficLight) -> Dict[str, List[str]]:
-        return self.state[trafficLight]
+        return self.state[trafficLight.getName()]
 
 #----------------------- EV PREDICATES AND REINFORCEMENT LEARNING ----------------------#
     # DETERMINE WHETHER OR NOT AN EMERGENCY VEHICLE IS APPROACHING
@@ -402,7 +402,7 @@ class DriverEV(Driver):
     def calculateEVs(self, trafficLights: List[TrafficLight]) -> None:
         for tl in trafficLights:
             state = self.getState(tl)
-            self.EVs[tl] = []
+            self.EVs[tl.getName()] = []
 
             for lane in state:
                 vehicles = []
@@ -422,26 +422,26 @@ class DriverEV(Driver):
                         vehID = veh["name"].split("_")[0]
                         speed = self.vehicleSpeeds[vehID]
                         distance = veh["distance"]
-                        self.EVs[tl].append(EmergencyVehicle(veh["name"], speed, distance, lane, i))
+                        self.EVs[tl.getName()].append(EmergencyVehicle(veh["name"], speed, distance, lane, i))
 
             self.EVs[tl].sort(key=lambda EV: EV.getDistance())
 
     # GET A LIST OF ALL EMERGENCY VEHICLES
     def getEVs(self, trafficLight: TrafficLight) -> List[EmergencyVehicle]:
-        return self.EVs[trafficLight]
+        return self.EVs[trafficLight.getName()]
 
     def calculateLeadingEV(self, trafficLights: List[TrafficLight]) -> None:
         for tl in trafficLights:
             EVs = self.getEVs(tl)
 
             if EVs == []:
-                self.leadingEV[tl] = None
+                self.leadingEV[tl.getName()] = None
             else:
-                self.leadingEV[tl] = EVs[0]
+                self.leadingEV[tl.getName()] = EVs[0]
 
     # GET LEADING EMERGENCY VEHICLE AMONG ALL LANES
     def getLeadingEV(self, trafficLight: TrafficLight) -> EmergencyVehicle:
-        return self.leadingEV[trafficLight]
+        return self.leadingEV[trafficLight.getName()]
 #---------------------------------- EV PREDICATES END ----------------------------------#
 
 #------------------------------ EV EVOLUTIONARY LEARNING -------------------------------#
@@ -561,7 +561,6 @@ class DriverEV(Driver):
 
             return parameters
 
-#------------------------------------ EV PREDICATES ------------------------------------#
         elif "EVDistanceToIntersection" == predicate:
             leadingEV = self.getLeadingEV(trafficLight)
             return leadingEV.getDistance() if leadingEV is not None else -1
@@ -576,7 +575,6 @@ class DriverEV(Driver):
 
         else:
             raise Exception("Undefined predicate:", predicate)
-#---------------------------------- EV PREDICATES END ----------------------------------#
 
     # RETURNS RULES THAT ARE APPLICABLE AT A GIVEN TIME AND STATE
     def getValidRules(self, trafficLight: TrafficLight, individual: Individual) -> Tuple[List[Rule], List[Rule], List[Rule]]:
