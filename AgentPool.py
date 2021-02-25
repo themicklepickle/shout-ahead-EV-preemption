@@ -85,12 +85,12 @@ class AgentPool:
         # COMPLETES THE INITIALIZATION OF AGENT POOL COMPONENTS THAT REQUIRE ALL AGENT POOLS TO BE INITIALIZED FIRST
     def finishSetUp(self, useShoutahead: bool, useEVCoopPredicates: bool):
         self.RSPredicates = PredicateSet.getPredicateSet()
-        self.RSintPredicates = CoopPredicateSet.getPredicateSet(self, useEVCoopPredicates)
+        self.RSintPredicates = CoopPredicateSet.getPredicateSet(self)
         self.RSevPredicates = EVPredicateSet.getPredicateSet()
         self.RSev_intPredicates = EVCoopPredicateSet.getPredicateSet(self)
         self.EVLanePredicates = EVPredicateSet.getAgentSpecificPredicates(self)
 
-        self.initIndividuals(useShoutahead)  # Populate Agent Pool's own rule set with random rules
+        self.initIndividuals(useShoutahead, useEVCoopPredicates)  # Populate Agent Pool's own rule set with random rules
         for tl in self.trafficLightsAssigned:
             tl.initPhaseTimeSpentInRedArray()
 
