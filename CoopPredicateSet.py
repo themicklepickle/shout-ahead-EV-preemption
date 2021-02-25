@@ -86,7 +86,7 @@ def getPartnerActionPredicates(agentPool: AgentPool):
     for tl in agentPool.getAssignedTrafficLights():
         for partner in tl.getCommunicationPartners():
             for action in partner.getAgentPool().getActionSet():
-                pred = partner.getName() + "_" + action
+                pred = f"partnerAction_{partner.getName()}_{action}"
                 customPredicates.append(pred)
             customPredicates.append(pred)
     return customPredicates
