@@ -8,13 +8,14 @@ if TYPE_CHECKING:
 
 class Rule:
 
-    def __init__(self, ruleType: Literal[-1, 0, 1, 2], conditions: List[str], action: int, agentPool: AgentPool):
+    def __init__(self, ruleType: Literal[-1, 0, 1, 2, 3], conditions: List[str], action: int, agentPool: AgentPool):
         # Rule types:
         #   -1: user-defined
         #    0: RS
         #    1: RSint
         #    2: RSev
-        self.type: Literal[-1, 0, 1, 2] = ruleType
+        #    3: RSev_int
+        self.type: Literal[-1, 0, 1, 2, 3] = ruleType
         self.conditions = conditions        # Set of predicates that determine if rule is true
         self.action = action                # Action to carry out if all conditions are true
         self.agentPool = agentPool          # Agent pool rule rule originated from (used for updating actions of rule)
