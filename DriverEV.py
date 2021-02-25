@@ -471,6 +471,7 @@ class DriverEV(Driver):
 #---------------------------------- EV PREDICATES END ----------------------------------#
 
 #------------------------------ EV EVOLUTIONARY LEARNING -------------------------------#
+
     def getAverageEVSpeed(self, trafficLight: TrafficLight) -> List[int]:
         EVs = self.getEVs(trafficLight)
         EVSpeedsList = [EV.getSpeed() for EV in EVs]
@@ -602,18 +603,18 @@ class DriverEV(Driver):
         else:
             raise Exception("Undefined predicate:", predicate)
 
-    # RETURNS RULES THAT ARE APPLICABLE AT A GIVEN TIME AND STATE
-    def getValidRules(self, trafficLight: TrafficLight, individual: Individual) -> Tuple[List[Rule], List[Rule], List[Rule]]:
+    def getValidRules(self, trafficLight: TrafficLight, individual: Individual) -> Tuple[List[Rule], List[Rule], List[Rule], List[Rule]]:
         validRS = []
         validRSint = []
         validRSev = []
+        validRSev_int = []
 
         # Find valid RS rules
         for rule in individual.getRS():
             if self.evaluateRule(trafficLight, rule):
                 validRS.append(rule)
 
-        if self.useShoutahead:
+        if self.useShoutahead and not self.useEVCoopPredicates:
             # Find valid RSint rules
             for rule in individual.getRSint():
                 if self.evaluateCoopRule(trafficLight, rule):
@@ -625,15 +626,15 @@ class DriverEV(Driver):
             if self.evaluateEVRule(trafficLight, rule):
                 validRSev.append(rule)
 
-        return (validRS, validRSint, validRSev)
+        if self.useShoutahead and self.useEVCoopPredicates:
+            # Find valid RSev_int rules
+            for rule in individual.getRSev_int():
+                if self.evaluateCoopRule(trafficLight, rule):
+                    validRSev_int.append(rule)
 
-    # EVALUATE RULE VALIDITY (fEval)
+        return (validRS, validRSint, validRSev, validRSev_int)
+
     def evaluateRule(self, trafficLight: TrafficLight, rule: Rule) -> bool:
-        if rule.getType() == 1:
-            return self.evaluateCoopRule(trafficLight, rule)
-        if rule.getType() == 2:
-            return self.evaluateEVRule(trafficLight, rule)
-
         # For each condition, its parameters are acquired and the condition predicate is evaluated
         for cond in rule.getConditions():
             predicate = cond.split("_")[0]
@@ -647,12 +648,59 @@ class DriverEV(Driver):
 
         return True  # if all predicates return true, evaluate rule as True
 
-    def evaluateEVRule(self, trafficLight: TrafficLight, rule: Rule) -> bool:
-        if rule.getType() == 0:
-            return self.evaluateRule(trafficLight, rule)
-        if rule.getType() == 1:
-            return self.evaluateCoopRule(trafficLight, rule)
+    def getCoopPredicateParameters(self, predicate: str, intention: Intention, condition: str) -> Union[int, Tuple[str, Intention]]:
+        if "timeSinceCommunication" == predicate:
+            timeSent = intention.getTime()
+            return traci.simulation.getTime() - timeSent
 
+        elif "intendedActionIs" == predicate:
+            return intention.getAction()
+
+        elif "timeSinceLastEVThrough" == predicate:
+            partnerName = "_".join(condition.split("_")[1:-2])
+            partnerTL = [tl for tl in self.setUpTuple[1] if tl.getName() == partnerName][0]
+            return (condition, self.getTimeSinceLastEVThrough(partnerTL))
+
+        elif "EVApproachingPartner" == predicate:
+            partnerName = condition.split("_", 1)[1]
+            partnerTL = [tl for tl in self.setUpTuple[1] if tl.getName() == partnerName][0]
+            return partnerTL
+
+        else:
+            raise Exception("Undefined predicate:", predicate)
+
+    def evaluateCoopRule(self, trafficLight: TrafficLight, rule: Rule) -> bool:
+        intentions = trafficLight.getCommunicatedIntentions()
+
+        for x in intentions:
+            for i in intentions[x]:
+                # For each condition, its parameters are acquired and the condition predicate is evaluated
+                for cond in rule.getConditions():
+                    predicate = cond.split("_")[0]
+
+                    # Get parameters
+                    if "partnerAction" == predicate:
+                        parameters = [cond, i]
+                    else:
+                        parameters = self.getCoopPredicateParameters(predicate, i, cond)
+
+                    # Construct predicate function call
+                    if "EVApproachingPartner" == predicate:
+                        predCall = self.getIsEVApproaching(parameters)
+                    elif "timeSinceLastEVThrough" == predicate:
+                        predCall = getattr(EVCoopPredicateSet, "timeSinceLastEVThrough")(*parameters)
+                    elif "partnerAction" == predicate:
+                        predCall = getattr(CoopPredicateSet, "partnerAction")(*parameters)
+                    else:
+                        predCall = getattr(CoopPredicateSet, cond)(parameters)
+
+                    # Determine validity of predicate
+                    if predCall == False:
+                        return False
+
+        return True  # if all predicates return true, evaluate rule as True
+
+    def evaluateEVRule(self, trafficLight: TrafficLight, rule: Rule) -> bool:
         for cond in rule.getConditions():
             predicate = cond.split("_")[0]
 
@@ -669,51 +717,3 @@ class DriverEV(Driver):
                 return False
 
         return True
-
-    # EVALUATE RULE VALIDITY (fEval)
-    def evaluateCoopRule(self, trafficLight: TrafficLight, rule: Rule) -> bool:
-        if rule.getType() == 0:
-            return self.evaluateRule(trafficLight, rule)
-        if rule.getType() == 2:
-            return self.evaluateEVRule(trafficLight, rule)
-
-        intentions = trafficLight.getCommunicatedIntentions()
-
-        for x in intentions:
-            for i in intentions[x]:
-                # For each condition, its parameters are acquired and the condition predicate is evaluated
-                for cond in rule.getConditions():
-                    predicate = cond.split("_")[0]
-
-                    if any(x.getName() == predicate for x in self.setUpTuple[1]):
-                        parameters = [cond, i]
-                    else:
-                        parameters = self.getCoopPredicateParameters(predicate, i, cond)
-
-                    if "EVApproachingPartner" == predicate:
-                        predCall = self.getIsEVApproaching(parameters)
-                    elif isinstance(parameters, int) or isinstance(parameters, float) or isinstance(parameters, str):
-                        predCall = getattr(CoopPredicateSet, cond)(parameters)  # Construct predicate fuction call
-                    else:
-                        # Construct predicate fuction call for custom predicates (they are of form TLname_action but are handled by the same predicate in CoopPredicateSet)
-                        predCall = getattr(CoopPredicateSet, "customPredicate")(parameters[0], parameters[1])
-
-                    # Determine validity of predicate
-                    if predCall == False:
-                        return False
-
-        return True  # if all predicates return true, evaluate rule as True
-
-    # PROVIDE SIMULATION RELEVANT PARAMETERS
-    def getCoopPredicateParameters(self, predicate: str, intention: Intention, condition: str) -> Union[int, Tuple[str, Intention]]:
-        if "timeSinceCommunication" == predicate:
-            timeSent = intention.getTime()
-            return traci.simulation.getTime() - timeSent
-        elif "intendedActionIs" == predicate:
-            return intention.getAction()
-        elif "EVApproachingPartner" == predicate:
-            partnerName = condition.split("_", 1)[1]
-            partnerTL = [tl for tl in self.setUpTuple[1] if tl.getName() == partnerName][0]
-            return partnerTL
-        else:
-            raise Exception("Undefined predicate:", predicate)
