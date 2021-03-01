@@ -35,7 +35,7 @@ class Simulation:
             self.options = json.load(f)
 
         deviceOptions = self.options["device"]
-        self.deviceName = deviceOptions["name"]
+        self.deviceName = deviceOptions["name"] if deviceOptions["name"] != "" else socket.gethostname()
 
         trainingOptions = self.options["training"]
         self.useShoutahead = trainingOptions["useShoutahead"]
@@ -83,7 +83,7 @@ class Simulation:
     def initOutput(self):
         self.status = None
         if self.displayStatus:
-            self.status = Status(socket.gethostname())
+            self.status = Status(self.deviceName)
             self.status.initialize()
             self.status.update("total generation", self.totalGenerations)
 
@@ -99,7 +99,7 @@ class Simulation:
         if self.notify:
             with open("credentials.json", "r") as f:
                 credentials = json.load(f)
-            self.notifier = Notifier(credentials["email"], credentials["password"], ["michael.xu1816@gmail.com"], socket.gethostname())
+            self.notifier = Notifier(credentials["email"], credentials["password"], ["michael.xu1816@gmail.com"], self.deviceName())
 
     def initSetUpTuple(self):
         sumoNetworkName = f"Traffic Flows/{self.sumoNetworkName}/simpleNetwork.net.xml"
