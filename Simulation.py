@@ -181,7 +181,7 @@ class Simulation:
             for ap in resultingAgentPools:
                 for i in ap.getIndividualsSet():
                     continue
-        self.allIndividualsTested = True  # Uncomment for quick testing
+        # self.allIndividualsTested = True  # Uncomment for quick testing
 
     def storeGeneration(self):
         genTime = self.generationRuntimes[-1]
