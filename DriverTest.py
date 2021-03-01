@@ -37,12 +37,14 @@ class DriverTest(DriverEV):
 
         # run functions to setup state
         self.constructTLControllingLaneDict(trafficLights)
-        self.constructLeftTurnLanesDict(trafficLights)
+        self.constructLeftTurnLanesList(trafficLights)
+        self.constructTimeSinceLastEVThroughDict(trafficLights)
 
         # get state and EVs
         self.calculateState(trafficLights)
         self.calculateEVs(trafficLights)
         self.calculateLeadingEV(trafficLights)
+        self.calculateTimeSinceLastEVThrough(trafficLights)
 
         # Simulation loop
         step = 0
@@ -50,7 +52,7 @@ class DriverTest(DriverEV):
         carsWaitingAfter = {}
 
         for tl in trafficLights:
-            tl.assignIndividual()
+            tl.assignIndividual(testing=True)
             tl.updateCurrentPhase(traci.trafficlight.getPhaseName(tl.getName()))
 
             rule = self.applicableUserDefinedRule(tl, userDefinedRules)  # Check user-defined rules
@@ -59,10 +61,10 @@ class DriverTest(DriverEV):
             if rule == False or rule is None:
                 # Determine if the rule should be chosen from RS or RSev
                 isEVApproaching = self.getIsEVApproaching(tl)
-                validRules = self.getValidRules(tl, tl.getAssignedIndividual())
+                validRS, validRSint, validRSev, validRSev_int = self.getValidRules(tl, tl.getAssignedIndividual())
 
                 # Get a rule from assigned Individual
-                rule = tl.getNextRule(validRules[0], validRules[1], validRules[2], isEVApproaching, traci.simulation.getTime())
+                rule = tl.getNextRule(validRS, validRSint, validRSev, validRSev_int, isEVApproaching, self.useEVCoopPredicates, traci.simulation.getTime())
 
                 # if no valid rule applicable, apply the Do Nothing rule.
                 if rule == -1:
@@ -94,6 +96,7 @@ class DriverTest(DriverEV):
             self.calculateState(trafficLights)
             self.calculateEVs(trafficLights)
             self.calculateLeadingEV(trafficLights)
+            self.calculateTimeSinceLastEVThrough(trafficLights)
 
             for tl in trafficLights:
                 # update output values
@@ -161,17 +164,20 @@ class DriverTest(DriverEV):
                     EVs = self.getEVs(tl)
                 else:
                     leadingEV = None
-                    EVs = None
+                    EVs = []
 
-                # Get a list of valid rules from RS, RSint, and RSev
-                validRS, validRSint, validRSev = self.getValidRules(tl, tl.getAssignedIndividual())
+                validRS, validRSint, validRSev, validRSev_int = self.getValidRules(tl, tl.getAssignedIndividual())
 
-                if len(validRS) == 0 and len(validRSint) == 0 and not isEVApproaching:
+                if len(validRS) == 0 and len(validRSint) == 0 and not isEVApproaching and not self.useEVCoopPredicates:
                     nextRule = -1
-                elif len(validRSev) == 0 and len(validRSint) == 0 and isEVApproaching:
+                elif len(validRSev) == 0 and len(validRSint) == 0 and isEVApproaching and not self.useEVCoopPredicates:
+                    nextRule = -1
+                elif len(validRS) == 0 and len(validRSev_int) == 0 and not isEVApproaching and self.useEVCoopPredicates:
+                    nextRule = -1
+                elif len(validRSev) == 0 and len(validRSev_int) == 0 and isEVApproaching and self.useEVCoopPredicates:
                     nextRule = -1
                 else:
-                    nextRule = tl.getNextRule(validRS, validRSint, validRSev, isEVApproaching, traci.simulation.getTime())  # Get a rule from assigned Individual
+                    nextRule = tl.getNextRule(validRS, validRSint, validRSev, validRSev_int, isEVApproaching, self.useEVCoopPredicates, traci.simulation.getTime())
 
                 if nextRule == -1:
                     tl.doNothing()  # Update traffic light's Do Nothing counter
@@ -186,9 +192,10 @@ class DriverTest(DriverEV):
                             traci.trafficlight.setPhase(tl.getName(), nextRule.getAction())
                             tl.resetTimeInCurrentPhase()
                             # if tl.getName() == "incoming":
-                            #     print(step)
-                            #     print(nextRule)
-                            #     print("\n")
+                            # print(step)
+                            # print(tl.getName())
+                            # print(nextRule)
+                            # print("\n")
 
                 # --- USER DEFINED RULE CHECK ---
                 if self.maxGreenAndYellow_UDRule:
@@ -229,7 +236,8 @@ class DriverTest(DriverEV):
         # run functions to setup state
         trafficLights = self.setUpTuple[1]
         self.constructTLControllingLaneDict(trafficLights)
-        self.constructLeftTurnLanesDict(trafficLights)
+        self.constructLeftTurnLanesList(trafficLights)
+        self.constructTimeSinceLastEVThroughDict(trafficLights)
 
         # Simulation loop
         step = 0
@@ -245,6 +253,7 @@ class DriverTest(DriverEV):
             self.calculateState(trafficLights)
             self.calculateEVs(trafficLights)
             self.calculateLeadingEV(trafficLights)
+            self.calculateTimeSinceLastEVThrough(trafficLights)
 
             for tl in trafficLights:
                 # update output values

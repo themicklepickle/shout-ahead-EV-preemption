@@ -10,6 +10,7 @@ from Rule import Rule
 import PredicateSet
 import CoopPredicateSet
 import EVPredicateSet
+import EVCoopPredicateSet
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
@@ -27,10 +28,12 @@ def initTestIndividual(agentPool: AgentPool, folder: str):
             rules.append(Rule(r["type"], r["conditions"], r["action"], agentPool))
         ruleSets[ruleSet] = rules
 
-    agentPool.testIndividual = Individual("Test", agentPool, ruleSets["RS"], ruleSets["RSint"], ruleSets["RSev"])
+    agentPool.testIndividual = Individual("Test", agentPool, ruleSets["RS"], ruleSets["RSint"], ruleSets["RSev"], ruleSets["RSev_int"])
+
     agentPool.RSPredicates = PredicateSet.getPredicateSet()
-    agentPool.RSintPredicates = CoopPredicateSet.getPredicateSet(agentPool, True)
+    agentPool.RSintPredicates = CoopPredicateSet.getPredicateSet(agentPool)
     agentPool.RSevPredicates = EVPredicateSet.getPredicateSet()
+    agentPool.RSev_intPredicates = EVCoopPredicateSet.getPredicateSet(agentPool)
     agentPool.EVLanePredicates = EVPredicateSet.getAgentSpecificPredicates(agentPool)
 
 
@@ -49,7 +52,8 @@ def addRule(apID, ruleSet, rule, folder):
             json.dump({
                 "RS": [],
                 "RSint": [],
-                "RSev": []
+                "RSev": [],
+                'RSev_int': []
             }, f, indent=2)
     with open(filepath, "r") as f:
         data = json.load(f)
@@ -105,40 +109,85 @@ def findBestIndivs():
         print(apID, maxIndiv["fitness"], maxIndivGen, maxIndivIndex)
 
 
-def addBestIndividualsInGeneration(generation):
+def addBestIndividualsInGeneration(startTime, folder, generation):
 
     username = os.environ["MONGODB_USERNAME"]
     password = os.environ["MONGODB_PASSWORD"]
-    client = pymongo.MongoClient(f"mongodb+srv://{username}:{password}@status.rxyk4.mongodb.net/status?retryWrites=true&w=majority")
+    client = pymongo.MongoClient(f"mongodb+srv://{username}:{password}@cluster0.a9379.mongodb.net/status?retryWrites=true&w=majority")
 
-    startTime = "Sat_Feb_13_12:34:59_AM_2021"
-    # generation = 3
-    label = "new agent pool"
-    individualIndex = 1
-    folder = "Sat_Feb_13_12:34:59_AM_2021"
+    label = "output"
 
     collection = client[startTime][str(generation)]
 
     for apID in ["AP" + str(i) for i in range(1, 4)]:
         filepath = f"rules/{folder}/{apID}.json"
+        # create folder if it doesn't exist
+        if not Path(filepath).is_file():
+            Path(f"rules/{folder}").mkdir(parents=True, exist_ok=True)
+
+        # clear contents of folder
         with open(filepath, "w") as f:
             json.dump({
                 "RS": [],
                 "RSint": [],
-                "RSev": []
+                "RSev": [],
+                "RSev_int": []
             }, f, indent=2)
 
+        # get document from MongoDB
         document = collection.find_one({
-            "label": label,
-            "id": apID
+            "label": label
         })
-        individual = document["data"][individualIndex]
-        for ruleSet in ["RS", "RSint", "RSev"]:
-            # for ruleSet in ["RSev"]:
+
+        # get desired individual from document
+        individual = document["data"]["bestIndividuals"][apID]
+
+        # add ruleSets of individual to the file
+        for ruleSet in ["RS", "RSint", "RSev", "RSev_int"]:
             for rule in individual[ruleSet]:
-                # if rule["weight"] != 0:
                 addRule(apID, ruleSet, rule, folder)
+
+    # username = os.environ["MONGODB_USERNAME"]
+    # password = os.environ["MONGODB_PASSWORD"]
+    # client = pymongo.MongoClient(f"mongodb+srv://{username}:{password}@status.rxyk4.mongodb.net/status?retryWrites=true&w=majority")
+
+    # startTime = "Mon_Feb_22_11:10:10_PM_2021"
+    # folder = startTime
+    # label = "new agent pool"
+    # individualIndex = 1
+
+    # collection = client[startTime][str(generation)]
+
+    # for apID in ["AP" + str(i) for i in range(1, 4)]:
+    #     filepath = f"rules/{folder}/{apID}.json"
+    #     with open(filepath, "w") as f:
+    #         json.dump({
+    #             "RS": [],
+    #             "RSint": [],
+    #             "RSev": [],
+    #             "RSev_int": []
+    #         }, f, indent=2)
+
+    #     document = collection.find_one({
+    #         "label": label,
+    #         "id": apID
+    #     })
+    #     individual = document["data"][individualIndex]
+    #     for ruleSet in ["RS", "RSint", "RSev", "RSev_int"]:
+    #         # for ruleSet in ["RSev"]:
+    #         for rule in individual[ruleSet]:
+    #             # if rule["weight"] != 0:
+    #             addRule(apID, ruleSet, rule, folder)
 
 
 if __name__ == "__main__":
-    addBestIndividualsInGeneration(1)
+    addBestIndividualsInGeneration(
+        startTime="Thu_Feb_25_10:02:43_PM_2021",
+        folder="Feb27_50",
+        generation=50
+    )
+    # addBestIndividualsInGeneration(
+    #     startTime="Mon_Feb_22_11:10:10_PM_2021",
+    #     folder="Feb25_20",
+    #     generation=20
+    # )

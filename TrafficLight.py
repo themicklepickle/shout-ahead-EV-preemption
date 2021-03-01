@@ -44,6 +44,7 @@ class TrafficLight:
         self.phaseTimeSpentInRed: List[float] = []
         self.EVs: List[EmergencyVehicle] = []
         self.leadingEV: EmergencyVehicle = None
+        self.timeSinceLastEVThrough = 0
 
     def __str__(self) -> str:
         return self.getName()
@@ -51,19 +52,15 @@ class TrafficLight:
     def __repr__(self) -> str:
         return self.getName()
 
-    # RETURNS THE TRAFFIC LIGHT'S NAME
     def getName(self):
         return self.name
 
-    # RETURNS THE LANES CONTROLLED BY THE TRAFFIC LIGHT
     def getLanes(self):
         return self.lanes
 
-    # RETURNS THE EDGES CONTROLLED BY THE TRAFFIC LIGHT
     def getEdges(self):
         return self.edges
 
-    # SETS THE NUMBER OF EDGES CONTROLLED BY THE TRAFFIC LIGHT
     def _setEdges(self, lanes: List[str]):
         # Determine edges from lanes
         for l in lanes:
@@ -82,15 +79,12 @@ class TrafficLight:
             else:
                 pass
 
-    # RETURNS THE PHASES AVAILBLE TO THE TRAFFIC LIGHT
     def getPhases(self):
         return self.phases
 
-    # SETS THE PHASES AVAILBLE TO THE TRAFFIC LIGHT
     def setPhases(self, phases: List[str]):
         self.phases = phases
 
-    # SETS THE PHASES AVAILBLE TO THE TRAFFIC LIGHT
     def addPhase(self, phase: str):
         self.phases.append(phase)
 
@@ -109,78 +103,60 @@ class TrafficLight:
     def resetTimeInCurrentPhase(self):
         self.timeInCurrentPhase = 0
 
-    # RETURN THE CURRENTLY SELECTED RULE
     def getCurrentRule(self):
         return self.currentRule
 
-    # SET THE CURRENTLY SELECTED RULE
     def setCurrentRule(self, rule: Rule):
         self.currentRule = rule
 
-    # RETURNS THE AGENT POOL OF THE TRAFFIC LIGHT
     def getAgentPool(self):
         return self.agentPool
 
-    # ASSIGNS THE TRAFFIC LIGHT TO AN AGENT POOL
     def assignToAgentPool(self, agentPool: AgentPool):
         self.agentPool = agentPool
 
-    # RETURNS THE RULE SET INDIVIDUAL CURRENTLY BEING USED BY THE TRAFFIC LIGHT FOR A SIM RUN
     def getAssignedIndividual(self):
         return self.assignedIndividual
 
-    # ASSIGNS A RULE SET INDIVIDUAL CURRENTLY BEING USED BY THE TRAFFIC LIGHT FOR A SIM RUN
-    def assignIndividual(self):
-        self.assignedIndividual = self.agentPool.selectIndividual()
+    def assignIndividual(self, testing=False):
+        self.assignedIndividual = self.agentPool.selectIndividual(testing)
         self.assignedIndividual.selected()  # Let Individual know it's been selected
 
-    # RETURNS THE TOTAL NUMBER OF CARS WAITING AT THE TRAFFIC LIGHT'S INTERSECTION
     def getCarsWaiting(self):
         return self.carsWaiting
 
-    # SETS THE TOTAL NUMBER OF CARS WAITING AT THE TRAFFIC LIGHT'S INTERSECTION
     def updateCarsWaiting(self, carsWaiting: Dict[str, List[str]]):
         self.carsWaiting = carsWaiting
 
-    # RETURNS THE TOTAL WAIT TIME OF CARS WAITING AT THE TRAFFIC LIGHT'S INTERSECTION
     def getWaitTime(self):
         return self.waitTime
 
-    # SETS THE TOTAL WAIT TIME OF CARS WAITING AT THE TRAFFIC LIGHT'S INTERSECTION
     def setWaitTime(self, waitTime: float):
         self.waitTime = waitTime
 
-    # INCREMENTS THE NUMBER OF TIMES THE TL HAS APPLIED THE Do Nothing ACTION
     def doNothing(self):
         self.doNothingCount += 1
 
-    # RETURN THE doNothingCount
     def getDoNothingCount(self):
         return self.doNothingCount
 
-    # RETURN LIST OF COMMUNICATION PARTNERS
     def getCommunicationPartners(self):
         return self.communicationPartners
 
-    # SET LIST OF COMMUNICATION PARTNERS
     def setCommunicationPartners(self, commPartners: List[TrafficLight]):
         self.communicationPartners = commPartners
 
-    # ADD A COMMUNICATION PARTNER
     def addCommunicationPartner(self, commPartner: TrafficLight):
         self.communicationPartners.append(commPartner)
 
-    # SET TL'S NEXT INTENDED ACTION
     def setIntention(self, intention: Intention):
         self.communicateIntention(intention)
         self.communicatedIntentions[intention.getTurn()] = intention
 
-    # COMMUNICATE INTENTION TO ALL COMMUNICATION PARTNERS
     def communicateIntention(self, intention: Intention):
         for tl in self.communicationPartners:
             tl.recieveIntention(intention)
 
-    # RECIEVE AN INTENTION FROM A COMMUNICATION PARTNER
     def recieveIntention(self, intention: Intention):
         if intention.getTurn() not in self.recievedIntentions:
             self.recievedIntentions[intention.getTurn()] = []
@@ -190,7 +166,6 @@ class TrafficLight:
     def getCommunicatedIntentions(self):
         return self.recievedIntentions
 
-    # REMOVES ALL INTENTIONS SENT TOO LONG AGO
     def removeOldIntentions(self, currentTime: float):
         intentionsToRemove = []
         for intention in self.recievedIntentions:
@@ -227,14 +202,14 @@ class TrafficLight:
                 return i
         return False
 
-    # DECIDE WHICH RULE TO APPLY AT CURRENT ACTION STEP
-    def getNextRule(self, validRulesRS: List[Rule], validRulesRSint: List[Rule], validRulesRSev: List[Rule], isEVApproaching: bool, time: float) -> Union[Rule, Literal[-1]]:
+    def getNextRule(self, validRulesRS: List[Rule], validRulesRSint: List[Rule], validRulesRSev: List[Rule], validRulesRSev_int: List[Rule], isEVApproaching: bool, useEVCoopPredicates: bool, time: float) -> Union[Rule, Literal[-1]]:
         self.numOfRulesSelected += 1
         # First, select a rule from RS (or RSev if applicable) and communicate it
         if isEVApproaching:
             intendedRule = self.getAssignedIndividual().selectRule(validRulesRSev)  # Get intended rule to apply
         else:
             intendedRule = self.getAssignedIndividual().selectRule(validRulesRS)  # Get intended rule to apply
+
         if intendedRule == -1:
             if isEVApproaching:
                 self.numOfTimesNoRSevRuleWasValid += 1
@@ -252,7 +227,11 @@ class TrafficLight:
                 self.setIntention(Intention(self, intendedRule.getAction(), time))
 
         # If intended rule isn't user-defined, select a rule from RSint and then decide between the two
-        coopRule = self.getAssignedIndividual().selectCoopRule(validRulesRSint)
+        if useEVCoopPredicates:
+            coopRule = self.getAssignedIndividual().selectCoopRule(validRulesRSev_int)
+        else:
+            coopRule = self.getAssignedIndividual().selectCoopRule(validRulesRSint)
+
         if coopRule == -1:
             self.numOfTimesNoCoopRuleWasValid += 1
 
@@ -267,11 +246,9 @@ class TrafficLight:
         elif coopRule == -1 and intendedRule != -1:
             self.setIntention(Intention(self, intendedRule.getAction(), time))
             return intendedRule
-
         elif coopRule != -1 and intendedRule == -1:
             self.setIntention(Intention(self, coopRule.getAction(), time))
             return coopRule
-
         elif coopRule.getWeight() >= intendedRule.getWeight():
             self.setIntention(Intention(self, coopRule.getAction(), time))
             return coopRule

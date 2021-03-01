@@ -6,6 +6,7 @@ from Driver import Driver
 import PredicateSet
 import CoopPredicateSet
 import EVPredicateSet
+import EVCoopPredicateSet
 import EvolutionaryLearner
 import ReinforcementLearner
 from EmergencyVehicle import EmergencyVehicle
@@ -17,17 +18,45 @@ if TYPE_CHECKING:
     from TrafficLight import TrafficLight
     from Rule import Rule
     from Intention import Intention
+    from AgentPool import AgentPool
 
 # NOTE: vehID in DriverEV.py refers to only the first element of the split, in Driver.py vehID was the split tuple
 
 
 class DriverEV(Driver):
 
+    def __init__(self,
+                 sumoCmd: str,
+                 setUpTuple: Tuple[List[Rule], List[TrafficLight], List[AgentPool]],
+                 maxGreenPhaseTime: int, maxYellowPhaseTime: int, maxSimulationTime: int,
+                 maxGreenAndYellow_UDRule: bool, maxRedPhaseTime_UDRule: bool, assignGreenPhaseToSingleWaitingPhase: bool,
+                 useShoutahead: bool, useEVCoopPredicates: bool) -> None:
+        self.sumoCmd = sumoCmd
+        self.setUpTuple = setUpTuple
+        self.maxGreenPhaseTime = maxGreenPhaseTime
+        self.maxYellowPhaseTime = maxYellowPhaseTime
+        self.maxSimulationTime = maxSimulationTime
+        self.maxGreenAndYellow_UDRule = maxGreenAndYellow_UDRule
+        self.maxRedPhaseTime_UDRule = maxRedPhaseTime_UDRule
+        self.assignGreenPhaseToSingleWaitingPhase_UDRule = assignGreenPhaseToSingleWaitingPhase
+        self.useShoutahead = useShoutahead
+        self.useEVCoopPredicates = useEVCoopPredicates
+        self.state = {}
+        self.leadingEV = {}
+        self.TLControllingLane = {}
+        self.leftTurnLanes = []
+        self.EVs = {}
+        self.lastEVs = None
+        self.vehicleWaitingTimes = {}
+        self.vehicleSpeeds = {}
+        self.timeSinceLastEVThrough = {}
+
     # CONTAINS MAIN TRACI SIMULATION LOOP
     def run(self) -> None:
         numOfRSRulesApplied: int = 0
         numOfRSintRulesApplied: int = 0
         numOfRSevRulesApplied: int = 0
+        numOfRSev_intRulesApplied: int = 0
 
         # Start SUMO. Comment out if running Driver as standalone module.
         traci.start(self.sumoCmd)
@@ -40,17 +69,20 @@ class DriverEV(Driver):
 
         # run functions to setup state
         self.constructTLControllingLaneDict(trafficLights)
-        self.constructLeftTurnLanesDict(trafficLights)
+        self.constructLeftTurnLanesList(trafficLights)
+        self.constructTimeSinceLastEVThroughDict(trafficLights)
 
         # get state and EVs
         self.calculateState(trafficLights)
         self.calculateEVs(trafficLights)
         self.calculateLeadingEV(trafficLights)
+        self.calculateTimeSinceLastEVThrough(trafficLights)
 
         # Assign each traffic light an individual from their agent pool for this simulation run, and a starting rule
         for tl in trafficLights:
             tl.assignIndividual()
             tl.updateCurrentPhase(traci.trafficlight.getPhaseName(tl.getName()))
+            # print(tl.getAssignedIndividual().getRSev_int())
 
             rule = self.applicableUserDefinedRule(tl, userDefinedRules)  # Check user-defined rules
 
@@ -58,10 +90,10 @@ class DriverEV(Driver):
             if rule == False or rule is None:
                 # Determine if the rule should be chosen from RS or RSev
                 isEVApproaching = self.getIsEVApproaching(tl)
-                validRules = self.getValidRules(tl, tl.getAssignedIndividual())
+                validRS, validRSint, validRSev, validRSev_int = self.getValidRules(tl, tl.getAssignedIndividual())
 
                 # Get a rule from assigned Individual
-                rule = tl.getNextRule(validRules[0], validRules[1], validRules[2], isEVApproaching, traci.simulation.getTime())
+                rule = tl.getNextRule(validRS, validRSint, validRSev, validRSev_int, isEVApproaching, self.useEVCoopPredicates, traci.simulation.getTime())
 
                 # if no valid rule applicable, apply the Do Nothing rule.
                 if rule == -1:
@@ -101,6 +133,7 @@ class DriverEV(Driver):
             self.calculateState(trafficLights)
             self.calculateEVs(trafficLights)
             self.calculateLeadingEV(trafficLights)
+            self.calculateTimeSinceLastEVThrough(trafficLights)
 
             for tl in trafficLights:
 
@@ -182,20 +215,23 @@ class DriverEV(Driver):
                         EVChangeInQueue = None
                 else:
                     leadingEV = None
-                    EVs = None
+                    EVs = []
                     EVChangeInSpeed = None
                     EVChangeInQueue = None
                     EVIsStopped = False
 
-                # Determine if the rule should be chosen from RS or RSev
-                validRules = self.getValidRules(tl, tl.getAssignedIndividual())
+                validRS, validRSint, validRSev, validRSev_int = self.getValidRules(tl, tl.getAssignedIndividual())
 
-                if len(validRules[0]) == 0 and len(validRules[1]) == 0 and not isEVApproaching:
-                    nextRule = -1  # -1 is used to represent "no valid next rule"
-                elif len(validRules[2]) == 0 and len(validRules[1]) == 0 and isEVApproaching:
-                    nextRule = -1  # -1 is used to represent "no valid next rule"
+                if len(validRS) == 0 and len(validRSint) == 0 and not isEVApproaching and not self.useEVCoopPredicates:
+                    nextRule = -1
+                elif len(validRSev) == 0 and len(validRSint) == 0 and isEVApproaching and not self.useEVCoopPredicates:
+                    nextRule = -1
+                elif len(validRS) == 0 and len(validRSev_int) == 0 and not isEVApproaching and self.useEVCoopPredicates:
+                    nextRule = -1
+                elif len(validRSev) == 0 and len(validRSev_int) == 0 and isEVApproaching and self.useEVCoopPredicates:
+                    nextRule = -1
                 else:
-                    nextRule = tl.getNextRule(validRules[0], validRules[1], validRules[2], isEVApproaching, traci.simulation.getTime())  # Get a rule from assigned Individual
+                    nextRule = tl.getNextRule(validRS, validRSint, validRSev, validRSev_int, isEVApproaching, self.useEVCoopPredicates, traci.simulation.getTime())
 
                 if nextRule == -1:
                     tl.doNothing()  # Update traffic light's Do Nothing counter
@@ -244,10 +280,9 @@ class DriverEV(Driver):
                         elif nextRule.getType() == 1:
                             numOfRSintRulesApplied += 1
                         elif nextRule.getType() == 2:
-                            # print(nextRule)
-                            # print(oldRule)
-                            # print()
                             numOfRSevRulesApplied += 1
+                        elif nextRule.getType() == 3:
+                            numOfRSev_intRulesApplied += 1
 
                 # --- USER DEFINED RULE CHECK ---
                 if self.maxGreenAndYellow_UDRule:
@@ -277,7 +312,8 @@ class DriverEV(Driver):
         print("Total applied rules")
         print(f"  RS: {numOfRSRulesApplied}")
         print(f"  RSint: {numOfRSintRulesApplied}")
-        print(f"  RSev: {numOfRSevRulesApplied}\n")
+        print(f"  RSev: {numOfRSevRulesApplied}")
+        print(f"  RSev_int: {numOfRSev_intRulesApplied}\n")
         for tl in trafficLights:
             tl.resetRecievedIntentions()
             individual = tl.getAssignedIndividual()
@@ -295,7 +331,7 @@ class DriverEV(Driver):
             for lane in tl.getLanes():
                 self.TLControllingLane[lane] = tl
 
-    def constructLeftTurnLanesDict(self, trafficLights: List[TrafficLight]) -> None:
+    def constructLeftTurnLanesList(self, trafficLights: List[TrafficLight]) -> None:
         maxLaneNum = 0
         for tl in trafficLights:
             for lane in tl.getLanes():
@@ -303,11 +339,15 @@ class DriverEV(Driver):
                     if int(lane.split("_")[2]) > maxLaneNum:
                         self.leftTurnLanes.append(lane)
 
+    def constructTimeSinceLastEVThroughDict(self, trafficLights: List[TrafficLight]) -> None:
+        for tl in trafficLights:
+            self.timeSinceLastEVThrough[tl.getName()] = -1
+
     def resetState(self, trafficLights: List[TrafficLight]) -> None:
         for tl in trafficLights:
-            self.state[tl] = {}
+            self.state[tl.getName()] = {}
             for lane in tl.getLanes():
-                self.state[tl][lane] = []
+                self.state[tl.getName()][lane] = []
 
     def calculateState(self, trafficLights: List[TrafficLight]) -> None:
         self.resetState(trafficLights)
@@ -343,10 +383,10 @@ class DriverEV(Driver):
                     identifer += "_EV_S"
 
             tl = self.TLControllingLane[laneID]
-            self.state[tl][laneID].append(vehID + identifer)
+            self.state[tl.getName()][laneID].append(vehID + identifer)
 
     def getState(self, trafficLight: TrafficLight) -> Dict[str, List[str]]:
-        return self.state[trafficLight]
+        return self.state[trafficLight.getName()]
 
 #----------------------- EV PREDICATES AND REINFORCEMENT LEARNING ----------------------#
     # DETERMINE WHETHER OR NOT AN EMERGENCY VEHICLE IS APPROACHING
@@ -360,9 +400,16 @@ class DriverEV(Driver):
         return False  # Return False if no EVs were found
 
     def calculateEVs(self, trafficLights: List[TrafficLight]) -> None:
+        if self.lastEVs is None:
+            self.lastEVs = self.EVs
+        else:
+            self.lastEVs = {}
+            for tlName, EVList in self.EVs.items():
+                self.lastEVs[tlName] = list(EVList)
+
         for tl in trafficLights:
             state = self.getState(tl)
-            self.EVs[tl] = []
+            self.EVs[tl.getName()] = []
 
             for lane in state:
                 vehicles = []
@@ -382,32 +429,54 @@ class DriverEV(Driver):
                         vehID = veh["name"].split("_")[0]
                         speed = self.vehicleSpeeds[vehID]
                         distance = veh["distance"]
-                        self.EVs[tl].append(EmergencyVehicle(veh["name"], speed, distance, lane, i))
+                        self.EVs[tl.getName()].append(EmergencyVehicle(veh["name"], speed, distance, lane, i))
 
-            self.EVs[tl].sort(key=lambda EV: EV.getDistance())
+            self.EVs[tl.getName()].sort(key=lambda EV: EV.getDistance())
 
     # GET A LIST OF ALL EMERGENCY VEHICLES
     def getEVs(self, trafficLight: TrafficLight) -> List[EmergencyVehicle]:
-        return self.EVs[trafficLight]
+        return self.EVs[trafficLight.getName()]
+
+    def getLastEVs(self, trafficLight: TrafficLight) -> List[EmergencyVehicle]:
+        return self.lastEVs[trafficLight.getName()]
 
     def calculateLeadingEV(self, trafficLights: List[TrafficLight]) -> None:
         for tl in trafficLights:
             EVs = self.getEVs(tl)
 
             if EVs == []:
-                self.leadingEV[tl] = None
+                self.leadingEV[tl.getName()] = None
             else:
-                self.leadingEV[tl] = EVs[0]
+                self.leadingEV[tl.getName()] = EVs[0]
 
     # GET LEADING EMERGENCY VEHICLE AMONG ALL LANES
     def getLeadingEV(self, trafficLight: TrafficLight) -> EmergencyVehicle:
-        return self.leadingEV[trafficLight]
+        return self.leadingEV[trafficLight.getName()]
+
+    def getTimeSinceLastEVThrough(self, trafficLight: TrafficLight) -> int:
+        return self.timeSinceLastEVThrough[trafficLight.getName()]
+
+    def calculateTimeSinceLastEVThrough(self, trafficLights: List[TrafficLight]) -> None:
+        for tl in trafficLights:
+            EVs = self.getEVs(tl)
+            lastEVs = self.getLastEVs(tl)
+
+            diff = [EV for EV in lastEVs if not any(EV.getNumber() == i.getNumber() for i in EVs)]
+
+            if len(diff) > 0:
+                self.timeSinceLastEVThrough[tl.getName()] = 0
+            elif self.timeSinceLastEVThrough[tl.getName()] != -1:
+                self.timeSinceLastEVThrough[tl.getName()] += 5
+
 #---------------------------------- EV PREDICATES END ----------------------------------#
 
 #------------------------------ EV EVOLUTIONARY LEARNING -------------------------------#
+
     def getAverageEVSpeed(self, trafficLight: TrafficLight) -> List[int]:
         EVs = self.getEVs(trafficLight)
         EVSpeedsList = [EV.getSpeed() for EV in EVs]
+        if EVSpeedsList == []:
+            return 0
         averageEVSpeed = sum(EVSpeedsList) / len(EVSpeedsList)
 
         return averageEVSpeed
@@ -521,7 +590,6 @@ class DriverEV(Driver):
 
             return parameters
 
-#------------------------------------ EV PREDICATES ------------------------------------#
         elif "EVDistanceToIntersection" == predicate:
             leadingEV = self.getLeadingEV(trafficLight)
             return leadingEV.getDistance() if leadingEV is not None else -1
@@ -536,20 +604,19 @@ class DriverEV(Driver):
 
         else:
             raise Exception("Undefined predicate:", predicate)
-#---------------------------------- EV PREDICATES END ----------------------------------#
 
-    # RETURNS RULES THAT ARE APPLICABLE AT A GIVEN TIME AND STATE
-    def getValidRules(self, trafficLight: TrafficLight, individual: Individual) -> Tuple[List[Rule], List[Rule], List[Rule]]:
+    def getValidRules(self, trafficLight: TrafficLight, individual: Individual) -> Tuple[List[Rule], List[Rule], List[Rule], List[Rule]]:
         validRS = []
         validRSint = []
         validRSev = []
+        validRSev_int = []
 
         # Find valid RS rules
         for rule in individual.getRS():
             if self.evaluateRule(trafficLight, rule):
                 validRS.append(rule)
 
-        if self.useShoutahead:
+        if self.useShoutahead and not self.useEVCoopPredicates:
             # Find valid RSint rules
             for rule in individual.getRSint():
                 if self.evaluateCoopRule(trafficLight, rule):
@@ -561,15 +628,15 @@ class DriverEV(Driver):
             if self.evaluateEVRule(trafficLight, rule):
                 validRSev.append(rule)
 
-        return (validRS, validRSint, validRSev)
+        if self.useShoutahead and self.useEVCoopPredicates:
+            # Find valid RSev_int rules
+            for rule in individual.getRSev_int():
+                if self.evaluateCoopRule(trafficLight, rule):
+                    validRSev_int.append(rule)
 
-    # EVALUATE RULE VALIDITY (fEval)
+        return (validRS, validRSint, validRSev, validRSev_int)
+
     def evaluateRule(self, trafficLight: TrafficLight, rule: Rule) -> bool:
-        if rule.getType() == 1:
-            return self.evaluateCoopRule(trafficLight, rule)
-        if rule.getType() == 2:
-            return self.evaluateEVRule(trafficLight, rule)
-
         # For each condition, its parameters are acquired and the condition predicate is evaluated
         for cond in rule.getConditions():
             predicate = cond.split("_")[0]
@@ -583,12 +650,59 @@ class DriverEV(Driver):
 
         return True  # if all predicates return true, evaluate rule as True
 
-    def evaluateEVRule(self, trafficLight: TrafficLight, rule: Rule) -> bool:
-        if rule.getType() == 0:
-            return self.evaluateRule(trafficLight, rule)
-        if rule.getType() == 1:
-            return self.evaluateCoopRule(trafficLight, rule)
+    def getCoopPredicateParameters(self, predicate: str, intention: Intention, condition: str) -> Union[int, Tuple[str, Intention]]:
+        if "timeSinceCommunication" == predicate:
+            timeSent = intention.getTime()
+            return traci.simulation.getTime() - timeSent
 
+        elif "intendedActionIs" == predicate:
+            return intention.getAction()
+
+        elif "timeSinceLastEVThrough" == predicate:
+            partnerName = "_".join(condition.split("_")[1:-2])
+            partnerTL = [tl for tl in self.setUpTuple[1] if tl.getName() == partnerName][0]
+            return (condition, self.getTimeSinceLastEVThrough(partnerTL))
+
+        elif "EVApproachingPartner" == predicate:
+            partnerName = condition.split("_", 1)[1]
+            partnerTL = [tl for tl in self.setUpTuple[1] if tl.getName() == partnerName][0]
+            return partnerTL
+
+        else:
+            raise Exception("Undefined predicate:", predicate)
+
+    def evaluateCoopRule(self, trafficLight: TrafficLight, rule: Rule) -> bool:
+        intentions = trafficLight.getCommunicatedIntentions()
+
+        for x in intentions:
+            for i in intentions[x]:
+                # For each condition, its parameters are acquired and the condition predicate is evaluated
+                for cond in rule.getConditions():
+                    predicate = cond.split("_")[0]
+
+                    # Get parameters
+                    if "partnerAction" == predicate:
+                        parameters = [cond, i]
+                    else:
+                        parameters = self.getCoopPredicateParameters(predicate, i, cond)
+
+                    # Construct predicate function call
+                    if "EVApproachingPartner" == predicate:
+                        predCall = self.getIsEVApproaching(parameters)
+                    elif "timeSinceLastEVThrough" == predicate:
+                        predCall = getattr(EVCoopPredicateSet, "timeSinceLastEVThrough")(*parameters)
+                    elif "partnerAction" == predicate:
+                        predCall = getattr(CoopPredicateSet, "partnerAction")(*parameters)
+                    else:
+                        predCall = getattr(CoopPredicateSet, cond)(parameters)
+
+                    # Determine validity of predicate
+                    if predCall == False:
+                        return False
+
+        return True  # if all predicates return true, evaluate rule as True
+
+    def evaluateEVRule(self, trafficLight: TrafficLight, rule: Rule) -> bool:
         for cond in rule.getConditions():
             predicate = cond.split("_")[0]
 
@@ -605,51 +719,3 @@ class DriverEV(Driver):
                 return False
 
         return True
-
-    # EVALUATE RULE VALIDITY (fEval)
-    def evaluateCoopRule(self, trafficLight: TrafficLight, rule: Rule) -> bool:
-        if rule.getType() == 0:
-            return self.evaluateRule(trafficLight, rule)
-        if rule.getType() == 2:
-            return self.evaluateEVRule(trafficLight, rule)
-
-        intentions = trafficLight.getCommunicatedIntentions()
-
-        for x in intentions:
-            for i in intentions[x]:
-                # For each condition, its parameters are acquired and the condition predicate is evaluated
-                for cond in rule.getConditions():
-                    predicate = cond.split("_")[0]
-
-                    if any(x.getName() == predicate for x in self.setUpTuple[1]):
-                        parameters = [cond, i]
-                    else:
-                        parameters = self.getCoopPredicateParameters(predicate, i, cond)
-
-                    if "EVApproachingPartner" == predicate:
-                        predCall = self.getIsEVApproaching(parameters)
-                    elif isinstance(parameters, int) or isinstance(parameters, float) or isinstance(parameters, str):
-                        predCall = getattr(CoopPredicateSet, cond)(parameters)  # Construct predicate fuction call
-                    else:
-                        # Construct predicate fuction call for custom predicates (they are of form TLname_action but are handled by the same predicate in CoopPredicateSet)
-                        predCall = getattr(CoopPredicateSet, "customPredicate")(parameters[0], parameters[1])
-
-                    # Determine validity of predicate
-                    if predCall == False:
-                        return False
-
-        return True  # if all predicates return true, evaluate rule as True
-
-    # PROVIDE SIMULATION RELEVANT PARAMETERS
-    def getCoopPredicateParameters(self, predicate: str, intention: Intention, condition: str) -> Union[int, Tuple[str, Intention]]:
-        if "timeSinceCommunication" == predicate:
-            timeSent = intention.getTime()
-            return traci.simulation.getTime() - timeSent
-        elif "intendedActionIs" == predicate:
-            return intention.getAction()
-        elif "EVApproachingPartner" == predicate:
-            partnerName = condition.split("_", 1)[1]
-            partnerTL = [tl for tl in self.setUpTuple[1] if tl.getName() == partnerName][0]
-            return partnerTL
-        else:
-            raise Exception("Undefined predicate:", predicate)

@@ -67,6 +67,7 @@ class Notifier:
                 "RS": [str(r) for r in topIndividual.getRS() if r.getWeight() != 0],
                 "RSint": [str(r) for r in topIndividual.getRSint() if r.getWeight() != 0],
                 "RSev": [str(r) for r in topIndividual.getRSev() if r.getWeight() != 0],
+                "RSev_int": [str(r) for r in topIndividual.getRSev_int() if r.getWeight() != 0]
             }
             for ruleSet in nonZeroRules:
                 if nonZeroRules[ruleSet] == []:

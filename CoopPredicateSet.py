@@ -38,22 +38,21 @@ def timeSinceCommunication_20_25(timeSinceCommunication: int):
 
 
 # EVALUATES VALIDITY OF A CUSTOM PREDICATE RELATIVE TO A COMMUNICATED INTENTION
-def customPredicate(predicate: str, intention: Intention) -> bool:
+def partnerAction(predicate: str, intention: Intention) -> bool:
     predicate = predicate.split("_", 1)
 
     return predicate[0] == intention.getTrafficLight().getName() and predicate[1] == intention.getAction()
 
 
 # RETURN LIST OF PREDICATE FUNCTIONS AS DEFINED ABOVE
-def getPredicateSet(agentPool: AgentPool, useEVCoopPredicates: bool):
+def getPredicateSet(agentPool: AgentPool):
     thisModule = sys.modules[__name__]  # Get reference to this module for next operation
     methodsDict = dict(inspect.getmembers(thisModule, predicate=inspect.isfunction))  # Get a dictionary with all methods (predicates) in this module
     # Remove all methods that are not predicates from dictionary
     methodsDict.pop("getPredicateSet")
     methodsDict.pop("getPredicateSetFromFile")
-    methodsDict.pop("customPredicate")
+    methodsDict.pop("partnerAction")
     methodsDict.pop("getPartnerActionPredicates")
-    methodsDict.pop("getEVApproachingPartnerPredicates")
 
     # Seperate methods/predicates from rest of data in dictionary into a list
     predicateSet: List[str] = []
@@ -61,8 +60,6 @@ def getPredicateSet(agentPool: AgentPool, useEVCoopPredicates: bool):
         predicateSet.append(predicate)
 
     predicateSet = predicateSet + getPartnerActionPredicates(agentPool)
-    if useEVCoopPredicates:
-        predicateSet += getEVApproachingPartnerPredicates(agentPool)
 
     return predicateSet
 
@@ -89,16 +86,7 @@ def getPartnerActionPredicates(agentPool: AgentPool):
     for tl in agentPool.getAssignedTrafficLights():
         for partner in tl.getCommunicationPartners():
             for action in partner.getAgentPool().getActionSet():
-                pred = partner.getName() + "_" + action
+                pred = f"partnerAction_{partner.getName()}_{action}"
                 customPredicates.append(pred)
-            customPredicates.append(pred)
-    return customPredicates
-
-
-def getEVApproachingPartnerPredicates(agentPool: AgentPool):
-    customPredicates: List[str] = []
-    for tl in agentPool.getAssignedTrafficLights():
-        for partner in tl.getCommunicationPartners():
-            pred = f"EVApproachingPartner_{partner.getName()}"
             customPredicates.append(pred)
     return customPredicates

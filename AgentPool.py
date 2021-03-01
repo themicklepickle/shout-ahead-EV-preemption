@@ -5,6 +5,7 @@ from random import randrange
 import PredicateSet
 import CoopPredicateSet
 import EVPredicateSet
+import EVCoopPredicateSet
 import EvolutionaryLearner as EvolutionaryLearner
 
 from typing import TYPE_CHECKING
@@ -29,6 +30,7 @@ class AgentPool:
         self.RSPredicates: List[str]
         self.RSintPredicates: List[str]
         self.RSevPredicates: List[str]
+        self.RSev_intPredicates: List[str]
         self.EVLanePredicates: List[str]
 
     def getID(self):
@@ -46,6 +48,9 @@ class AgentPool:
     def getRSevPredicates(self):
         return self.RSevPredicates
 
+    def getRSev_intPredicates(self):
+        return self.RSev_intPredicates
+
     def getEVLanePredicates(self):
         return self.EVLanePredicates
 
@@ -55,8 +60,8 @@ class AgentPool:
     def updateIndividualsSet(self, individuals: List[Individual]):
         self.individuals = individuals
 
-    def initIndividuals(self, useShoutahead):
-        self.individuals = EvolutionaryLearner.initIndividuals(self, useShoutahead)
+    def initIndividuals(self, useShoutahead: bool, useEVCoopPredicates: bool):
+        self.individuals = EvolutionaryLearner.initIndividuals(self, useShoutahead, useEVCoopPredicates)
 
     def getAssignedTrafficLights(self):
         return self.trafficLightsAssigned
@@ -80,16 +85,19 @@ class AgentPool:
         # COMPLETES THE INITIALIZATION OF AGENT POOL COMPONENTS THAT REQUIRE ALL AGENT POOLS TO BE INITIALIZED FIRST
     def finishSetUp(self, useShoutahead: bool, useEVCoopPredicates: bool):
         self.RSPredicates = PredicateSet.getPredicateSet()
-        self.RSintPredicates = CoopPredicateSet.getPredicateSet(self, useEVCoopPredicates)
+        self.RSintPredicates = CoopPredicateSet.getPredicateSet(self)
         self.RSevPredicates = EVPredicateSet.getPredicateSet()
+        self.RSev_intPredicates = EVCoopPredicateSet.getPredicateSet(self)
         self.EVLanePredicates = EVPredicateSet.getAgentSpecificPredicates(self)
 
-        self.initIndividuals(useShoutahead)  # Populate Agent Pool's own rule set with random rules
+        self.initIndividuals(useShoutahead, useEVCoopPredicates)  # Populate Agent Pool's own rule set with random rules
         for tl in self.trafficLightsAssigned:
             tl.initPhaseTimeSpentInRedArray()
 
     # SELECTS AN INDIVIDUAL TO PASS TO A TRAFFIC LIGHT WHEN REQUESTED
-    def selectIndividual(self):
+    def selectIndividual(self, testing):
+        if testing:
+            return self.testIndividual
         self.individualsNeedingRuns = []
         for i in self.individuals:
             if i.getSelectedCount() < self.minIndividualRunsPerGen:
@@ -111,6 +119,11 @@ class AgentPool:
 
     def getRandomRSevPredicate(self):
         return self.RSevPredicates[randrange(len(self.RSevPredicates))]
+
+    def getRandomRSev_intPredicate(self):
+        if len(self.RSev_intPredicates) == 0:
+            return None
+        return self.RSev_intPredicates[randrange(len(self.RSev_intPredicates))]
 
     def getRandomEVLanePredicate(self):
         return self.EVLanePredicates[randrange(len(self.EVLanePredicates))]

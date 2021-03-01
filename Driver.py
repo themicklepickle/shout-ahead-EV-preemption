@@ -14,6 +14,7 @@ if TYPE_CHECKING:
 
 class Driver:
 
+    # NOTE: This method is overriden in DriverEV.py
     def __init__(self,
                  sumoCmd: str,
                  setUpTuple: Tuple[List[Rule], List[TrafficLight], List[AgentPool]],

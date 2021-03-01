@@ -43,8 +43,8 @@ def main(status: Status, database: Database, notifier: Notifier):
     # ------------------------
 
     # --- USER-DEFINED RULES TOGGLE ---
-    maxGreenAndYellowPhaseTime_UDRule = True
-    maxRedPhaseTime_UDRule = True
+    maxGreenAndYellowPhaseTime_UDRule = False
+    maxRedPhaseTime_UDRule = False
     assignGreenPhaseToSingleWaitingPhase_UDRule = True
     # ----------------------------------
 
@@ -59,12 +59,18 @@ def main(status: Status, database: Database, notifier: Notifier):
     # -----------------------------
 
     # --- SUMO BINARY SETUP ---
+    autoStart = True
+    autoQuit = True
     if gui == False:
         sumoBinary = checkBinary('sumo')
         sumoCmd = [sumoBinary, "-c", f"{folderName}/config_file.sumocfg", "--waiting-time-memory", "5", "--time-to-teleport", "-1"]
     else:
         sumoBinary = checkBinary('sumo-gui')
-        sumoCmd = [sumoBinary, "-c", f"{folderName}/config_file.sumocfg", "--waiting-time-memory", "5", "--time-to-teleport", "-1", "-Q", "true", "-S", "true"]
+        sumoCmd = [sumoBinary, "-c", f"{folderName}/config_file.sumocfg", "--waiting-time-memory", "5", "--time-to-teleport", "-1"]
+        if autoStart:
+            sumoCmd += ["-S", "true"]
+        if autoQuit:
+            sumoCmd += ["-Q", "true"]
     # -------------------------
 
     # --- OUTPUT MANAGEMENT ---
@@ -84,8 +90,7 @@ def main(status: Status, database: Database, notifier: Notifier):
             "userDefinedRulesToggle": {
                 "maxGreenAndYellowPhaseTime_UDRule": maxGreenAndYellowPhaseTime_UDRule,
                 "maxRedPhaseTime_UDRule": maxRedPhaseTime_UDRule,
-                "assignGreenPhaseToSingleWaitingPhase_UDRule": assignGreenPhaseToSingleWaitingPhase_UDRule,
-
+                "assignGreenPhaseToSingleWaitingPhase_UDRule": assignGreenPhaseToSingleWaitingPhase_UDRule
             },
             "simulationAttributes": {
                 "sumoNetworkName": sumoNetworkName,
@@ -107,7 +112,7 @@ def main(status: Status, database: Database, notifier: Notifier):
     print(f"----- Start time: {getTime()} -----\n")
     setUpTuple = InitSetUp.run(sumoNetworkName, individualRunsPerGen, useShoutahead, useEVCoopPredicates)
     simRunner = DriverEV(sumoCmd, setUpTuple, maxGreenPhaseTime, maxYellowPhaseTime, maxSimulationTime,
-                         maxGreenAndYellowPhaseTime_UDRule, maxRedPhaseTime_UDRule, assignGreenPhaseToSingleWaitingPhase_UDRule, useShoutahead)
+                         maxGreenAndYellowPhaseTime_UDRule, maxRedPhaseTime_UDRule, assignGreenPhaseToSingleWaitingPhase_UDRule, useShoutahead, useEVCoopPredicates)
     generations = 1
     episode = 0
     allIndividualsTested = False
@@ -144,7 +149,7 @@ def main(status: Status, database: Database, notifier: Notifier):
                 maxSimulationTime = maxSimulationTime_15
 
             simRunner = DriverEV(sumoCmd, setUpTuple, maxGreenPhaseTime, maxYellowPhaseTime, maxSimulationTime,
-                                 maxGreenAndYellowPhaseTime_UDRule, maxRedPhaseTime_UDRule, assignGreenPhaseToSingleWaitingPhase_UDRule, useShoutahead)
+                                 maxGreenAndYellowPhaseTime_UDRule, maxRedPhaseTime_UDRule, assignGreenPhaseToSingleWaitingPhase_UDRule, useShoutahead, useEVCoopPredicates)
 
             # Output management
             print(f"----- Episode {episode+1} of GENERATION {generations} of {totalGenerations} -----")
@@ -183,7 +188,7 @@ def main(status: Status, database: Database, notifier: Notifier):
             ap.normalizeIndividualsFitnesses()  # Normalize the fitness values of each Individual in an agent pool for breeding purposes
 
         if generations + 1 < totalGenerations:
-            EvolutionaryLearner.createNewGeneration(setUpTuple[2], useShoutahead, database)  # Update agent pools with a new generation of individuals
+            EvolutionaryLearner.createNewGeneration(setUpTuple[2], useShoutahead, useEVCoopPredicates, database)  # Update agent pools with a new generation of individuals
             sys.stdout.flush()
         elif database:
             OutputManager.run(setUpTuple[2], generationRuntimes, episodeRuntimes, database)
