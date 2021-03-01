@@ -68,7 +68,7 @@ global EVStopsFactor
 global averageEVSpeedFactor
 
 EVStopFitnessPenalty = -1  # Penalty applied to fitness for every EV stop
-EVStopsFactor = 1
+EVStopsFactor = 0.001
 averageEVSpeedFactor = 10
 
 
