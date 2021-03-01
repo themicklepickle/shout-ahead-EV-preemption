@@ -28,7 +28,7 @@ def updatedWeight(rule: Rule, nextRule: Rule, throughputRatio: float, waitTimeRe
     # Returns the updated weight based on the Sarsa learning method
     reward = determineReward(throughputRatio, waitTimeReducedRatio, EVChangeInSpeed, EVChangeInQueue)
     penalty = determinePenalty(intersectionQueueDifference, EVIsStopped)
-    
+
     updatedWeight = rule.getWeight() + (learningFactor * (reward + (discountRate * nextRule.getWeight() - rule.getWeight()))) + (penaltyMultiplier * penalty)
 
     return updatedWeight * 0.0001  # Numbers are reduced by 99.99% to keep them managable
