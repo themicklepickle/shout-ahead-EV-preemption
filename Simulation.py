@@ -99,7 +99,7 @@ class Simulation:
         if self.notify:
             with open("credentials.json", "r") as f:
                 credentials = json.load(f)
-            self.notifier = Notifier(credentials["email"], credentials["password"], ["michael.xu1816@gmail.com"], self.deviceName())
+            self.notifier = Notifier(credentials["email"], credentials["password"], ["michael.xu1816@gmail.com"], self.deviceName)
 
     def initSetUpTuple(self):
         sumoNetworkName = f"Traffic Flows/{self.sumoNetworkName}/simpleNetwork.net.xml"
