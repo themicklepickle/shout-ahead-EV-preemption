@@ -95,7 +95,9 @@ class AgentPool:
             tl.initPhaseTimeSpentInRedArray()
 
     # SELECTS AN INDIVIDUAL TO PASS TO A TRAFFIC LIGHT WHEN REQUESTED
-    def selectIndividual(self):
+    def selectIndividual(self, testing):
+        if testing:
+            return self.testIndividual
         self.individualsNeedingRuns = []
         for i in self.individuals:
             if i.getSelectedCount() < self.minIndividualRunsPerGen:
