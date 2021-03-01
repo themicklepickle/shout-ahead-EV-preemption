@@ -118,8 +118,8 @@ class TrafficLight:
     def getAssignedIndividual(self):
         return self.assignedIndividual
 
-    def assignIndividual(self):
-        self.assignedIndividual = self.agentPool.selectIndividual()
+    def assignIndividual(self, testing=False):
+        self.assignedIndividual = self.agentPool.selectIndividual(testing)
         self.assignedIndividual.selected()  # Let Individual know it's been selected
 
     def getCarsWaiting(self):
