@@ -86,6 +86,7 @@ class Tester(Simulation):
         self.ruleSetFolder = databaseName
 
         self.initClient()
+        self.initCmd()
 
         generations = []
 
