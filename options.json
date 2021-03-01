@@ -1,0 +1,36 @@
+{
+  "device": {
+    "name": ""
+  },
+  "training": {
+    "useShoutahead": true,
+    "useEVCoopPredicates": true,
+    "totalGenerations": 50,
+    "individualRunsPerGen": 3
+  },
+  "userDefinedRules": {
+    "maxGreenAndYellowPhaseTime_UDRule": false,
+    "maxRedPhaseTime_UDRule": false,
+    "assignGreenPhaseToSingleWaitingPhase_UDRule": true
+  },
+  "simulation": {
+    "sumoNetworkName": "EV Traffic Flow 225",
+    "maxGreenPhaseTime": 225,
+    "maxYellowPhaseTime": 5,
+    "maxSimulationTime": {
+      "default": 7000,
+      "5-15": 5000,
+      "15+": 4000
+    }
+  },
+  "binary": {
+    "gui": true,
+    "autoStart": true,
+    "autoQuit": true
+  },
+  "output": {
+    "displayStatus": true,
+    "storeInDatabase": true,
+    "notify": true
+  }
+}

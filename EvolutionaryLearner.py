@@ -112,11 +112,6 @@ def createNewGeneration(agentPools: List[AgentPool],  useShoutahead: bool, useEV
     """CREATES NEW GENERATION AFTER A SIMULATION RUN AND UPDATES AGENT POOLS' INDIVIDUAL SET WITH NEW GEN"""
     print("Creating a new Generation.")
     for ap in agentPools:
-        # Output old agent pool
-        if database:
-            agentPoolData = [i.getJSON() for i in ap.getIndividualsSet()]
-            database.updateAgentPool(ap.getID(), agentPoolData, "old")
-
         individuals = ap.getIndividualsSet()
         individuals.sort(key=lambda x: x.getFitness(), reverse=False)
 

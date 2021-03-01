@@ -14,7 +14,6 @@ class DriverTest(DriverEV):
     def getResults(self) -> Dict:
         return {
             "EVStops": self.EVStops,
-            "averageEVSpeedsList": self.averageEVSpeedsList,
             "averageEVSpeed": self.averageEVSpeed,
             "simulationTime": self.simulationTime
         }
