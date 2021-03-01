@@ -475,6 +475,8 @@ class DriverEV(Driver):
     def getAverageEVSpeed(self, trafficLight: TrafficLight) -> List[int]:
         EVs = self.getEVs(trafficLight)
         EVSpeedsList = [EV.getSpeed() for EV in EVs]
+        if EVSpeedsList == []:
+            return 0
         averageEVSpeed = sum(EVSpeedsList) / len(EVSpeedsList)
 
         return averageEVSpeed
