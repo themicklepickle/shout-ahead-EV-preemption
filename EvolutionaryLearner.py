@@ -3,8 +3,6 @@ from __future__ import annotations
 import numpy.random as npr
 from random import randrange, randint, random, choice
 
-import PredicateSet
-import CoopPredicateSet
 import EVPredicateSet
 import EVCoopPredicateSet
 from Rule import Rule

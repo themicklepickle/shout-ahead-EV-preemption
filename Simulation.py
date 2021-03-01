@@ -1,19 +1,16 @@
 from sumolib import checkBinary  # Checks for the binary in environ vars
 import os
 import sys
-from pathlib import Path
 import datetime
 import timeit
 import time
 import pytz
 import socket
-import cProfile
 import json
 import traceback
 from operator import attrgetter
 
 import InitSetUp
-import OutputManager
 from DriverEV import DriverEV
 import EvolutionaryLearner
 from Notifier import Notifier

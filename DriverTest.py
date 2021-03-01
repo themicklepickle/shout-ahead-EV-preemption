@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import traci
-import timeit
 
 from DriverEV import DriverEV
 
