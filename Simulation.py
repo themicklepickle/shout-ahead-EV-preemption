@@ -113,11 +113,22 @@ class Simulation:
         self.simulationStartTime = self.getTime()
         self.generationRuntimes = []
 
+    def getMaxSimulationTimes(self):
+        return [
+            self.maxGreenPhaseTime,
+            self.maxYellowPhaseTime,
+            self.maxSimulationTime
+        ]
+
+    def getUserDefinedRules(self):
+        return [
+            self.maxGreenAndYellowPhaseTime_UDRule,
+            self.maxRedPhaseTime_UDRule,
+            self.assignGreenPhaseToSingleWaitingPhase_UDRule
+        ]
+
     def getSimRunner(self):
-        return DriverEV(self.cmd, self.setUpTuple,
-                        self.maxGreenPhaseTime, self.maxYellowPhaseTime, self.maxSimulationTime,
-                        self.maxGreenAndYellowPhaseTime_UDRule, self.maxRedPhaseTime_UDRule, self.assignGreenPhaseToSingleWaitingPhase_UDRule,
-                        self.useShoutahead, self.useEVCoopPredicates)
+        return DriverEV(self.cmd, self.setUpTuple, *self.getMaxSimulationTimes(), *self.getUserDefinedRules(), self.useShoutahead, self.useEVCoopPredicates)
 
     def getTime(self):
         return datetime.datetime.now(pytz.timezone("America/Denver")).strftime("%a %b %d %I:%M:%S %p %Y")
