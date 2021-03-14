@@ -8,8 +8,8 @@
     "individualRunsPerGen": 3
   },
   "ruleSets": {
-    "local": "RSev",
-    "cooperation": "RSev_int",
+    "local": "RS",
+    "cooperation": "RSint",
     "learnedLocal": "blank",
     "learnedCooperation": "blank"
   },
