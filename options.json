@@ -29,7 +29,7 @@
     }
   },
   "binary": {
-    "gui": true,
+    "gui": false,
     "autoStart": true,
     "autoQuit": true
   },
