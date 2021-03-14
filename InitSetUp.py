@@ -9,7 +9,7 @@ if TYPE_CHECKING:
     from Rule import Rule
 
 
-def run(sumoNetworkName: str, minIndividualRunsPerGen: int, useShoutahead: bool, useEVCoopPredicates: bool):
+def run(sumoNetworkName: str, minIndividualRunsPerGen: int, useShoutahead: bool, ruleSetOptions: List[str]):
     userDefinedRules: List[Rule] = []
     edgePartners: Dict[str, List[str]] = {}
 
@@ -133,7 +133,7 @@ def run(sumoNetworkName: str, minIndividualRunsPerGen: int, useShoutahead: bool,
 
     # Finish the initialization of the agent pools
     for ap in agentPools:
-        ap.finishSetUp(useShoutahead, useEVCoopPredicates)
+        ap.finishSetUp(useShoutahead, ruleSetOptions)
 
     return (userDefinedRules, trafficLights, agentPools)
 

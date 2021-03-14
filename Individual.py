@@ -16,12 +16,10 @@ class Individual:
     defaultFitness = 10000.0
 
     # INTIALIZE OBJECT VARIABLES
-    def __init__(self, identifier: str, agentPool: AgentPool, RS: List[Rule], RSint: List[Rule], RSev: List[Rule], RSev_int: List[Rule]) -> None:
+    def __init__(self, identifier: str, agentPool: AgentPool, RS: List[Rule], RSint: List[Rule]) -> None:
         self.id = identifier
         self.RS = RS                                # Set of rules without observations of communicated intentions
         self.RSint = RSint                          # Set of rules with observations of communicated intentions
-        self.RSev = RSev
-        self.RSev_int = RSev_int
         self.selectedCount = 0                      # Number of times individual has been chosen during a generation
         self.totalSelectedCount = 0                 # Total number of times individual has been chosen during a training period
         self.agentPool = agentPool                  # AgentPool name
@@ -49,8 +47,6 @@ class Individual:
             "actionSet": self.agentPool.getActionSet(),
             "RS": [rule.getJSON() for rule in self.RS],
             "RSint": [rule.getJSON() for rule in self.RSint],
-            "RSev": [rule.getJSON() for rule in self.RSev],
-            "RSev_int": [rule.getJSON() for rule in self.RSev_int],
             "fitness": self.fitness,
             "agentPool": self.agentPool.getID(),
             "selectedCount": self.selectedCount,
@@ -68,12 +64,6 @@ class Individual:
 
     def getRSint(self):
         return self.RSint
-
-    def getRSev(self):
-        return self.RSev
-
-    def getRSev_int(self):
-        return self.RSev_int
 
     def selected(self):
         self.selectedCount += 1
@@ -171,7 +161,7 @@ class Individual:
     # ----------- END ----------- #
 
     def getSumRuleWeights(self) -> float:
-        ruleSet = self.getRS() + self.getRSev()
+        ruleSet = self.getRS()
         self.ruleWeightSum = sum(rule.getWeight() for rule in ruleSet)
 
         return self.ruleWeightSum

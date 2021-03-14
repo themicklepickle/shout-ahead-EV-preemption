@@ -8,14 +8,8 @@ if TYPE_CHECKING:
 
 class Rule:
 
-    def __init__(self, ruleType: Literal[-1, 0, 1, 2, 3], conditions: List[str], action: int, agentPool: AgentPool):
-        # Rule types:
-        #   -1: user-defined
-        #    0: RS
-        #    1: RSint
-        #    2: RSev
-        #    3: RSev_int
-        self.type: Literal[-1, 0, 1, 2, 3] = ruleType
+    def __init__(self, ruleType: str, conditions: List[str], action: int, agentPool: AgentPool):
+        self.type = ruleType                # Name of the rule set that the rule belongs to ["RS", "RSev", "RSint", "RSev_int", "RSlearned", "RSlearned_int", "user-defined"]
         self.conditions = conditions        # Set of predicates that determine if rule is true
         self.action = action                # Action to carry out if all conditions are true
         self.agentPool = agentPool          # Agent pool rule rule originated from (used for updating actions of rule)
@@ -47,53 +41,45 @@ class Rule:
             "doNothingAction": self.doNothingAction
         }
 
-    # GET RULE TYPE
     def getType(self):
         return self.type
 
-    # GET RULE CONDITIONS
+    def setType(self, ruleType: str):
+        self.type = ruleType
+
     def getConditions(self):
         return self.conditions
 
-    # UPDATE RULE CONDITIONS
     def setConditions(self, conditions: List[str]):
         self.conditions = conditions
 
-    # GET RULE ACTION
     def getAction(self):
         return self.action
 
-    # UPDATE RULE ACTION
     def setAction(self, action):
         if action == -1:
             self.action = 1
         else:
             self._action = action
 
-    # GET CORRESPONDING AGENT POOL
     def getAgentPool(self):
         return self.agentPool
 
-    # UPDATE AGENT POOL RULE ORIGINATED FROM
     def setAgentPool(self, agentPool):
         self.agentPool = agentPool
 
-    # GET RULE WEIGHT
     def getWeight(self):
         return self.weight
 
     def setWeight(self, weight):
         self.weight = weight
 
-    # UPDATE WEIGHT OF RULE AFTER SIMULATION RUN
     def updateWeight(self, weight):
         self.weight += weight
 
-    # UPDATE NUMBER OF TIMES A RULE HAS BEEN APPLIED
     def selected(self):
         self.timesSelected += 1
 
-    # GET NUMBER OF TIMES A RULE HAS BEEN SELECTED
     def getTimesSelected(self):
         return self.timesSelected
 
@@ -104,7 +90,7 @@ class Rule:
         self.normalizedWeight = weight
 
     def setDoNothingFlag(self):
-        if self.type != -1:
+        if self.type != "user-defined":
             if self.action == len(self.agentPool.getActionSet())-1:
                 self.doNothingAction = True
 

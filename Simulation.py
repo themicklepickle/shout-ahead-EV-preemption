@@ -39,9 +39,16 @@ class Simulation:
 
         trainingOptions = self.options["training"]
         self.useShoutahead = trainingOptions["useShoutahead"]
-        self.useEVCoopPredicates = trainingOptions["useEVCoopPredicates"]
         self.totalGenerations = trainingOptions["totalGenerations"]
         self.individualRunsPerGen = trainingOptions["individualRunsPerGen"]
+
+        ruleSetOptions = self.options["ruleSets"]
+        self.ruleSetOptions = [
+            ruleSetOptions["local"],
+            ruleSetOptions["cooperation"],
+            ruleSetOptions["learnedLocal"],
+            ruleSetOptions["learnedCooperation"]
+        ]
 
         userDefinedRuleToggle = self.options["userDefinedRules"]
         self.maxGreenAndYellowPhaseTime_UDRule = userDefinedRuleToggle["maxGreenAndYellowPhaseTime_UDRule"]
@@ -103,7 +110,7 @@ class Simulation:
 
     def initSetUpTuple(self):
         sumoNetworkName = f"Traffic Flows/{self.sumoNetworkName}/simpleNetwork.net.xml"
-        self.setUpTuple = InitSetUp.run(sumoNetworkName, self.individualRunsPerGen, self.useShoutahead, self.useEVCoopPredicates)
+        self.setUpTuple = InitSetUp.run(sumoNetworkName, self.individualRunsPerGen, self.useShoutahead, self.ruleSetOptions)
         self.getSimRunner()
 
     def initVariables(self):
@@ -128,7 +135,7 @@ class Simulation:
         ]
 
     def getSimRunner(self):
-        return DriverEV(self.cmd, self.setUpTuple, *self.getMaxSimulationTimes(), *self.getUserDefinedRules(), self.useShoutahead, self.useEVCoopPredicates)
+        return DriverEV(self.cmd, self.setUpTuple, *self.getMaxSimulationTimes(), *self.getUserDefinedRules(), self.useShoutahead, self.ruleSetOptions)
 
     def getTime(self):
         return datetime.datetime.now(pytz.timezone("America/Denver")).strftime("%a %b %d %I:%M:%S %p %Y")
@@ -244,7 +251,7 @@ class Simulation:
             ap.normalizeIndividualsFitnesses()
 
         if self.generation + 1 < self.totalGenerations:
-            EvolutionaryLearner.createNewGeneration(self.setUpTuple[2], self.useShoutahead, self.useEVCoopPredicates, self.database)
+            EvolutionaryLearner.createNewGeneration(self.setUpTuple[2], self.useShoutahead, self.ruleSetOptions, self.database)
 
         for ap in self.setUpTuple[2]:
             for i in ap.getIndividualsSet():

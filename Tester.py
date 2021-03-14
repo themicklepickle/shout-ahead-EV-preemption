@@ -29,7 +29,7 @@ class Tester(Simulation):
         self.db = self.client[self.databaseName]
 
     def getTestSimRunner(self):
-        return DriverTest(self.cmd, self.setUpTuple, *self.getMaxSimulationTimes(), *self.getUserDefinedRules(), self.useShoutahead, self.useEVCoopPredicates)
+        return DriverTest(self.cmd, self.setUpTuple, *self.getMaxSimulationTimes(), *self.getUserDefinedRules(), self.useShoutahead, self.ruleSetOptions)
 
     def initTestIndividual(self, agentPool: AgentPool):
         with open(f"rules/{self.ruleSetFolder}/{agentPool.getID()}.json", "r") as f:

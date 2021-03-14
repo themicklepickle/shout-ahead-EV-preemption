@@ -1,12 +1,14 @@
 from __future__ import annotations
 
 from random import randrange
+import json
 
 import PredicateSet
 import CoopPredicateSet
 import EVPredicateSet
 import EVCoopPredicateSet
 import EvolutionaryLearner as EvolutionaryLearner
+from Rule import Rule
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
@@ -32,6 +34,8 @@ class AgentPool:
         self.RSevPredicates: List[str]
         self.RSev_intPredicates: List[str]
         self.EVLanePredicates: List[str]
+        self.RSlearned: List[Rule]
+        self.RSlearned_int: List[Rule]
 
     def getID(self):
         return self.id
@@ -54,14 +58,23 @@ class AgentPool:
     def getEVLanePredicates(self):
         return self.EVLanePredicates
 
+    def getRSlearned(self):
+        return self.RSlearned
+
+    def setRSlearned(self, RSlearned: List[Rule]):
+        self.RSlearned = RSlearned
+
+    def getRSlearned_int(self):
+        return self.RSlearned_int
+
+    def setRSlearned_int(self, RSlearned_int: List[Rule]):
+        self.RSlearned_int = RSlearned_int
+
     def getIndividualsSet(self):
         return self.individuals
 
     def updateIndividualsSet(self, individuals: List[Individual]):
         self.individuals = individuals
-
-    def initIndividuals(self, useShoutahead: bool, useEVCoopPredicates: bool):
-        self.individuals = EvolutionaryLearner.initIndividuals(self, useShoutahead, useEVCoopPredicates)
 
     def getAssignedTrafficLights(self):
         return self.trafficLightsAssigned
@@ -71,7 +84,7 @@ class AgentPool:
             for tl in trafficLightsAssigned:
                 self.trafficLightsAssigned.append(tl)
                 tl.assignToAgentPool(self)
-                #print(tl.getName(), "is assigned to agent pool", tl.getAgentPool().getID())
+                # print(tl.getName(), "is assigned to agent pool", tl.getAgentPool().getID())
         else:
             trafficLightsAssigned.assignToAgentPool(self)
 
@@ -82,19 +95,47 @@ class AgentPool:
     def addDoNothingAction(self):
         self.actionSet.append("DoNothing")
 
-        # COMPLETES THE INITIALIZATION OF AGENT POOL COMPONENTS THAT REQUIRE ALL AGENT POOLS TO BE INITIALIZED FIRST
-    def finishSetUp(self, useShoutahead: bool, useEVCoopPredicates: bool):
+    def getLearnedRuleSet(self, ruleType: str, folder: str):
+        opposites = {
+            "RS": "RSev",
+            "RSev": "RS",
+            "RSint": "RSev_int",
+            "RSev_int": "RSint"
+        }
+
+        # get rule set in JSON format
+        with open(f"rules/{folder}/{self.id}.json", "r") as f:
+            ruleSets = json.load(f)
+        JSONRuleSet = ruleSets[opposites[ruleType]]
+
+        # convert JSON rules to Rule objects
+        ruleSet = []
+        for r in JSONRuleSet:
+            rule = Rule("learned", r["conditions"], r["action"], self)
+            rule.setWeight(r["weight"])
+            ruleSet.append(rule)
+
+        return ruleSet
+
+    def finishSetUp(self, useShoutahead: bool, ruleSetOptions: List[str]):
+        # get predicates for each rule set
         self.RSPredicates = PredicateSet.getPredicateSet()
         self.RSintPredicates = CoopPredicateSet.getPredicateSet(self)
         self.RSevPredicates = EVPredicateSet.getPredicateSet()
         self.RSev_intPredicates = EVCoopPredicateSet.getPredicateSet(self)
         self.EVLanePredicates = EVPredicateSet.getAgentSpecificPredicates(self)
 
-        self.initIndividuals(useShoutahead, useEVCoopPredicates)  # Populate Agent Pool's own rule set with random rules
+        # get the previously learned rules
+        localRSType, coopRSType, learnedLocalRSFolder, learnedCoopRSFolder = ruleSetOptions
+        self.RSlearned = self.getLearnedRuleSet(localRSType, learnedLocalRSFolder)
+        if useShoutahead:
+            self.RSlearned_int = self.getLearnedRuleSet(coopRSType, learnedCoopRSFolder)
+
+        # intialize the individuals
+        self.individuals = EvolutionaryLearner.initIndividuals(self, useShoutahead, ruleSetOptions)
         for tl in self.trafficLightsAssigned:
             tl.initPhaseTimeSpentInRedArray()
 
-    # SELECTS AN INDIVIDUAL TO PASS TO A TRAFFIC LIGHT WHEN REQUESTED
     def selectIndividual(self, testing):
         if testing:
             return self.testIndividual

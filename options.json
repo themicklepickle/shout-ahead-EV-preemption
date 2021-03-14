@@ -4,9 +4,14 @@
   },
   "training": {
     "useShoutahead": true,
-    "useEVCoopPredicates": true,
     "totalGenerations": 50,
     "individualRunsPerGen": 3
+  },
+  "ruleSets": {
+    "local": "RSev",
+    "cooperation": "RSev_int",
+    "learnedLocal": "blank",
+    "learnedCooperation": "blank"
   },
   "userDefinedRules": {
     "maxGreenAndYellowPhaseTime_UDRule": false,
