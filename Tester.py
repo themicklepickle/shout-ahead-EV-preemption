@@ -232,3 +232,29 @@ class Tester(Simulation):
             writer.writeheader()
             for row in apData:
                 writer.writerow(row)
+
+    def getTopFitnessesPerGeneration(self, databaseName: str, filename: str):
+        self.databaseName = databaseName
+        self.initClient()
+
+        data = []
+
+        for generation in range(50, 0, -1):
+            genData = {"generation": generation}
+            for apID in ["AP" + str(x) for x in range(1, 4)]:
+                collection = self.db[str(generation)]
+                document = collection.find_one({"label": "output"})
+                individual = document["data"]["bestIndividuals"][apID]
+                genData[f"{apID} topFitness"] = individual["fitness"]
+                genData[f"{apID} topNormalizedFitness"] = individual["normalizedFitness"]
+            data.append(genData)
+
+        fieldnames = ["generation"]
+        for apID in ["AP" + str(x) for x in range(1, 4)]:
+            fieldnames.append(f"{apID} topFitness")
+            fieldnames.append(f"{apID} topNormalizedFitness")
+        with open(f"results/{filename}.csv", "w") as f:
+            writer = csv.DictWriter(f, fieldnames=fieldnames)
+            writer.writeheader()
+            for row in data:
+                writer.writerow(row)
