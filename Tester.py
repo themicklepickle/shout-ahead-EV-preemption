@@ -54,7 +54,7 @@ class Tester(Simulation):
         for ap in self.setUpTuple[2]:
             self.initTestIndividual(ap)
 
-    def testRules(self, ruleSetFolder: str, UDRulesTuple, gui: bool):
+    def testRules(self, ruleSetFolder: str, UDRulesTuple, gui: bool, iterations: int):
         # override options
         self.maxGreenAndYellowPhaseTime_UDRule = UDRulesTuple[0]
         self.maxRedPhaseTime_UDRule = UDRulesTuple[1]
@@ -66,12 +66,21 @@ class Tester(Simulation):
         self.initSetUpTuple()
         self.config()
 
-        simRunner = self.getTestSimRunner()
-        simRunner.runTest()
+        results = []
+        for i in range(iterations):
+            simRunner = self.getTestSimRunner()
+            simRunner.runTest()
 
-        results = simRunner.getResults()
-        for key, val in results.items():
-            print(f"{key}: {val}")
+            res = simRunner.getResults()
+            results.append(res)
+
+        print("\n")
+        print(ruleSetFolder, UDRulesTuple, gui)
+
+        for key in results[0]:
+            print(f"{key}: {[res[key] for res in results]}")
+            print(f"average {key}: {sum(res[key] for res in results) / len(results)}")
+            print()
 
     def findBestGeneration(self, UDRulesTuple, gui: bool, databaseName: str, outputFile: str):
         # override options
