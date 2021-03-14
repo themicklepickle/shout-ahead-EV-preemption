@@ -192,12 +192,15 @@ class Tester(Simulation):
                     self.addRule(apID, ruleSet, rule, self.ruleSetFolder)
 
     def findBestIndivs(self, databaseName, label):
+        self.databaseName = databaseName
+        self.initClient()
+
         for apID in ["AP" + str(i) for i in range(1, 4)]:
             maxIndiv = {"fitness": 100000000}
             maxIndivGen = 0
             maxIndivIndex = 0
             for generation in range(1, 49):
-                collection = self.client[databaseName][str(generation)]
+                collection = self.db[str(generation)]
 
                 document = collection.find_one({
                     "label": label,
@@ -209,7 +212,11 @@ class Tester(Simulation):
                         maxIndiv = indiv
                         maxIndivGen = generation
                         maxIndivIndex = i
-            print(apID, maxIndiv["fitness"], maxIndivGen, maxIndivIndex)
+            print(apID)
+            print(f'fitness: {maxIndiv["fitness"]}')
+            print(f'generation: {maxIndivGen}')
+            print(f'index: {maxIndivIndex}')
+            print()
 
     def JSONToCSV(self, filename: str):
         with open(f"results/{filename}.json", "r") as f:
