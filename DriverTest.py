@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import traci
-import timeit
 
 from DriverEV import DriverEV
 
@@ -14,7 +13,6 @@ class DriverTest(DriverEV):
     def getResults(self) -> Dict:
         return {
             "EVStops": self.EVStops,
-            "averageEVSpeedsList": self.averageEVSpeedsList,
             "averageEVSpeed": self.averageEVSpeed,
             "simulationTime": self.simulationTime
         }

@@ -202,19 +202,16 @@ class TrafficLight:
                 return i
         return False
 
-    def getNextRule(self, validRulesRS: List[Rule], validRulesRSint: List[Rule], validRulesRSev: List[Rule], validRulesRSev_int: List[Rule], isEVApproaching: bool, useEVCoopPredicates: bool, time: float) -> Union[Rule, Literal[-1]]:
+    def getNextRule(self, validRulesRS: List[Rule], validRulesRSint: List[Rule], time: float) -> Union[Rule, Literal[-1]]:
+        if len(validRulesRS) == 0 and len(validRulesRSint) == 0:
+            return -1
+
         self.numOfRulesSelected += 1
-        # First, select a rule from RS (or RSev if applicable) and communicate it
-        if isEVApproaching:
-            intendedRule = self.getAssignedIndividual().selectRule(validRulesRSev)  # Get intended rule to apply
-        else:
-            intendedRule = self.getAssignedIndividual().selectRule(validRulesRS)  # Get intended rule to apply
+        # First, select a rule from RS and communicate it
+        intendedRule = self.getAssignedIndividual().selectRule(validRulesRS)  # Get intended rule to apply
 
         if intendedRule == -1:
-            if isEVApproaching:
-                self.numOfTimesNoRSevRuleWasValid += 1
-            else:
-                self.numOfTimesNoRSRuleWasValid += 1
+            self.numOfTimesNoRSRuleWasValid += 1
             if self.currentRule is None or self.currentRule == -1:
                 # Return the Do Nothing action
                 self.setIntention(Intention(self, len(self.getAgentPool().getActionSet())-1, time))
@@ -227,10 +224,7 @@ class TrafficLight:
                 self.setIntention(Intention(self, intendedRule.getAction(), time))
 
         # If intended rule isn't user-defined, select a rule from RSint and then decide between the two
-        if useEVCoopPredicates:
-            coopRule = self.getAssignedIndividual().selectCoopRule(validRulesRSev_int)
-        else:
-            coopRule = self.getAssignedIndividual().selectCoopRule(validRulesRSint)
+        coopRule = self.getAssignedIndividual().selectCoopRule(validRulesRSint)
 
         if coopRule == -1:
             self.numOfTimesNoCoopRuleWasValid += 1
@@ -264,9 +258,6 @@ class TrafficLight:
 
     def getRSRuleValidRate(self):
         return (self.numOfTimesNoRSRuleWasValid/self.numOfRulesSelected)*100
-
-    def getRSevRuleValidRate(self):
-        return (self.numOfTimesNoRSevRuleWasValid/self.numOfRulesSelected)*100
 
     def getEVs(self):
         return self.EVs

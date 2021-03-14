@@ -21,7 +21,7 @@ global EVQueueFactor
 global EVIsStoppedPenalty
 EVSpeedFactor = 0.1
 EVQueueFactor = 1
-EVIsStoppedPenalty = -1
+EVIsStoppedPenalty = 1
 
 
 def updatedWeight(rule: Rule, nextRule: Rule, throughputRatio: float, waitTimeReducedRatio: float, intersectionQueueDifference: int, EVChangeInSpeed: float, EVChangeInQueue: int, EVIsStopped: bool) -> float:
