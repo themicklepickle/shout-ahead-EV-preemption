@@ -59,6 +59,7 @@ class DriverEV(Driver):
         self.averageEVSpeedsList = []
         self.averageEVSpeed = 0
         self.simulationTime = 0
+        self.totalFitness = 0
 
         ruleApplicationCounts = {
             self.ruleSetOptions[0]: 0,
@@ -236,18 +237,23 @@ class DriverEV(Driver):
 
         # Update the fitnesses of the individuals involved in the simulation based on their fitnesses
         simRunTime: float = traci.simulation.getTime()
-        print(f"*** SIMULATION TIME: {simRunTime} ***\n")
-        print("Total applied rules")
+        print(f"    *** SIMULATION TIME: {simRunTime} ***\n")
+        print("    Total applied rules")
         for ruleType, count in ruleApplicationCounts.items():
-            print(f"  {ruleType}: {count}")
+            print(f"      {ruleType}: {count}")
         for tl in trafficLights:
             tl.resetRecievedIntentions()
             individual = tl.getAssignedIndividual()
             individual.updateLastRunTime(simRunTime)
-            individual.updateFitness(EvolutionaryLearner.rFit(individual, simRunTime), EvolutionaryLearner.EVrFit(individual))
-            # print(tl.getName())
-            # print([r for r in tl.getAssignedIndividual().getRSev() if r.getWeight() != 0])
+            individual.updateFitness(
+                EvolutionaryLearner.rFit(individual, simRunTime),
+                EvolutionaryLearner.EVrFit(individual) if self.learnEVPreemption else 0
+            )
+            self.totalFitness += individual.getFitness()
+
         traci.close()  # End simulation
+
+        self.simulationTime = simRunTime
 
         # Returns all the agent pools to the main module
         return self.setUpTuple[2], trafficLights
@@ -690,5 +696,6 @@ class DriverEV(Driver):
         return {
             "EVStops": self.EVStops,
             "averageEVSpeed": self.averageEVSpeed,
-            "simulationTime": self.simulationTime
+            "simulationTime": self.simulationTime,
+            "totalFitness": self.totalFitness
         }

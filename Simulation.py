@@ -141,6 +141,8 @@ class Simulation:
             return newValue > oldValue
         if "simulationTime" == attributeName:
             return newValue < oldValue
+        if "totalFitness" == attributeName:
+            return newValue < oldValue
 
     def updateBestResults(self, trafficLights: List[TrafficLight]):
         for key, value in self.results.items():
@@ -151,6 +153,11 @@ class Simulation:
                 }
                 for tl in trafficLights:
                     self.bestResults[key]["trafficLights"][tl.getAgentPool().getID()] = tl.getAssignedIndividual().getJSON()
+
+    def displayResults(self):
+        print("    Results:")
+        for key, value in self.results.items():
+            print(f"      {key}: {value} ({self.bestResults[key]['value']})")
 
     def getMaxSimulationTimes(self):
         return [
@@ -221,10 +228,11 @@ class Simulation:
         if self.generationEpisode == 1:
             self.initBestResults(trafficLights)
         else:
+            self.displayResults()
             self.updateBestResults(trafficLights)
 
         runtime = timeit.default_timer() - start
-        print(f"  Time: {round(runtime, 1)}")
+        print(f"    Time: {round(runtime, 1)}")
         sys.stdout.flush()
         self.episodeRuntimes.append(runtime)
 
