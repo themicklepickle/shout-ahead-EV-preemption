@@ -1,3 +1,5 @@
+from TrafficLight import TrafficLight
+from AgentPool import AgentPool
 from sumolib import checkBinary  # Checks for the binary in environ vars
 import os
 import sys
@@ -16,6 +18,7 @@ import EvolutionaryLearner
 from Notifier import Notifier
 from Status import Status
 from Database import Database
+from typing import List
 
 
 class Simulation:
@@ -120,6 +123,34 @@ class Simulation:
         self.simulationStartTime = self.getTime()
         self.generationRuntimes = []
 
+    def initBestResults(self, trafficLights: List[TrafficLight]):
+        self.bestResults = {}
+        for key, value in self.results.items():
+            self.bestResults[key] = {
+                "value": value,
+                "trafficLights": {}
+            }
+            for tl in trafficLights:
+                self.bestResults[key]["trafficLights"][tl.getAgentPool().getID()] = tl.getAssignedIndividual().getJSON()
+
+    def isBetter(self, newValue, oldValue, attributeName):
+        if "EVStops" == attributeName:
+            return newValue < oldValue
+        if "averageEVSpeed" == attributeName:
+            return newValue > oldValue
+        if "simulationTime" == attributeName:
+            return newValue < oldValue
+
+    def updateBestResults(self, trafficLights: List[TrafficLight]):
+        for key, value in self.results.items():
+            if self.isBetter(value, self.bestResults[key]["value"], key):
+                self.bestResults[key] = {
+                    "value": value,
+                    "trafficLights": {}
+                }
+                for tl in trafficLights:
+                    self.bestResults[key]["trafficLights"][tl.getAgentPool().getID()] = tl.getAssignedIndividual().getJSON()
+
     def getMaxSimulationTimes(self):
         return [
             self.maxGreenPhaseTime,
@@ -182,10 +213,15 @@ class Simulation:
         simRunner = self.getSimRunner()
 
         start = timeit.default_timer()
-        resultingAgentPools = simRunner.run()
+        resultingAgentPools, trafficLights = simRunner.run()
+        self.results = simRunner.getResults()
+        if self.episode == 1:
+            self.initBestResults(trafficLights)
+        else:
+            self.updateBestResults(trafficLights)
 
         runtime = timeit.default_timer() - start
-        print(f"    Time: {round(runtime, 1)}")
+        print(f"  Time: {round(runtime, 1)}")
         sys.stdout.flush()
         self.episodeRuntimes.append(runtime)
 
@@ -199,6 +235,7 @@ class Simulation:
             for ap in resultingAgentPools:
                 for i in ap.getIndividualsSet():
                     continue
+
         # self.allIndividualsTested = True  # Uncomment for quick testing
 
     def storeGeneration(self):
@@ -216,6 +253,7 @@ class Simulation:
                 "averageEpisodeTime": averageEpisodeTime,
                 "generations": generations,
                 "episodes": episodes,
+                "bestResults": self.bestResults
             }
         }
         bestIndividuals = {}
@@ -276,6 +314,7 @@ class Simulation:
             # Evolutionary learning loop
             while self.generation <= self.totalGenerations:
                 self.newGeneration()
+                self.initBestResults()
 
                 # Reinforcement learning loop
                 while not self.allIndividualsTested:

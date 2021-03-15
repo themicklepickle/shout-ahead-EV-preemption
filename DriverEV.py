@@ -54,6 +54,12 @@ class DriverEV(Driver):
 
     # CONTAINS MAIN TRACI SIMULATION LOOP
     def run(self) -> None:
+        # results to be outputted
+        self.EVStops = 0
+        self.averageEVSpeedsList = []
+        self.averageEVSpeed = 0
+        self.simulationTime = 0
+
         ruleApplicationCounts = {
             self.ruleSetOptions[0]: 0,
             self.ruleSetOptions[1]: 0,
@@ -144,6 +150,11 @@ class DriverEV(Driver):
             self.calculateTimeSinceLastEVThrough(trafficLights)
 
             for tl in trafficLights:
+                self.EVStops += self.getNumEVStops(tl)
+                self.averageEVSpeedsList.append(self.getAverageEVSpeed(tl))
+                if len(self.averageEVSpeedsList) > 0:
+                    self.averageEVSpeed = sum(self.averageEVSpeedsList) / len(self.averageEVSpeedsList)
+
                 if self.checkUDRules(tl, nextRule):
                     continue
 
@@ -239,7 +250,7 @@ class DriverEV(Driver):
         traci.close()  # End simulation
 
         # Returns all the agent pools to the main module
-        return self.setUpTuple[2]
+        return self.setUpTuple[2], trafficLights
 
     def getEV_RLParameters(self, tl: TrafficLight, isEVApproaching: bool):
         leadingEV = None
@@ -674,3 +685,10 @@ class DriverEV(Driver):
                         return False
 
         return True  # if all predicates return true, evaluate rule as True
+
+    def getResults(self) -> Dict:
+        return {
+            "EVStops": self.EVStops,
+            "averageEVSpeed": self.averageEVSpeed,
+            "simulationTime": self.simulationTime
+        }
