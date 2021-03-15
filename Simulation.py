@@ -119,6 +119,7 @@ class Simulation:
     def initVariables(self):
         self.generation = 1
         self.episode = 0
+        self.generationEpisode = 0
         self.allIndividualsTested = False
         self.simulationStartTime = self.getTime()
         self.generationRuntimes = []
@@ -187,6 +188,7 @@ class Simulation:
         self.startTime = time.time()
         self.episodeRuntimes = []
         self.allIndividualsTested = False
+        self.generationEpisode = 0
 
         for ap in self.setUpTuple[2]:
             for i in ap.getIndividualsSet():
@@ -194,6 +196,7 @@ class Simulation:
 
     def indivRun(self):
         self.episode += 1
+        self.generationEpisode += 1
 
         print(f"--- Episode {self.episode} of GENERATION {self.generation} of {self.totalGenerations} ---")
         print(f"    Generation start time: {self.genStart}")
@@ -215,7 +218,7 @@ class Simulation:
         start = timeit.default_timer()
         resultingAgentPools, trafficLights = simRunner.run()
         self.results = simRunner.getResults()
-        if self.episode == 1:
+        if self.generationEpisode == 1:
             self.initBestResults(trafficLights)
         else:
             self.updateBestResults(trafficLights)
@@ -314,7 +317,6 @@ class Simulation:
             # Evolutionary learning loop
             while self.generation <= self.totalGenerations:
                 self.newGeneration()
-                self.initBestResults()
 
                 # Reinforcement learning loop
                 while not self.allIndividualsTested:
