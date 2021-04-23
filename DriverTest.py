@@ -55,31 +55,30 @@ class DriverTest(DriverEV):
 
             rule = self.applicableUserDefinedRule(tl, userDefinedRules)  # Check user-defined rules
 
-            # If no user-defined rules can be applied, get a rule from Agent Pool
-            if rule == False or rule is None:
-                # Determine if the rule should be chosen from RS or RSev
-                isEVApproaching = self.getIsEVApproaching(tl)
-                validRS, validRSint, validRSev, validRSev_int = self.getValidRules(tl, tl.getAssignedIndividual())
-
-                # Get a rule from assigned Individual
-                rule = tl.getNextRule(validRS, validRSint, validRSev, validRSev_int, isEVApproaching, self.useEVCoopPredicates, traci.simulation.getTime())
-
-                # if no valid rule applicable, apply the Do Nothing rule.
-                if rule == -1:
-                    tl.doNothing()  # Update traffic light's Do Nothing counter
-                    tl.getAssignedIndividual().updateFitnessPenalty(False, 0)  # Update fitness penalty for individual
-
-                else:
-                    # If rule conditions are satisfied, apply its action. Otherwise, do nothing.
-                    if not rule.hasDoNothingAction():
-                        traci.trafficlight.setPhase(tl.getName(), rule.getAction())
-                        tl.resetTimeInCurrentPhase()
-            else:
+            # Check user-defined rules
+            rule = self.applicableUserDefinedRule(tl, userDefinedRules)
+            if rule:
                 self.applyUserDefinedRuleAction(tl, traci.trafficlight.getPhaseName(tl.getName()), rule)
                 tl.resetTimeInCurrentPhase()
+                tl.setCurrentRule(rule)
+                tl.updateTimePhaseSpentInRed(traci.trafficlight.getPhase(tl.getName()), 5)
+                continue
 
+            # Check learning rules
+            validRS, validRSint = self.getValidRules(tl, tl.getAssignedIndividual())
+            rule = tl.getNextRule(validRS, validRSint, traci.simulation.getTime())
+            if rule != -1 and not rule.hasDoNothingAction():
+                traci.trafficlight.setPhase(tl.getName(), rule.getAction())
+                tl.resetTimeInCurrentPhase()
+                tl.setCurrentRule(rule)  # Set current rule in traffic light
+                tl.updateTimePhaseSpentInRed(traci.trafficlight.getPhase(tl.getName()), 5)
+                continue
+
+            # Apply Do Nothing action if no rules were applicable
+            tl.doNothing()  # Update traffic light's Do Nothing counter
+            tl.getAssignedIndividual().updateFitnessPenalty(False, 0)  # Update fitness penalty for individual
             tl.setCurrentRule(rule)  # Set current rule in traffic light
-            # tl.updateTimePhaseSpentInRed(traci.trafficlight.getPhase(tl.getName()), 5)
+            tl.updateTimePhaseSpentInRed(traci.trafficlight.getPhase(tl.getName()), 5)
 
         while traci.simulation.getMinExpectedNumber() > 0 and traci.simulation.getTime() < self.maxSimulationTime:
             tl.removeOldIntentions(traci.simulation.getTime())
@@ -103,119 +102,43 @@ class DriverTest(DriverEV):
                 if len(self.averageEVSpeedsList) > 0:
                     self.averageEVSpeed = sum(self.averageEVSpeedsList) / len(self.averageEVSpeedsList)
 
-                # --- USER DEFINED RULE CHECK ---
-                if self.assignGreenPhaseToSingleWaitingPhase_UDRule:
-                    applied = self.checkAssignGreenPhaseToSingleWaitingPhaseRule(tl)
-                    if applied is True:
-                        continue
-
-                if self.maxGreenAndYellow_UDRule:
-                    applied = self.checkMaxGreenAndYellowPhaseRule(tl, nextRule)
-                    if applied is True:
-                        continue
-
-                if self.maxRedPhaseTime_UDRule:
-                    applied = self.checkMaxRedPhaseTimeRule(tl)
-                    if applied is True:
-                        continue
-                # -------------------------------
+                if self.checkUDRules(tl, nextRule):
+                    continue
 
                 tl.updateTimeInCurrentPhase(5)
 
                 isEVApproaching = self.getIsEVApproaching(tl)
 
-                # Check if a user-defined rule can be applied
+                # --- Check user-defined rules ---
                 nextRule = self.applicableUserDefinedRule(tl, userDefinedRules)
                 if nextRule:
                     self.applyUserDefinedRuleAction(tl, traci.trafficlight.getPhaseName(tl.getName()), nextRule)
                     tl.resetTimeInCurrentPhase()
 
-                    # --- USER DEFINED RULE CHECK ---
-                    if self.maxGreenAndYellow_UDRule:
-                        self.checkMaxGreenAndYellowPhaseRule(tl, nextRule)
+                    self.checkUDRules(tl, nextRule)
 
-                    if self.assignGreenPhaseToSingleWaitingPhase_UDRule:
-                        self.checkAssignGreenPhaseToSingleWaitingPhaseRule(tl)
-
-                    if self.maxRedPhaseTime_UDRule:
-                        self.checkMaxRedPhaseTimeRule(tl)
-                    # -------------------------------
-
-                    # update evolutionary learning attributes if there is at least one EV approaching
-                    if isEVApproaching:
-                        tl.getAssignedIndividual().updateAverageEVSpeed(self.getEVSpeedsList(tl))
-                        tl.getAssignedIndividual().updateEVStops(self.getNumEVStops(tl))
-
-                    # Update traffic light
-                    tl.setCurrentRule(nextRule)
-                    tl.updateCarsWaiting(carsWaitingAfter)
-                    tl.setEVs(self.getEVs(tl))
-                    tl.setLeadingEV(self.getLeadingEV(tl))
+                    self.updateValues(tl, isEVApproaching, nextRule, carsWaitingAfter)
                     continue
 
-                # If no user-defined rules can be applied, get a rule from Agent Pool
-                carsWaitingAfter = self.carsWaiting(tl)
+                # --- Check learning rules ---
+                validRS, validRSint = self.getValidRules(tl, tl.getAssignedIndividual())
+                nextRule = tl.getNextRule(validRS, validRSint, traci.simulation.getTime())
+                if nextRule != -1:
+                    carsWaitingAfter = self.carsWaiting(tl)
 
-                # Get EV reinforcement learning parameters
-                if isEVApproaching:
-                    leadingEV = self.getLeadingEV(tl)
-                    EVs = self.getEVs(tl)
-                else:
-                    leadingEV = None
-                    EVs = []
-
-                validRS, validRSint, validRSev, validRSev_int = self.getValidRules(tl, tl.getAssignedIndividual())
-
-                if len(validRS) == 0 and len(validRSint) == 0 and not isEVApproaching and not self.useEVCoopPredicates:
-                    nextRule = -1
-                elif len(validRSev) == 0 and len(validRSint) == 0 and isEVApproaching and not self.useEVCoopPredicates:
-                    nextRule = -1
-                elif len(validRS) == 0 and len(validRSev_int) == 0 and not isEVApproaching and self.useEVCoopPredicates:
-                    nextRule = -1
-                elif len(validRSev) == 0 and len(validRSev_int) == 0 and isEVApproaching and self.useEVCoopPredicates:
-                    nextRule = -1
-                else:
-                    nextRule = tl.getNextRule(validRS, validRSint, validRSev, validRSev_int, isEVApproaching, self.useEVCoopPredicates, traci.simulation.getTime())
-
-                if nextRule == -1:
-                    tl.doNothing()  # Update traffic light's Do Nothing counter
-                    tl.getAssignedIndividual().updateFitnessPenalty(False, False)  # Update fitness penalty for individual
-                else:
                     # Apply the next rule; if action is -1 then action is do nothing
-                    if not nextRule.hasDoNothingAction():
+                    if not nextRule.hasDoNothingAction() and nextRule is not tl.getCurrentRule():
                         traci.trafficlight.setPhase(tl.getName(), nextRule.getAction())
+                        tl.resetTimeInCurrentPhase()
 
-                        # change the phase if the action is different than the current action
-                        if nextRule is not tl.getCurrentRule():
-                            traci.trafficlight.setPhase(tl.getName(), nextRule.getAction())
-                            tl.resetTimeInCurrentPhase()
-                            # if tl.getName() == "incoming":
-                            # print(step)
-                            # print(tl.getName())
-                            # print(nextRule)
-                            # print("\n")
+                        self.updateValues(tl, isEVApproaching, nextRule, carsWaitingAfter)
+                        continue
 
-                # --- USER DEFINED RULE CHECK ---
-                if self.maxGreenAndYellow_UDRule:
-                    self.checkMaxGreenAndYellowPhaseRule(tl, nextRule)
-
-                if self.assignGreenPhaseToSingleWaitingPhase_UDRule:
-                    self.checkAssignGreenPhaseToSingleWaitingPhaseRule(tl)
-
-                if self.maxRedPhaseTime_UDRule:
-                    self.checkMaxRedPhaseTimeRule(tl)
-                # -------------------------------
-
-                # update evolutionary learning attributes if there is at least one EV approaching
-                if isEVApproaching:
-                    tl.getAssignedIndividual().updateAverageEVSpeed(self.getAverageEVSpeed(tl))
-                    tl.getAssignedIndividual().updateEVStops(self.getNumEVStops(tl))
-
-                # Update attributes within the tl itself
-                tl.setCurrentRule(nextRule)
-                tl.updateCarsWaiting(carsWaitingAfter)
-                tl.setEVs(EVs)
-                tl.setLeadingEV(leadingEV)
+                # Apply Do Nothing action if no rules were applicable
+                tl.doNothing()  # Update traffic light's Do Nothing counter
+                tl.getAssignedIndividual().updateFitnessPenalty(False, False)  # Update fitness penalty for individual
+                self.checkUDRules(tl, nextRule)
+                self.updateValues(tl, isEVApproaching, nextRule, carsWaitingAfter)
 
         traci.close()  # End simulation
 
