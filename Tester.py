@@ -24,8 +24,9 @@ class Tester(Simulation):
     def initClient(self):
         username = os.environ["MONGODB_USERNAME"]
         password = os.environ["MONGODB_PASSWORD"]
+        cluster = os.environ["MONGODB_CLUSTER"]
 
-        self.client = pymongo.MongoClient(f"mongodb+srv://{username}:{password}@asp4.aa5st.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
+        self.client = pymongo.MongoClient(f"mongodb+srv://{username}:{password}@{cluster}.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
         self.db = self.client[self.databaseName]
 
     def getTestSimRunner(self):
