@@ -25,7 +25,7 @@ class Tester(Simulation):
         username = os.environ["MONGODB_USERNAME"]
         password = os.environ["MONGODB_PASSWORD"]
 
-        self.client = pymongo.MongoClient(f"mongodb+srv://{username}:{password}@cluster0.a9379.mongodb.net/status?retryWrites=true&w=majority")
+        self.client = pymongo.MongoClient(f"mongodb+srv://{username}:{password}@asp4.aa5st.mongodb.net/myFirstDatabase?retryWrites=true&w=majority")
         self.db = self.client[self.databaseName]
 
     def getTestSimRunner(self):
@@ -42,7 +42,7 @@ class Tester(Simulation):
                 rules.append(Rule(r["type"], r["conditions"], r["action"], agentPool))
             ruleSets[ruleSet] = rules
 
-        agentPool.testIndividual = Individual("Test", agentPool, ruleSets["RS"], ruleSets["RSint"], ruleSets["RSev"], ruleSets["RSev_int"])
+        agentPool.testIndividual = Individual("Test", agentPool, ruleSets["RS"], ruleSets["RSint"])
 
         agentPool.RSPredicates = PredicateSet.getPredicateSet()
         agentPool.RSintPredicates = CoopPredicateSet.getPredicateSet(agentPool)
@@ -97,7 +97,7 @@ class Tester(Simulation):
         generations = []
 
         for i in range(50, 0, -1):
-            self.addBestIndividualsInGeneration(i)
+            self.addBestPoolInGeneration(i, "averageEVSpeed")
             self.initSetUpTuple()
             self.config()
 
@@ -162,11 +162,16 @@ class Tester(Simulation):
         with open(filepath, "w") as f:
             json.dump(data, f, indent=2)
 
-    def addBestIndividualsInGeneration(self, generation):
+    def addBestIndividualsInGeneration(self, generation,  databaseName=None, ruleSetFolder=None):
+        if databaseName:
+            self.databaseName = databaseName
+            self.ruleSetFolder = ruleSetFolder
+            self.initClient()
         collection = self.db[str(generation)]
 
         for apID in ["AP" + str(i) for i in range(1, 4)]:
             filepath = f"rules/{self.ruleSetFolder}/{apID}.json"
+
             # create folder if it doesn't exist
             if not Path(filepath).is_file():
                 Path(f"rules/{self.ruleSetFolder}").mkdir(parents=True, exist_ok=True)
@@ -188,6 +193,46 @@ class Tester(Simulation):
 
             # add ruleSets of individual to the file
             for ruleSet in ["RS", "RSint", "RSev", "RSev_int"]:
+                if ruleSet not in individual:
+                    continue
+                for rule in individual[ruleSet]:
+                    self.addRule(apID, ruleSet, rule, self.ruleSetFolder)
+
+    def addBestPoolInGeneration(self, generation, metric, databaseName=None, ruleSetFolder=None):
+        if databaseName:
+            self.databaseName = databaseName
+            if ruleSetFolder:
+                self.ruleSetFolder = ruleSetFolder
+            else:
+                self.ruleSetFolder = databaseName
+            self.initClient()
+
+        collection = self.db[str(generation)]
+
+        for apID in ["AP" + str(i) for i in range(1, 4)]:
+            filepath = f"rules/{self.ruleSetFolder}/{apID}.json"
+
+            # create folder if it doesn't exist
+            if not Path(filepath).is_file():
+                Path(f"rules/{self.ruleSetFolder}").mkdir(parents=True, exist_ok=True)
+
+            # clear contents of folder
+            with open(filepath, "w") as f:
+                json.dump({
+                    "RS": [],
+                    "RSint": [],
+                    "RSev": [],
+                    "RSev_int": []
+                }, f, indent=2)
+
+            # get document from MongoDB
+            document = collection.find_one({"label": "output"})
+
+            # get desired individual from document
+            individual = document["data"]["stats"]["bestResults"][metric]["trafficLights"][apID]
+
+            # add ruleSets of individual to the file
+            for ruleSet in ["RS", "RSint"]:
                 for rule in individual[ruleSet]:
                     self.addRule(apID, ruleSet, rule, self.ruleSetFolder)
 
@@ -253,6 +298,30 @@ class Tester(Simulation):
         for apID in ["AP" + str(x) for x in range(1, 4)]:
             fieldnames.append(f"{apID} topFitness")
             fieldnames.append(f"{apID} topNormalizedFitness")
+        with open(f"results/{filename}.csv", "w") as f:
+            writer = csv.DictWriter(f, fieldnames=fieldnames)
+            writer.writeheader()
+            for row in data:
+                writer.writerow(row)
+
+    def getBestResultsPerGeneration(self, databaseName: str, filename: str):
+        self.databaseName = databaseName
+        self.initClient()
+
+        data = []
+
+        for generation in range(50, 0, -1):
+            genData = {"generation": generation}
+
+            collection = self.db[str(generation)]
+            document = collection.find_one({"label": "output"})
+            bestResults = document["data"]["stats"]["bestResults"]
+
+            for key, value in bestResults.items():
+                genData[key] = value["value"]
+            data.append(genData)
+
+        fieldnames = ["generation", "EVStops", "averageEVSpeed", "simulationTime", "totalFitness"]
         with open(f"results/{filename}.csv", "w") as f:
             writer = csv.DictWriter(f, fieldnames=fieldnames)
             writer.writeheader()

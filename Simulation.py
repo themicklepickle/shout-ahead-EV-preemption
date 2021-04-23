@@ -1,3 +1,5 @@
+from TrafficLight import TrafficLight
+from AgentPool import AgentPool
 from sumolib import checkBinary  # Checks for the binary in environ vars
 import os
 import sys
@@ -16,6 +18,7 @@ import EvolutionaryLearner
 from Notifier import Notifier
 from Status import Status
 from Database import Database
+from typing import List
 
 
 class Simulation:
@@ -116,9 +119,45 @@ class Simulation:
     def initVariables(self):
         self.generation = 1
         self.episode = 0
+        self.generationEpisode = 0
         self.allIndividualsTested = False
         self.simulationStartTime = self.getTime()
         self.generationRuntimes = []
+
+    def initBestResults(self, trafficLights: List[TrafficLight]):
+        self.bestResults = {}
+        for key, value in self.results.items():
+            self.bestResults[key] = {
+                "value": value,
+                "trafficLights": {}
+            }
+            for tl in trafficLights:
+                self.bestResults[key]["trafficLights"][tl.getAgentPool().getID()] = tl.getAssignedIndividual().getJSON()
+
+    def isBetter(self, newValue, oldValue, attributeName):
+        if "EVStops" == attributeName:
+            return newValue < oldValue
+        if "averageEVSpeed" == attributeName:
+            return newValue > oldValue
+        if "simulationTime" == attributeName:
+            return newValue < oldValue
+        if "totalFitness" == attributeName:
+            return newValue < oldValue
+
+    def updateBestResults(self, trafficLights: List[TrafficLight]):
+        for key, value in self.results.items():
+            if self.isBetter(value, self.bestResults[key]["value"], key):
+                self.bestResults[key] = {
+                    "value": value,
+                    "trafficLights": {}
+                }
+                for tl in trafficLights:
+                    self.bestResults[key]["trafficLights"][tl.getAgentPool().getID()] = tl.getAssignedIndividual().getJSON()
+
+    def displayResults(self):
+        print("    Results:")
+        for key, value in self.results.items():
+            print(f"      {key}: {value} ({self.bestResults[key]['value']})")
 
     def getMaxSimulationTimes(self):
         return [
@@ -156,6 +195,7 @@ class Simulation:
         self.startTime = time.time()
         self.episodeRuntimes = []
         self.allIndividualsTested = False
+        self.generationEpisode = 0
 
         for ap in self.setUpTuple[2]:
             for i in ap.getIndividualsSet():
@@ -163,6 +203,7 @@ class Simulation:
 
     def indivRun(self):
         self.episode += 1
+        self.generationEpisode += 1
 
         print(f"--- Episode {self.episode} of GENERATION {self.generation} of {self.totalGenerations} ---")
         print(f"    Generation start time: {self.genStart}")
@@ -182,7 +223,13 @@ class Simulation:
         simRunner = self.getSimRunner()
 
         start = timeit.default_timer()
-        resultingAgentPools = simRunner.run()
+        resultingAgentPools, trafficLights = simRunner.run()
+        self.results = simRunner.getResults()
+        if self.generationEpisode == 1:
+            self.initBestResults(trafficLights)
+        else:
+            self.displayResults()
+            self.updateBestResults(trafficLights)
 
         runtime = timeit.default_timer() - start
         print(f"    Time: {round(runtime, 1)}")
@@ -199,6 +246,7 @@ class Simulation:
             for ap in resultingAgentPools:
                 for i in ap.getIndividualsSet():
                     continue
+
         # self.allIndividualsTested = True  # Uncomment for quick testing
 
     def storeGeneration(self):
@@ -216,6 +264,7 @@ class Simulation:
                 "averageEpisodeTime": averageEpisodeTime,
                 "generations": generations,
                 "episodes": episodes,
+                "bestResults": self.bestResults
             }
         }
         bestIndividuals = {}

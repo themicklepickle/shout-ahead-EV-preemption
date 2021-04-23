@@ -1,7 +1,7 @@
 ## 1. Create GCP Instance
 - location: `us-west1`
 - zone: `us-west1-b` 
-- machine type: `6 cores, 3 GB memory`
+- machine type: `2 cores, 1 GB memory`
 - boot disk: `Ubuntu 20.04 LTS`
 - firewall: `Allow HTTP traffic, Allow HTTPS traffic`
 
@@ -63,7 +63,7 @@
 - `git pull origin [BRANCH]`
 - or all together:
     ```
-    git clone https://github.com/themicklepickle/ASP.git ASP &&
+    git clone https://github.com/themicklepickle/shout-ahead-EV-preemption.git ASP &&
     cd ASP &&
     git pull origin [BRANCH]
     ```
@@ -71,9 +71,9 @@
 ### Install Python modules
 - `pip3 install -r requirements.txt`
 
-### Create email.txt
-- copy content of local `email.txt`
-- `vim email.txt`
+### Create credentials.json
+- copy content of local `credentials.json`
+- `vim credentials.json`
 - paste copied content
 - type `ESC`
 - type `:wq`
@@ -85,3 +85,21 @@
 
 ### Run simulation
 - `python3 main.py`
+
+## ALL THE SETUP
+  ```
+  sudo apt update &&
+  sudo apt install software-properties-common &&
+  sudo add-apt-repository ppa:deadsnakes/ppa -y &&
+  sudo apt update &&
+  sudo apt install python3.8 -y &&
+  sudo apt install python3-pip -y &&
+  sudo add-apt-repository ppa:sumo/stable -y &&
+  sudo apt-get update &&
+  sudo apt-get install sumo sumo-tools sumo-doc -y &&
+  git clone https://github.com/themicklepickle/shout-ahead-EV-preemption.git ASP &&
+  cd ASP &&
+  pip3 install -r requirements.txt &&
+  tmux new -s l &&
+  vim credentials.json
+  ```
