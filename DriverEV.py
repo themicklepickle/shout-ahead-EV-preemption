@@ -646,7 +646,7 @@ class DriverEV(Driver):
             return traci.simulation.getTime() - timeSent
 
         elif "intendedActionIs" == predicate:
-            return intention.getAction()
+            return (condition, intention.getAction())
 
         elif "timeSinceLastEVThrough" == predicate:
             partnerName = "_".join(condition.split("_")[1:-2])
@@ -682,6 +682,8 @@ class DriverEV(Driver):
                     elif "timeSinceLastEVThrough" == predicate:
                         predCall = getattr(EVCoopPredicateSet, "timeSinceLastEVThrough")(*parameters)
                     elif "partnerAction" == predicate:
+                        predCall = getattr(CoopPredicateSet, "partnerAction")(*parameters)
+                    elif "intendedActionIs" == predicate:
                         predCall = getattr(CoopPredicateSet, "partnerAction")(*parameters)
                     else:
                         predCall = getattr(CoopPredicateSet, cond)(parameters)
