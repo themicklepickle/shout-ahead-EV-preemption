@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from TrafficLight import TrafficLight
+from network_components.TrafficLight import TrafficLight
 from shout_ahead.AgentPool import AgentPool
 
 from typing import TYPE_CHECKING

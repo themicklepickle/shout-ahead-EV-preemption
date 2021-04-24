@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from typing import Union, Dict, List, Tuple
     from shout_ahead.AgentPool import AgentPool
-    from TrafficLight import TrafficLight
+    from network_components.TrafficLight import TrafficLight
     from shout_ahead.Rule import Rule
 
 

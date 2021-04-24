@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from typing import List, Dict, Union, Literal
     from shout_ahead.Intention import Intention
-    from EmergencyVehicle import EmergencyVehicle
+    from network_components.EmergencyVehicle import EmergencyVehicle
     from shout_ahead.Rule import Rule
     from shout_ahead.AgentPool import AgentPool
 

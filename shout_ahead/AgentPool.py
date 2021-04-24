@@ -14,7 +14,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from typing import List
     from shout_ahead.Individual import Individual
-    from TrafficLight import TrafficLight
+    from network_components.TrafficLight import TrafficLight
 
 
 class AgentPool:
