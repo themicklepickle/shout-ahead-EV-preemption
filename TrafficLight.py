@@ -2,15 +2,15 @@ from __future__ import annotations
 
 from numpy.random import choice
 
-from Intention import Intention
+from shout_ahead.Intention import Intention
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from typing import List, Dict, Union, Literal
-    from Intention import Intention
+    from shout_ahead.Intention import Intention
     from EmergencyVehicle import EmergencyVehicle
-    from Rule import Rule
-    from AgentPool import AgentPool
+    from shout_ahead.Rule import Rule
+    from shout_ahead.AgentPool import AgentPool
 
 
 class TrafficLight:

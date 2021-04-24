@@ -7,9 +7,9 @@ import PredicateSet
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from typing import Union, Dict, List, Tuple
-    from AgentPool import AgentPool
+    from shout_ahead.AgentPool import AgentPool
     from TrafficLight import TrafficLight
-    from Rule import Rule
+    from shout_ahead.Rule import Rule
 
 
 class Driver:

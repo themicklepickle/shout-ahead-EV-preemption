@@ -14,11 +14,11 @@ from EmergencyVehicle import EmergencyVehicle
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from typing import List, Dict, Union, Tuple, Literal
-    from Individual import Individual
+    from shout_ahead.Individual import Individual
     from TrafficLight import TrafficLight
-    from Rule import Rule
-    from Intention import Intention
-    from AgentPool import AgentPool
+    from shout_ahead.Rule import Rule
+    from shout_ahead.Intention import Intention
+    from shout_ahead.AgentPool import AgentPool
 
 # NOTE: vehID in DriverEV.py refers to only the first element of the split, in Driver.py vehID was the split tuple
 

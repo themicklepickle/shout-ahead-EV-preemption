@@ -1,5 +1,5 @@
 from TrafficLight import TrafficLight
-from AgentPool import AgentPool
+from shout_ahead.AgentPool import AgentPool
 from sumolib import checkBinary  # Checks for the binary in environ vars
 import os
 import sys

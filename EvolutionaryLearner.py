@@ -6,13 +6,13 @@ import json
 
 import EVPredicateSet
 import EVCoopPredicateSet
-from Rule import Rule
-from Individual import Individual
+from shout_ahead.Rule import Rule
+from shout_ahead.Individual import Individual
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from typing import List, Literal
-    from AgentPool import AgentPool
+    from shout_ahead.AgentPool import AgentPool
     from output_management.Database import Database
 
 

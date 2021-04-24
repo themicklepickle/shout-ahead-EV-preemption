@@ -5,8 +5,8 @@ from numpy.random import choice
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from typing import List, Union, Literal, Tuple
-    from AgentPool import AgentPool
-    from Rule import Rule
+    from shout_ahead.AgentPool import AgentPool
+    from shout_ahead.Rule import Rule
 
 
 class Individual:

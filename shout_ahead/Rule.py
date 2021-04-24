@@ -3,7 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from typing import List, Literal
-    from AgentPool import AgentPool
+    from shout_ahead.AgentPool import AgentPool
 
 
 class Rule:

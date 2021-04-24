@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from Rule import Rule
+    from shout_ahead.Rule import Rule
 
 global learningFactor           # Influences rate with which the weight value converges against the correct weight value
 global discountRate             # Determines the emphasis on the importance of future evaluations

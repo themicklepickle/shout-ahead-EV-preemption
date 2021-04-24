@@ -8,12 +8,12 @@ import CoopPredicateSet
 import EVPredicateSet
 import EVCoopPredicateSet
 import EvolutionaryLearner as EvolutionaryLearner
-from Rule import Rule
+from shout_ahead.Rule import Rule
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from typing import List
-    from Individual import Individual
+    from shout_ahead.Individual import Individual
     from TrafficLight import TrafficLight
 
 

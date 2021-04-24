@@ -7,8 +7,8 @@ import pymongo
 from pathlib import Path
 
 from Simulation import Simulation
-from Individual import Individual
-from Rule import Rule
+from shout_ahead.Individual import Individual
+from shout_ahead.Rule import Rule
 import PredicateSet
 import CoopPredicateSet
 import EVPredicateSet
@@ -17,7 +17,7 @@ from drivers.DriverTest import DriverTest
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from AgentPool import AgentPool
+    from shout_ahead.AgentPool import AgentPool
 
 
 class Tester(Simulation):
