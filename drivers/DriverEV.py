@@ -7,8 +7,8 @@ import PredicateSet
 import CoopPredicateSet
 import EVPredicateSet
 import EVCoopPredicateSet
-import EvolutionaryLearner
-import ReinforcementLearner
+from learning import EvolutionaryLearner
+from learning import ReinforcementLearner
 from network_components.EmergencyVehicle import EmergencyVehicle
 
 from typing import TYPE_CHECKING

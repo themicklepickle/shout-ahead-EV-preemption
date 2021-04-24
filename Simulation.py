@@ -14,7 +14,7 @@ from operator import attrgetter
 
 import InitSetUp
 from drivers.DriverEV import DriverEV
-import EvolutionaryLearner
+from learning import EvolutionaryLearner
 from output_management.Notifier import Notifier
 from output_management.Status import Status
 from output_management.Database import Database

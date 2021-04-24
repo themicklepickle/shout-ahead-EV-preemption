@@ -7,7 +7,7 @@ import PredicateSet
 import CoopPredicateSet
 import EVPredicateSet
 import EVCoopPredicateSet
-import EvolutionaryLearner as EvolutionaryLearner
+from learning import EvolutionaryLearner as EvolutionaryLearner
 from shout_ahead.Rule import Rule
 
 from typing import TYPE_CHECKING
