@@ -1,30 +1,39 @@
-from network_components.TrafficLight import TrafficLight
-from shout_ahead.AgentPool import AgentPool
-from sumolib import checkBinary  # Checks for the binary in environ vars
-import os
-import sys
-import datetime
-import timeit
-import time
-import pytz
-import socket
-import json
-import traceback
-from operator import attrgetter
+from __future__ import annotations
 
+import traceback
+import json
+import socket
+import pytz
+import time
+import timeit
+import datetime
+import sys
+import os
 from setup import InitSetUp
+from operator import attrgetter
+from dotenv import load_dotenv
+from sumolib import checkBinary
+
 from drivers.DriverEV import DriverEV
 from learning import EvolutionaryLearner
-from output_management.Notifier import Notifier
-from output_management.Status import Status
+from network_components.TrafficLight import TrafficLight
 from output_management.Database import Database
-from typing import List
+from output_management.Status import Status
+from output_management.Notifier import Notifier
+
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from typing import List
 
 
 class Simulation:
     def __init__(self) -> None:
+        self.loadEnvironmentVariables()
         self.initSUMO()
         self.initOptions()
+
+    def loadEnvironmentVariables(self):
+        load_dotenv()
 
     def initSUMO(self):
         if "SUMO_HOME" in os.environ:
@@ -107,9 +116,9 @@ class Simulation:
 
         self.notifier = None
         if self.notify:
-            with open("credentials.json", "r") as f:
-                credentials = json.load(f)
-            self.notifier = Notifier(credentials["email"], credentials["password"], ["michael.xu1816@gmail.com"], self.deviceName)
+            email = os.environ["NOTIFIER_EMAIL"]
+            password = os.environ["NOTIFIER_PASSWORD"]
+            self.notifier = Notifier(email, password, ["michael.xu1816@gmail.com"], self.deviceName)
 
     def initSetUpTuple(self):
         sumoNetworkName = f"Traffic Flows/{self.sumoNetworkName}/simpleNetwork.net.xml"
