@@ -23,7 +23,7 @@
     "maxGreenPhaseTime": 225,
     "maxYellowPhaseTime": 225,
     "maxSimulationTime": {
-      "default": 7000,
+      "default": 100,
       "5-15": 5000,
       "15+": 4000
     }
@@ -34,8 +34,8 @@
     "autoQuit": true
   },
   "output": {
-    "displayStatus": true,
-    "storeInDatabase": true,
-    "notify": true
+    "displayStatus": false,
+    "storeInDatabase": false,
+    "notify": false
   }
 }

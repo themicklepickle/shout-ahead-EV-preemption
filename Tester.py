@@ -13,7 +13,7 @@ import PredicateSet
 import CoopPredicateSet
 import EVPredicateSet
 import EVCoopPredicateSet
-from DriverTest import DriverTest
+from drivers.DriverTest import DriverTest
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:

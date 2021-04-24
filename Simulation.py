@@ -13,7 +13,7 @@ import traceback
 from operator import attrgetter
 
 import InitSetUp
-from DriverEV import DriverEV
+from drivers.DriverEV import DriverEV
 import EvolutionaryLearner
 from Notifier import Notifier
 from Status import Status

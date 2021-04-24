@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import traci
 
-from Driver import Driver
+from drivers.Driver import Driver
 import PredicateSet
 import CoopPredicateSet
 import EVPredicateSet
