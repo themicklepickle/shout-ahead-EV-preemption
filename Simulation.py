@@ -12,7 +12,7 @@ import json
 import traceback
 from operator import attrgetter
 
-import InitSetUp
+from setup import InitSetUp
 from drivers.DriverEV import DriverEV
 from learning import EvolutionaryLearner
 from output_management.Notifier import Notifier
