@@ -4,8 +4,8 @@ import numpy.random as npr
 from random import randrange, randint, random, choice
 import json
 
-import EVPredicateSet
-import EVCoopPredicateSet
+from predicate_sets import EVPredicateSet
+from predicate_sets import EVCoopPredicateSet
 from shout_ahead.Rule import Rule
 from shout_ahead.Individual import Individual
 

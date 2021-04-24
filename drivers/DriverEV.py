@@ -3,10 +3,10 @@ from __future__ import annotations
 import traci
 
 from drivers.Driver import Driver
-import PredicateSet
-import CoopPredicateSet
-import EVPredicateSet
-import EVCoopPredicateSet
+from predicate_sets import PredicateSet
+from predicate_sets import CoopPredicateSet
+from predicate_sets import EVPredicateSet
+from predicate_sets import EVCoopPredicateSet
 from learning import EvolutionaryLearner
 from learning import ReinforcementLearner
 from network_components.EmergencyVehicle import EmergencyVehicle

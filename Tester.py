@@ -9,10 +9,10 @@ from pathlib import Path
 from Simulation import Simulation
 from shout_ahead.Individual import Individual
 from shout_ahead.Rule import Rule
-import PredicateSet
-import CoopPredicateSet
-import EVPredicateSet
-import EVCoopPredicateSet
+from predicate_sets import PredicateSet
+from predicate_sets import CoopPredicateSet
+from predicate_sets import EVPredicateSet
+from predicate_sets import EVCoopPredicateSet
 from drivers.DriverTest import DriverTest
 
 from typing import TYPE_CHECKING

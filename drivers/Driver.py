@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import traci
 
-import PredicateSet
+from predicate_sets import PredicateSet
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:

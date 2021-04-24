@@ -3,10 +3,10 @@ from __future__ import annotations
 from random import randrange
 import json
 
-import PredicateSet
-import CoopPredicateSet
-import EVPredicateSet
-import EVCoopPredicateSet
+from predicate_sets import PredicateSet
+from predicate_sets import CoopPredicateSet
+from predicate_sets import EVPredicateSet
+from predicate_sets import EVCoopPredicateSet
 from learning import EvolutionaryLearner as EvolutionaryLearner
 from shout_ahead.Rule import Rule
 
