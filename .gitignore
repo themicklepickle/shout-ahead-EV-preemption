@@ -9,3 +9,4 @@ email.txt
 credentials.json
 **/Archive
 *~
+.env
