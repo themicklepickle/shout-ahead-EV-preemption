@@ -13,7 +13,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from typing import List, Literal
     from AgentPool import AgentPool
-    from Database import Database
+    from output_management.Database import Database
 
 
 # Best runtime in seconds by the SUMO traffic light algorithm

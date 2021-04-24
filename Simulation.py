@@ -15,9 +15,9 @@ from operator import attrgetter
 import InitSetUp
 from drivers.DriverEV import DriverEV
 import EvolutionaryLearner
-from Notifier import Notifier
-from Status import Status
-from Database import Database
+from output_management.Notifier import Notifier
+from output_management.Status import Status
+from output_management.Database import Database
 from typing import List
 
 
