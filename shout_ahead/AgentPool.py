@@ -3,18 +3,18 @@ from __future__ import annotations
 from random import randrange
 import json
 
-import PredicateSet
-import CoopPredicateSet
-import EVPredicateSet
-import EVCoopPredicateSet
-import EvolutionaryLearner as EvolutionaryLearner
-from Rule import Rule
+from predicate_sets import PredicateSet
+from predicate_sets import CoopPredicateSet
+from predicate_sets import EVPredicateSet
+from predicate_sets import EVCoopPredicateSet
+from learning import EvolutionaryLearner as EvolutionaryLearner
+from shout_ahead.Rule import Rule
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from typing import List
-    from Individual import Individual
-    from TrafficLight import TrafficLight
+    from shout_ahead.Individual import Individual
+    from network_components.TrafficLight import TrafficLight
 
 
 class AgentPool:

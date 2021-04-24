@@ -7,7 +7,7 @@ from random import randrange
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from typing import List
-    from AgentPool import AgentPool
+    from shout_ahead.AgentPool import AgentPool
 
 
 #--------------------- EV Traffic Density ----------------------#

@@ -6,8 +6,8 @@ import inspect
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from typing import List
-    from Intention import Intention
-    from AgentPool import AgentPool
+    from shout_ahead.Intention import Intention
+    from shout_ahead.AgentPool import AgentPool
 
 
 #------------------- timeSinceLastCommunication predicates --------------------#

@@ -1,4 +1,4 @@
-from Simulation import Simulation
+from API.Simulation import Simulation
 
 
 Simulation().run()

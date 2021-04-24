@@ -1,12 +1,12 @@
 from __future__ import annotations
 
-from TrafficLight import TrafficLight
-from AgentPool import AgentPool
+from network_components.TrafficLight import TrafficLight
+from shout_ahead.AgentPool import AgentPool
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from typing import List, Dict
-    from Rule import Rule
+    from shout_ahead.Rule import Rule
 
 
 def run(sumoNetworkName: str, minIndividualRunsPerGen: int, useShoutahead: bool, ruleSetOptions: List[str]):

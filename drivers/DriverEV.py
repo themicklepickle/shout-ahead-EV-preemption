@@ -2,23 +2,23 @@ from __future__ import annotations
 
 import traci
 
-from Driver import Driver
-import PredicateSet
-import CoopPredicateSet
-import EVPredicateSet
-import EVCoopPredicateSet
-import EvolutionaryLearner
-import ReinforcementLearner
-from EmergencyVehicle import EmergencyVehicle
+from drivers.Driver import Driver
+from predicate_sets import PredicateSet
+from predicate_sets import CoopPredicateSet
+from predicate_sets import EVPredicateSet
+from predicate_sets import EVCoopPredicateSet
+from learning import EvolutionaryLearner
+from learning import ReinforcementLearner
+from network_components.EmergencyVehicle import EmergencyVehicle
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from typing import List, Dict, Union, Tuple, Literal
-    from Individual import Individual
-    from TrafficLight import TrafficLight
-    from Rule import Rule
-    from Intention import Intention
-    from AgentPool import AgentPool
+    from shout_ahead.Individual import Individual
+    from network_components.TrafficLight import TrafficLight
+    from shout_ahead.Rule import Rule
+    from shout_ahead.Intention import Intention
+    from shout_ahead.AgentPool import AgentPool
 
 # NOTE: vehID in DriverEV.py refers to only the first element of the split, in Driver.py vehID was the split tuple
 

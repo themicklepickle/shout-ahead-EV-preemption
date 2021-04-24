@@ -4,16 +4,16 @@ import numpy.random as npr
 from random import randrange, randint, random, choice
 import json
 
-import EVPredicateSet
-import EVCoopPredicateSet
-from Rule import Rule
-from Individual import Individual
+from predicate_sets import EVPredicateSet
+from predicate_sets import EVCoopPredicateSet
+from shout_ahead.Rule import Rule
+from shout_ahead.Individual import Individual
 
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from typing import List, Literal
-    from AgentPool import AgentPool
-    from Database import Database
+    from shout_ahead.AgentPool import AgentPool
+    from output_management.Database import Database
 
 
 # Best runtime in seconds by the SUMO traffic light algorithm
