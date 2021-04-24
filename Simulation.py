@@ -87,7 +87,7 @@ class Simulation:
 
     def initCmd(self):
         sumoOptions = {
-            "-c": f"Traffic Flows/{self.sumoNetworkName}/config_file.sumocfg",
+            "-c": f"traffic_flows/{self.sumoNetworkName}/config_file.sumocfg",
             "--waiting-time-memory": "5",
             "--time-to-teleport": "-1",
             "--no-step-log": "true",
@@ -121,7 +121,7 @@ class Simulation:
             self.notifier = Notifier(email, password, ["michael.xu1816@gmail.com"], self.deviceName)
 
     def initSetUpTuple(self):
-        sumoNetworkName = f"Traffic Flows/{self.sumoNetworkName}/simpleNetwork.net.xml"
+        sumoNetworkName = f"traffic_flows/{self.sumoNetworkName}/simpleNetwork.net.xml"
         self.setUpTuple = InitSetUp.run(sumoNetworkName, self.individualRunsPerGen, self.useShoutahead, self.ruleSetOptions)
         self.getSimRunner()
 
