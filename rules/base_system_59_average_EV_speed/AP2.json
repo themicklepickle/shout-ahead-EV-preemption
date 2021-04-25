@@ -1,0 +1,175 @@
+{
+  "RS": [
+    {
+      "type": "RS",
+      "conditions": [
+        "horizontalPhaseIs_Yellow",
+        "numCarsWaitingToProceedStraight_10_15"
+      ],
+      "action": 4,
+      "weight": 0
+    },
+    {
+      "type": "RS",
+      "conditions": [
+        "numCarsWaitingToTurnLeft_0",
+        "timeSpentInCurrentPhase_60_90"
+      ],
+      "action": 5,
+      "weight": 0
+    },
+    {
+      "type": "RS",
+      "conditions": [
+        "horizontalPhaseIsLeftTurn_Green",
+        "longestTimeWaitedToProceedStraight_15_30",
+        "numCarsWaitingToProceedStraight_25_35"
+      ],
+      "action": 8,
+      "weight": 0
+    },
+    {
+      "type": "RS",
+      "conditions": [
+        "longestTimeWaitedToProceedStraight_240_270"
+      ],
+      "action": 0,
+      "weight": -0.002918971810797543
+    },
+    {
+      "type": "RS",
+      "conditions": [
+        "horizontalPhaseIsLeftTurn_Yellow",
+        "longestTimeWaitedToTurnLeft_270_300",
+        "eastWestPhaseIsLeftTurn_Yellow"
+      ],
+      "action": 0,
+      "weight": 0
+    },
+    {
+      "type": "RS",
+      "conditions": [
+        "northSouthPhaseIsLeftTurn_Yellow",
+        "timeSpentInCurrentPhase_150_180"
+      ],
+      "action": 5,
+      "weight": 0
+    },
+    {
+      "type": "RS",
+      "conditions": [
+        "numCarsWaitingToProceedStraight_10_15"
+      ],
+      "action": 2,
+      "weight": -0.0012528028639016229
+    },
+    {
+      "type": "RS",
+      "conditions": [
+        "northSouthPhaseIsLeftTurn_Yellow"
+      ],
+      "action": 3,
+      "weight": 0
+    },
+    {
+      "type": "RS",
+      "conditions": [
+        "westEastPhaseIsLeftTurn_Yellow"
+      ],
+      "action": 6,
+      "weight": 0
+    }
+  ],
+  "RSint": [
+    {
+      "type": "RSint",
+      "conditions": [
+        "timeSinceCommunication_0_5",
+        "partnerAction_incoming_DoNothing"
+      ],
+      "action": 1,
+      "weight": -0.010451797966117667
+    },
+    {
+      "type": "RSint",
+      "conditions": [
+        "partnerAction_incoming_H_S_Y",
+        "timeSinceCommunication_20_25"
+      ],
+      "action": 4,
+      "weight": -0.0004437803175638777
+    },
+    {
+      "type": "RSint",
+      "conditions": [
+        "timeSinceCommunication_0_5"
+      ],
+      "action": 6,
+      "weight": -5.401656340740843e-05
+    },
+    {
+      "type": "RSint",
+      "conditions": [
+        "timeSinceCommunication_10_15",
+        "partnerAction_incoming_SN_L_Y"
+      ],
+      "action": 4,
+      "weight": -0.003365645435287883
+    },
+    {
+      "type": "RSint",
+      "conditions": [
+        "partnerAction_incoming_NS_L_G",
+        "timeSinceCommunication_5_10"
+      ],
+      "action": 4,
+      "weight": -0.0003358127783281329
+    },
+    {
+      "type": "RSint",
+      "conditions": [
+        "timeSinceCommunication_0_5",
+        "partnerAction_incoming_SN_L_G"
+      ],
+      "action": 7,
+      "weight": -0.0006636267343660153
+    },
+    {
+      "type": "RSint",
+      "conditions": [
+        "timeSinceCommunication_20_25",
+        "partnerAction_incoming_NS_L_Y"
+      ],
+      "action": 0,
+      "weight": -0.0007382561527140894
+    },
+    {
+      "type": "RSint",
+      "conditions": [
+        "partnerAction_incoming_H_S_G"
+      ],
+      "action": 1,
+      "weight": -0.00047485866227912237
+    },
+    {
+      "type": "RSint",
+      "conditions": [
+        "timeSinceCommunication_15_20",
+        "partnerAction_incoming_NS_L_G"
+      ],
+      "action": 0,
+      "weight": -0.00023522757146017466
+    },
+    {
+      "type": "RSint",
+      "conditions": [
+        "timeSinceCommunication_15_20",
+        "partnerAction_incoming_SN_L_G"
+      ],
+      "action": 8,
+      "weight": 0
+    }
+  ],
+  "RSev": [],
+  "RSev_int": []
+}

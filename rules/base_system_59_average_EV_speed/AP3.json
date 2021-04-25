@@ -1,0 +1,149 @@
+{
+  "RS": [
+    {
+      "type": "RS",
+      "conditions": [
+        "northSouthPhaseIs_Green",
+        "eastWestPhaseIs_Yellow"
+      ],
+      "action": 4,
+      "weight": 0
+    },
+    {
+      "type": "RS",
+      "conditions": [
+        "longestTimeWaitedToProceedStraight_120_150",
+        "horizontalPhaseIsLeftTurn_Yellow"
+      ],
+      "action": 6,
+      "weight": 0
+    },
+    {
+      "type": "RS",
+      "conditions": [
+        "timeSpentInCurrentPhase_270_300",
+        "longestTimeWaitedToProceedStraight_210_240",
+        "southNorthPhaseIsLeftTurn_Green"
+      ],
+      "action": 3,
+      "weight": 0
+    },
+    {
+      "type": "RS",
+      "conditions": [
+        "southNorthPhaseIsLeftTurn_Yellow",
+        "horizontalPhaseIsLeftTurn_Green"
+      ],
+      "action": 3,
+      "weight": 0
+    },
+    {
+      "type": "RS",
+      "conditions": [
+        "southNorthPhaseIs_Green",
+        "numCarsWaitingToProceedStraight_5_10"
+      ],
+      "action": 3,
+      "weight": 0
+    },
+    {
+      "type": "RS",
+      "conditions": [
+        "horizontalPhaseIsLeftTurn_Green",
+        "northSouthPhaseIs_Yellow"
+      ],
+      "action": 1,
+      "weight": 0
+    },
+    {
+      "type": "RS",
+      "conditions": [
+        "numCarsWaitingToProceedStraight_35_45",
+        "longestTimeWaitedToTurnLeft_210_240"
+      ],
+      "action": 2,
+      "weight": 0.0007340878187885775
+    },
+    {
+      "type": "RS",
+      "conditions": [
+        "timeSpentInCurrentPhase_90_120",
+        "southNorthPhaseIsLeftTurn_Green"
+      ],
+      "action": 5,
+      "weight": 0.00010880903309923144
+    },
+    {
+      "type": "RS",
+      "conditions": [
+        "longestTimeWaitedToProceedStraight_15_30",
+        "longestTimeWaitedToTurnLeft_180_210"
+      ],
+      "action": 1,
+      "weight": 0
+    }
+  ],
+  "RSint": [
+    {
+      "type": "RSint",
+      "conditions": [
+        "timeSinceCommunication_0_5"
+      ],
+      "action": 5,
+      "weight": 0.011044230972033026
+    },
+    {
+      "type": "RSint",
+      "conditions": [
+        "partnerAction_T-intersection_EW_SL_Y"
+      ],
+      "action": 4,
+      "weight": 0.03674647598206409
+    },
+    {
+      "type": "RSint",
+      "conditions": [
+        "partnerAction_four-arm_H_L_G",
+        "timeSinceCommunication_0"
+      ],
+      "action": 4,
+      "weight": 0.02476997127459109
+    },
+    {
+      "type": "RSint",
+      "conditions": [
+        "timeSinceCommunication_0"
+      ],
+      "action": 4,
+      "weight": 0.09435963238965019
+    },
+    {
+      "type": "RSint",
+      "conditions": [
+        "partnerAction_four-arm_H_S_G",
+        "timeSinceCommunication_5_10"
+      ],
+      "action": 6,
+      "weight": 0
+    },
+    {
+      "type": "RSint",
+      "conditions": [
+        "partnerAction_four-arm_H_S_G"
+      ],
+      "action": 0,
+      "weight": 0.025172260055229153
+    },
+    {
+      "type": "RSint",
+      "conditions": [
+        "timeSinceCommunication_20_25",
+        "partnerAction_four-arm_V_S_Y"
+      ],
+      "action": 0,
+      "weight": 0.003053101643289233
+    }
+  ],
+  "RSev": [],
+  "RSev_int": []
+}

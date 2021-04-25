@@ -1,0 +1,136 @@
+{
+  "RS": [
+    {
+      "type": "RS",
+      "conditions": [
+        "northSouthPhaseIsLeftTurn_Yellow",
+        "westEastPhaseIsLeftTurn_Green",
+        "longestTimeWaitedToProceedStraight_30_45"
+      ],
+      "action": 0,
+      "weight": 0
+    },
+    {
+      "type": "RS",
+      "conditions": [
+        "longestTimeWaitedToTurnLeft_0_15",
+        "longestTimeWaitedToProceedStraight_180_210",
+        "timeSpentInCurrentPhase_45_60"
+      ],
+      "action": 1,
+      "weight": 0
+    },
+    {
+      "type": "RS",
+      "conditions": [
+        "longestTimeWaitedToTurnLeft_210_240",
+        "southNorthPhaseIs_Yellow"
+      ],
+      "action": 3,
+      "weight": 0
+    },
+    {
+      "type": "RS",
+      "conditions": [
+        "longestTimeWaitedToProceedStraight_270_300"
+      ],
+      "action": 0,
+      "weight": -0.005482719833523572
+    },
+    {
+      "type": "RS",
+      "conditions": [
+        "longestTimeWaitedToProceedStraight_210_240",
+        "northSouthPhaseIsLeftTurn_Yellow"
+      ],
+      "action": 4,
+      "weight": 0
+    },
+    {
+      "type": "RS",
+      "conditions": [
+        "eastWestPhaseIs_Yellow",
+        "longestTimeWaitedToTurnLeft_30_45"
+      ],
+      "action": 4,
+      "weight": 0
+    },
+    {
+      "type": "RS",
+      "conditions": [
+        "numCarsWaitingToTurnLeft_15",
+        "horizontalPhaseIsLeftTurn_Green"
+      ],
+      "action": 2,
+      "weight": 0
+    },
+    {
+      "type": "RS",
+      "conditions": [
+        "numCarsWaitingToProceedStraight_15_25"
+      ],
+      "action": 0,
+      "weight": 0
+    },
+    {
+      "type": "RS",
+      "conditions": [
+        "longestTimeWaitedToProceedStraight_210_240"
+      ],
+      "action": 3,
+      "weight": 0
+    }
+  ],
+  "RSint": [
+    {
+      "type": "RSint",
+      "conditions": [
+        "timeSinceCommunication_0"
+      ],
+      "action": 0,
+      "weight": 0.00015428741051367323
+    },
+    {
+      "type": "RSint",
+      "conditions": [
+        "timeSinceCommunication_0_5"
+      ],
+      "action": 0,
+      "weight": 4.8275967240196534e-05
+    },
+    {
+      "type": "RSint",
+      "conditions": [
+        "timeSinceCommunication_10_15"
+      ],
+      "action": 0,
+      "weight": 0.00193509008691287
+    },
+    {
+      "type": "RSint",
+      "conditions": [
+        "timeSinceCommunication_5_10"
+      ],
+      "action": 3,
+      "weight": 0.0003101144680811657
+    },
+    {
+      "type": "RSint",
+      "conditions": [
+        "timeSinceCommunication_15_20"
+      ],
+      "action": 2,
+      "weight": 9.893638485592979e-06
+    },
+    {
+      "type": "RSint",
+      "conditions": [
+        "timeSinceCommunication_20_25"
+      ],
+      "action": 1,
+      "weight": 0.00564698740067527
+    }
+  ],
+  "RSev": [],
+  "RSev_int": []
+}
