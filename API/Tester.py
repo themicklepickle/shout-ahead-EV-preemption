@@ -285,7 +285,7 @@ class Tester(Simulation):
 
         data = []
 
-        for generation in range(50, 0, -1):
+        for generation in range(60, 0, -1):
             genData = {"generation": generation}
             for apID in ["AP" + str(x) for x in range(1, 4)]:
                 collection = self.db[str(generation)]
@@ -311,7 +311,7 @@ class Tester(Simulation):
 
         data = []
 
-        for generation in range(50, 0, -1):
+        for generation in range(60, 0, -1):
             genData = {"generation": generation}
 
             collection = self.db[str(generation)]
