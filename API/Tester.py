@@ -6,7 +6,7 @@ import csv
 import pymongo
 from pathlib import Path
 
-from Simulation import Simulation
+from API.Simulation import Simulation
 from shout_ahead.Individual import Individual
 from shout_ahead.Rule import Rule
 from predicate_sets import PredicateSet
