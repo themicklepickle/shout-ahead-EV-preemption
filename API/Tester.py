@@ -292,13 +292,13 @@ class Tester(Simulation):
                 document = collection.find_one({"label": "output"})
                 individual = document["data"]["bestIndividuals"][apID]
                 genData[f"{apID} topFitness"] = individual["fitness"]
-                genData[f"{apID} topNormalizedFitness"] = individual["normalizedFitness"]
+                # genData[f"{apID} topNormalizedFitness"] = individual["normalizedFitness"]
             data.append(genData)
 
         fieldnames = ["generation"]
         for apID in ["AP" + str(x) for x in range(1, 4)]:
             fieldnames.append(f"{apID} topFitness")
-            fieldnames.append(f"{apID} topNormalizedFitness")
+            # fieldnames.append(f"{apID} topNormalizedFitness")
         with open(f"results/{filename}.csv", "w") as f:
             writer = csv.DictWriter(f, fieldnames=fieldnames)
             writer.writeheader()
