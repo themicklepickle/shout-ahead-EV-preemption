@@ -18,6 +18,7 @@ from drivers.DriverTest import DriverTest
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from shout_ahead.AgentPool import AgentPool
+    from typing import Literal
 
 
 class Tester(Simulation):
@@ -199,7 +200,7 @@ class Tester(Simulation):
                 for rule in individual[ruleSet]:
                     self.addRule(apID, ruleSet, rule, self.ruleSetFolder)
 
-    def addBestPoolInGeneration(self, generation, metric, databaseName=None, ruleSetFolder=None):
+    def addBestPoolInGeneration(self, generation, metric: Literal["simulationTime", "EVStops", "averageEVSpeed"], databaseName=None, ruleSetFolder=None):
         if databaseName:
             self.databaseName = databaseName
             if ruleSetFolder:
