@@ -56,7 +56,7 @@ class Tester(Simulation):
         for ap in self.setUpTuple[2]:
             self.initTestIndividual(ap)
 
-    def testRules(self, ruleSetFolder: str, UDRulesTuple, gui: bool, iterations: int, saveResults: bool = True):
+    def testRules(self, name: str, ruleSetFolder: str, UDRulesTuple, gui: bool, iterations: int,  saveResults: bool = True, docID=None):
         # override options
         self.maxGreenAndYellowPhaseTime_UDRule = UDRulesTuple[0]
         self.maxRedPhaseTime_UDRule = UDRulesTuple[1]
@@ -70,6 +70,15 @@ class Tester(Simulation):
         self.initSetUpTuple()
         self.config()
 
+        if saveResults:
+            docID = docID or self.db["test results"].insert_one({
+                "name": name,
+                "ruleSetFolder": ruleSetFolder,
+                "time": self.getTime(),
+                "iteratons": iterations,
+                "results": []
+            }).inserted_id
+
         results = []
         for i in range(iterations):
             print(f"Iteration {i+1}/{iterations}")
@@ -80,6 +89,9 @@ class Tester(Simulation):
             res = simRunner.getResults()
             results.append(res)
 
+            if saveResults:
+                self.db["test results"].update_one({"_id": docID}, {"$set": {"results": results}})
+
         print("\n")
         print(ruleSetFolder, UDRulesTuple, gui)
 
@@ -87,20 +99,6 @@ class Tester(Simulation):
             print(f"{key}: {[res[key] for res in results]}")
             print(f"average {key}: {sum(res[key] for res in results) / len(results)}")
             print()
-
-        if saveResults:
-            completeResults = {
-                "time": self.getTime(),
-                "ruleSetFolder": ruleSetFolder,
-                "UDRulesTuple": UDRulesTuple,
-                "iterations": iterations,
-                "results": results
-            }
-
-            with open(f"results/{ruleSetFolder}.json", "w") as f:
-                json.dump(completeResults, f)
-
-            self.db["test results"].insert_one(completeResults)
 
     def findBestGeneration(self, UDRulesTuple, gui: bool, databaseName: str, outputFile: str):
         # override options
