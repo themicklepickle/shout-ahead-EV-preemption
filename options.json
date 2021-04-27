@@ -23,7 +23,7 @@
     "maxGreenPhaseTime": 225,
     "maxYellowPhaseTime": 225,
     "maxSimulationTime": {
-      "default": 7000,
+      "default": 2000,
       "5-15": 5000,
       "15+": 4000
     }
