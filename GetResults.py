@@ -15,7 +15,7 @@ tester.testRules("blank", [0, 0, 1], False, 1)
 ### EV LAYERED #2 ###
 tester.addBestPoolInGeneration(51, "averageEVSpeed", EV_layered_2, "EV_layered_2_51_average_EV_speed")
 tester.addRuleSetToRuleSet("EV_layered_2_51_average_EV_speed", "base_system_59_average_EV_speed")
-tester.testRules("EV_layered_2_51_average_EV_speed", [0, 0, 1], True, 1000, True)
+tester.testRules("EV_layered_2_51_average_EV_speed", [0, 0, 1], False, 1000, True)
 
 
 ### BASE SYSTEM ###
