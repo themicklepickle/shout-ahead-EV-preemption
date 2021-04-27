@@ -17,6 +17,14 @@ class DriverTest(DriverEV):
             "simulationTime": self.simulationTime
         }
 
+    def updateOutputValues(self, tl) -> None:
+        self.EVStops += self.getNumEVStops(tl)
+        averageEVSpeed = self.getAverageEVSpeed(tl)
+        if averageEVSpeed is not None:
+            self.averageEVSpeedsList.append(averageEVSpeed)
+        if len(self.averageEVSpeedsList) > 0:
+            self.averageEVSpeed = sum(self.averageEVSpeedsList) / len(self.averageEVSpeedsList)
+
     def runTest(self) -> None:
         # results to be outputted
         self.EVStops = 0
@@ -96,11 +104,7 @@ class DriverTest(DriverEV):
             self.calculateTimeSinceLastEVThrough(trafficLights)
 
             for tl in trafficLights:
-                # update output values
-                self.EVStops += self.getNumEVStops(tl)
-                self.averageEVSpeedsList.append(self.getAverageEVSpeed(tl))
-                if len(self.averageEVSpeedsList) > 0:
-                    self.averageEVSpeed = sum(self.averageEVSpeedsList) / len(self.averageEVSpeedsList)
+                self.updateOutputValues(tl)
 
                 if self.checkUDRules(tl, nextRule):
                     continue
@@ -177,11 +181,7 @@ class DriverTest(DriverEV):
             self.calculateTimeSinceLastEVThrough(trafficLights)
 
             for tl in trafficLights:
-                # update output values
-                self.EVStops += self.getNumEVStops(tl)
-                self.averageEVSpeedsList.append(self.getAverageEVSpeed(tl))
-                if len(self.averageEVSpeedsList) > 0:
-                    self.averageEVSpeed = sum(self.averageEVSpeedsList) / len(self.averageEVSpeedsList)
+                self.updateOutputValues(tl)
 
         traci.close()  # End simulation
 
