@@ -75,7 +75,7 @@ class Tester(Simulation):
                 "name": name,
                 "ruleSetFolder": ruleSetFolder,
                 "time": self.getTime(),
-                "iteratons": iterations,
+                "iterations": iterations,
                 "results": []
             }).inserted_id
 
