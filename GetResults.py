@@ -11,7 +11,7 @@ EV_layered_2 = "Sun_Apr_25_02:05:51_PM_2021"
 
 ### CONTROL ###
 # %%
-tester.testRules("Control", "blank", [0, 0, 1], False, 100, True)
+tester.testRules("Control", "blank", [0, 0, 1], False, 1, True)
 
 
 ### EV LAYERED #2 (FULL) ###
