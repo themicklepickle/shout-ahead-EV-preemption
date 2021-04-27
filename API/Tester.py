@@ -362,3 +362,11 @@ class Tester(Simulation):
             # rewrite the
             with open(f"rules/{mainRuleSetName}/{apID}.json", "w") as f:
                 json.dump(mainRules, f, indent=2)
+
+    def removeOneRuleSet(self, ruleSetFolderName, ruleSetName: Literal["RS", "RSint"]):
+        for apID in ["AP" + str(i) for i in range(1, 4)]:
+            with open(f"rules/{ruleSetFolderName}/{apID}.json", "r") as f:
+                ruleSets = json.load(f)
+            ruleSets[ruleSetName] = []
+            with open(f"rules/{ruleSetFolderName}/{apID}.json", "w") as f:
+                json.dump(ruleSets, f, indent=2)
