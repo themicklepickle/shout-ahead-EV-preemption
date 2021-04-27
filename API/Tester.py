@@ -329,3 +329,20 @@ class Tester(Simulation):
             writer.writeheader()
             for row in data:
                 writer.writerow(row)
+
+    def addRuleSetToRuleSet(self, mainRuleSetName: str, otherRuleSetName: str):
+        for apID in ["AP" + str(i) for i in range(1, 4)]:
+            # get rule sets from files
+            with open(f"rules/{mainRuleSetName}/{apID}.json", "r") as f:
+                mainRules = json.load(f)
+            with open(f"rules/{otherRuleSetName}/{apID}.json", "r") as f:
+                otherRules = json.load(f)
+
+            # combine them
+            for key, val in otherRules.items():
+                for rule in val:
+                    mainRules[key].append(rule)
+
+            # rewrite the
+            with open(f"rules/{mainRuleSetName}/{apID}.json", "w") as f:
+                json.dump(mainRules, f, indent=2)
