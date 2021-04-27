@@ -72,6 +72,8 @@ class Tester(Simulation):
 
         results = []
         for i in range(iterations):
+            print(f"Iteration {i+1}/{iterations}")
+
             simRunner = self.getTestSimRunner()
             simRunner.runTest()
 
