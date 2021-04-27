@@ -6,7 +6,7 @@ import csv
 import pymongo
 from pathlib import Path
 
-from Simulation import Simulation
+from API.Simulation import Simulation
 from shout_ahead.Individual import Individual
 from shout_ahead.Rule import Rule
 from predicate_sets import PredicateSet
@@ -18,6 +18,7 @@ from drivers.DriverTest import DriverTest
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from shout_ahead.AgentPool import AgentPool
+    from typing import Literal
 
 
 class Tester(Simulation):
@@ -199,7 +200,7 @@ class Tester(Simulation):
                 for rule in individual[ruleSet]:
                     self.addRule(apID, ruleSet, rule, self.ruleSetFolder)
 
-    def addBestPoolInGeneration(self, generation, metric, databaseName=None, ruleSetFolder=None):
+    def addBestPoolInGeneration(self, generation, metric: Literal["simulationTime", "EVStops", "averageEVSpeed"], databaseName=None, ruleSetFolder=None):
         if databaseName:
             self.databaseName = databaseName
             if ruleSetFolder:
@@ -285,20 +286,20 @@ class Tester(Simulation):
 
         data = []
 
-        for generation in range(50, 0, -1):
+        for generation in range(60, 0, -1):
             genData = {"generation": generation}
             for apID in ["AP" + str(x) for x in range(1, 4)]:
                 collection = self.db[str(generation)]
                 document = collection.find_one({"label": "output"})
                 individual = document["data"]["bestIndividuals"][apID]
                 genData[f"{apID} topFitness"] = individual["fitness"]
-                genData[f"{apID} topNormalizedFitness"] = individual["normalizedFitness"]
+                # genData[f"{apID} topNormalizedFitness"] = individual["normalizedFitness"]
             data.append(genData)
 
         fieldnames = ["generation"]
         for apID in ["AP" + str(x) for x in range(1, 4)]:
             fieldnames.append(f"{apID} topFitness")
-            fieldnames.append(f"{apID} topNormalizedFitness")
+            # fieldnames.append(f"{apID} topNormalizedFitness")
         with open(f"results/{filename}.csv", "w") as f:
             writer = csv.DictWriter(f, fieldnames=fieldnames)
             writer.writeheader()
@@ -311,7 +312,7 @@ class Tester(Simulation):
 
         data = []
 
-        for generation in range(50, 0, -1):
+        for generation in range(60, 0, -1):
             genData = {"generation": generation}
 
             collection = self.db[str(generation)]

@@ -4,14 +4,14 @@
   },
   "training": {
     "useShoutahead": true,
-    "totalGenerations": 50,
+    "totalGenerations": 60,
     "individualRunsPerGen": 3
   },
   "ruleSets": {
-    "local": "RS",
-    "cooperation": "RSint",
-    "learnedLocal": "blank",
-    "learnedCooperation": "blank"
+    "local": "RSev",
+    "cooperation": "RSev_int",
+    "learnedLocal": "base_system_59_average_EV_speed",
+    "learnedCooperation": "base_system_59_average_EV_speed"
   },
   "userDefinedRules": {
     "maxGreenAndYellowPhaseTime_UDRule": false,
@@ -23,7 +23,7 @@
     "maxGreenPhaseTime": 225,
     "maxYellowPhaseTime": 225,
     "maxSimulationTime": {
-      "default": 100,
+      "default": 7000,
       "5-15": 5000,
       "15+": 4000
     }
@@ -34,8 +34,8 @@
     "autoQuit": true
   },
   "output": {
-    "displayStatus": false,
-    "storeInDatabase": false,
+    "displayStatus": true,
+    "storeInDatabase": true,
     "notify": false
   }
 }
