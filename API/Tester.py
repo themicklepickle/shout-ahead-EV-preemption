@@ -56,7 +56,7 @@ class Tester(Simulation):
         for ap in self.setUpTuple[2]:
             self.initTestIndividual(ap)
 
-    def testRules(self, ruleSetFolder: str, UDRulesTuple, gui: bool, iterations: int):
+    def testRules(self, ruleSetFolder: str, UDRulesTuple, gui: bool, iterations: int, saveResults: bool = True):
         # override options
         self.maxGreenAndYellowPhaseTime_UDRule = UDRulesTuple[0]
         self.maxRedPhaseTime_UDRule = UDRulesTuple[1]
@@ -64,6 +64,8 @@ class Tester(Simulation):
         self.gui = gui
         self.ruleSetFolder = ruleSetFolder
 
+        self.databaseName = "evaluation"
+        self.initClient()
         self.initCmd()
         self.initSetUpTuple()
         self.config()
@@ -83,6 +85,20 @@ class Tester(Simulation):
             print(f"{key}: {[res[key] for res in results]}")
             print(f"average {key}: {sum(res[key] for res in results) / len(results)}")
             print()
+
+        if saveResults:
+            completeResults = {
+                "time": self.getTime(),
+                "ruleSetFolder": ruleSetFolder,
+                "UDRulesTuple": UDRulesTuple,
+                "iterations": iterations,
+                "results": results
+            }
+
+            with open(f"results/{ruleSetFolder}.json", "w") as f:
+                json.dump(completeResults, f)
+
+            self.db["test results"].insert_one(completeResults)
 
     def findBestGeneration(self, UDRulesTuple, gui: bool, databaseName: str, outputFile: str):
         # override options
