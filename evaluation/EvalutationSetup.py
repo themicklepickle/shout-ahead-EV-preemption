@@ -53,11 +53,17 @@ class EvaluationSetup:
     def createTestingTrafficFlow(self, IDNumber, minVehicles,  maxVehicles, minStartTime, maxStartTime, percentEVs):
         numVehicles = randint(minVehicles, maxVehicles)
 
+        validStartTimes = list(range(minStartTime, maxStartTime))
+
         # create a list of vehicle start times and whether or not they are EVs
         vehicles = []
         for _ in range(numVehicles):
+            if len(validStartTimes) == 0:
+                break
+            startTime = choice(validStartTimes)
+            validStartTimes.remove(startTime)
             vehicles.append({
-                "startTime": randint(minStartTime, maxStartTime),
+                "startTime": startTime,
                 "isEV": random() <= percentEVs
             })
 
