@@ -3,6 +3,7 @@ from __future__ import annotations
 import os
 import json
 import csv
+from bson.objectid import ObjectId
 import pymongo
 from pathlib import Path
 
@@ -370,3 +371,16 @@ class Tester(Simulation):
             ruleSets[ruleSetName] = []
             with open(f"rules/{ruleSetFolderName}/{apID}.json", "w") as f:
                 json.dump(ruleSets, f, indent=2)
+
+    def getTestResultsFromDB(self, docID, outputFileName):
+        self.databaseName = "evaluation"
+        self.initClient()
+        testResults = self.db["test results"]
+
+        results = testResults.find_one(ObjectId(docID))["results"]
+
+        with open(f"results/final/{outputFileName}.csv", "w") as f:
+            writer = csv.DictWriter(f, fieldnames=results[0].keys())
+            writer.writeheader()
+            for row in results:
+                writer.writerow(row)
