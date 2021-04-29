@@ -1,5 +1,5 @@
-from random import random, randint, choice, randrange
-from textwrap import dedent, indent
+from random import random, randint, choice, shuffle
+from textwrap import dedent
 from pathlib import Path
 from shutil import rmtree
 from distutils.dir_util import copy_tree
@@ -16,12 +16,6 @@ class EvaluationSetup:
         Path(folderPath).mkdir(parents=True, exist_ok=True)  # create folder
         copy_tree("traffic_flows/Template/", folderPath)  # add config files
 
-    def getValidEdges(self) -> None:
-        with open("traffic_flows/Template/routes.rou.xml") as f:
-            validEdges = [line.split('"')[1] for line in f.readlines() if "route " in line]
-        with open("evaluation/validEdges.txt", "w") as f:
-            f.write(indent("\n".join(validEdges), "+ ", lambda line: True))
-
     def getHeader(self) -> str:
         with open("evaluation/header.txt") as f:
             return f.read()
@@ -35,50 +29,34 @@ class EvaluationSetup:
             validEdges = [line.strip() for line in f.readlines()]
         return choice(validEdges)
 
-    def getVehicleXML(self, vehicle) -> str:
-        id = depart = vehicle["startTime"]
-
-        EVType = ""
-        if vehicle["isEV"]:
-            EVType = f' type="{choice(["FireTruck", "Ambulance", "PoliceCar"])}"'
-
-        edges = self.pickEdges()
-
+    def getVehicleXML(self, id, depart, EVType, edges) -> str:
         return dedent(f"""\
         <vehicle id="{id}" depart="{depart}"{EVType}>
             <route edges="{edges}"/>
         </vehicle>
         """)
 
-    def createTestingTrafficFlow(self, IDNumber, minVehicles,  maxVehicles, minStartTime, maxStartTime, percentEVs):
-        numVehicles = randint(minVehicles, maxVehicles)
+    def alterFlow(self, IDNumber, trafficFlowFolderName):
+        with open(f"traffic_flows/{trafficFlowFolderName}/routes.rou.xml") as f:
+            lines = f.readlines()
+        IDs = [line.split('"')[1] for line in lines if "vehicle " in line]
+        edges = [line.split('"')[1] for line in lines if "route " in line]
+        types = [' type="' + line.split('"')[5] + '"' if "type" in line else "" for line in lines]
 
-        validStartTimes = list(range(minStartTime, maxStartTime))
+        shuffle(edges)
+        shuffle(types)
 
-        # create a list of vehicle start times and whether or not they are EVs
-        vehicles = []
-        for _ in range(numVehicles):
-            if len(validStartTimes) == 0:
-                break
-            startTime = choice(validStartTimes)
-            validStartTimes.remove(startTime)
-            vehicles.append({
-                "startTime": startTime,
-                "isEV": random() <= percentEVs
-            })
-
-        # create file
         with open(f"traffic_flows/evaluation/routes{IDNumber}.rou.xml", "w") as f:
             f.write(self.getHeader())
-            for vehicle in vehicles:
-                f.write(self.getVehicleXML(vehicle))
+            for id, startTime, type_, edge in zip(IDs, IDs, types, edges):
+                f.write(self.getVehicleXML(id, startTime, type_, edge))
             f.write(self.getFooter())
 
-    def setupAllTestingTrafficFlows(self, numberOfTrafficFlows, *params):
+    def setupAllTestingTrafficFlows(self, numberOfTrafficFlows, trafficFlowFolderName):
         for i in range(numberOfTrafficFlows):
-            self.createTestingTrafficFlow(i, *params)
+            self.alterFlow(i, trafficFlowFolderName)
 
 
 if __name__ == "__main__":
     setup = EvaluationSetup()
-    setup.setupAllTestingTrafficFlows(1000, 100, 225, 0, 300, 0.15)
+    setup.setupAllTestingTrafficFlows(1000, "EV Traffic Flow 225")
