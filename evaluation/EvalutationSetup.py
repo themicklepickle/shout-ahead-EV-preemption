@@ -81,4 +81,4 @@ class EvaluationSetup:
 
 if __name__ == "__main__":
     setup = EvaluationSetup()
-    setup.setupAllTestingTrafficFlows(1000, 100, 225, 0, 300, 0.5)
+    setup.setupAllTestingTrafficFlows(1000, 100, 225, 0, 300, 0.15)
