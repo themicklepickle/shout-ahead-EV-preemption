@@ -453,7 +453,7 @@ class DriverEV(Driver):
 
     def getAverageEVSpeed(self, trafficLight: TrafficLight) -> List[int]:
         EVs = self.getEVs(trafficLight)
-        EVSpeedsList = [EV.getSpeed() * 3.6 for EV in EVs if EV.getSpeed() > 0]
+        EVSpeedsList = [EV.getSpeed() * 3.6 for EV in EVs]  # multiply by 3.6 to convert from m/s to km/h
         if EVSpeedsList == []:
             return None
         averageEVSpeed = sum(EVSpeedsList) / len(EVSpeedsList)
