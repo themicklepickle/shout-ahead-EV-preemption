@@ -1,0 +1,314 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 05/08/20 16:21:45 by Eclipse SUMO netedit Version 1.3.1
+<configuration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/netconvertConfiguration.xsd">
+
+    <input>
+        <sumo-net-file value="C:\Users\chris\OneDrive\Desktop\502%20Project\Project%20Development\simpleNetwork.net.xml"/>
+    </input>
+
+    <output>
+        <output-file value="C:\Users\chris\OneDrive\Desktop\502%20Project\Project%20Development\simpleNetwork.net.xml"/>
+    </output>
+
+    <processing>
+        <geometry.max-grade.fix value="false"/>
+        <offset.disable-normalization value="true"/>
+        <opposites.guess.fix-lengths value="true"/>
+        <lefthand value="false"/>
+    </processing>
+
+    <junctions>
+        <no-turnarounds value="true"/>
+        <junctions.corner-detail value="5"/>
+        <junctions.limit-turn-speed value="5.5"/>
+        <rectangular-lane-cut value="false"/>
+    </junctions>
+
+    <pedestrian>
+        <walkingareas value="false"/>
+    </pedestrian>
+
+</configuration>
+-->
+
+<net version="1.3" junctionCornerDetail="5" limitTurnSpeed="5.50" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/net_file.xsd">
+
+    <location netOffset="0.00,0.00" convBoundary="-386.09,-296.95,1502.38,388.97" origBoundary="-10000000000.00,-10000000000.00,10000000000.00,10000000000.00" projParameter="!"/>
+
+    <edge id=":T-intersection_0" function="internal">
+        <lane id=":T-intersection_0_0" index="0" speed="6.52" length="9.02" shape="1205.42,-270.52 1202.98,-270.23 1201.21,-269.23 1200.10,-267.51 1199.66,-265.07"/>
+    </edge>
+    <edge id=":T-intersection_1" function="internal">
+        <lane id=":T-intersection_1_0" index="0" speed="13.89" length="14.33" shape="1205.42,-270.52 1191.09,-270.91"/>
+        <lane id=":T-intersection_1_1" index="1" speed="13.89" length="14.33" shape="1205.51,-273.72 1191.18,-274.11"/>
+    </edge>
+    <edge id=":T-intersection_3" function="internal">
+        <lane id=":T-intersection_3_0" index="0" speed="13.89" length="14.34" shape="1191.35,-280.50 1205.68,-280.11"/>
+    </edge>
+    <edge id=":T-intersection_4" function="internal">
+        <lane id=":T-intersection_4_0" index="0" speed="8.06" length="14.55" shape="1191.26,-277.31 1193.70,-276.49 1195.39,-274.20 1196.31,-270.43 1196.47,-265.18"/>
+    </edge>
+    <edge id=":bend_0" function="internal">
+        <lane id=":bend_0_0" index="0" speed="8.96" length="18.46" shape="377.79,-290.34 378.49,-295.37 380.64,-298.92 384.23,-300.99 389.28,-301.58"/>
+    </edge>
+    <edge id=":bend_1" function="internal">
+        <lane id=":bend_1_0" index="0" speed="7.65" length="13.19" shape="380.99,-290.35 381.49,-293.94 383.02,-296.48 385.59,-297.96 389.20,-298.38"/>
+    </edge>
+    <edge id=":bend_2" function="internal">
+        <lane id=":bend_2_0" index="0" speed="3.90" length="2.64" shape="389.03,-291.98 388.31,-291.89 387.79,-291.60 387.49,-291.09 387.39,-290.37"/>
+    </edge>
+    <edge id=":bend_3" function="internal">
+        <lane id=":bend_3_0" index="0" speed="6.07" length="7.91" shape="389.11,-295.18 386.95,-294.92 385.41,-294.04 384.49,-292.52 384.19,-290.36"/>
+    </edge>
+    <edge id=":four-arm_0" function="internal">
+        <lane id=":four-arm_0_0" index="0" speed="6.74" length="9.55" shape="379.41,56.76 378.97,54.15 377.83,52.29 376.00,51.17 373.46,50.79"/>
+    </edge>
+    <edge id=":four-arm_1" function="internal">
+        <lane id=":four-arm_1_0" index="0" speed="13.89" length="21.17" shape="379.41,56.76 379.06,35.59"/>
+    </edge>
+    <edge id=":four-arm_2" function="internal">
+        <lane id=":four-arm_2_0" index="0" speed="9.20" length="19.61" shape="382.61,56.67 383.22,51.31 385.41,47.48 389.18,45.20 394.53,44.46"/>
+    </edge>
+    <edge id=":four-arm_3" function="internal">
+        <lane id=":four-arm_3_0" index="0" speed="6.43" length="9.03" shape="394.50,50.86 392.03,51.20 390.30,52.26 389.29,54.02 389.00,56.49"/>
+    </edge>
+    <edge id=":four-arm_4" function="internal">
+        <lane id=":four-arm_4_0" index="0" speed="13.89" length="21.04" shape="394.50,50.86 373.46,50.79"/>
+    </edge>
+    <edge id=":four-arm_5" function="internal">
+        <lane id=":four-arm_5_0" index="0" speed="9.34" length="19.58" shape="394.51,47.66 389.17,46.89 385.35,44.61 383.04,40.84 382.26,35.58"/>
+    </edge>
+    <edge id=":four-arm_6" function="internal">
+        <lane id=":four-arm_6_0" index="0" speed="6.62" length="9.33" shape="388.66,35.56 389.04,38.04 390.14,39.82 391.98,40.90 394.54,41.26"/>
+    </edge>
+    <edge id=":four-arm_7" function="internal">
+        <lane id=":four-arm_7_0" index="0" speed="13.89" length="20.94" shape="388.66,35.56 389.00,56.49"/>
+    </edge>
+    <edge id=":four-arm_8" function="internal">
+        <lane id=":four-arm_8_0" index="0" speed="9.25" length="19.40" shape="385.46,35.57 384.73,40.84 382.48,44.60 378.73,46.85 373.46,47.59"/>
+    </edge>
+    <edge id=":four-arm_9" function="internal">
+        <lane id=":four-arm_9_0" index="0" speed="6.50" length="9.03" shape="373.47,41.19 375.92,40.85 377.67,39.80 378.72,38.05 379.06,35.59"/>
+    </edge>
+    <edge id=":four-arm_10" function="internal">
+        <lane id=":four-arm_10_0" index="0" speed="13.89" length="21.07" shape="373.47,41.19 394.54,41.26"/>
+    </edge>
+    <edge id=":four-arm_11" function="internal">
+        <lane id=":four-arm_11_0" index="0" speed="9.43" length="19.65" shape="373.47,44.39 378.73,45.16 382.55,47.45 384.90,51.26 385.81,56.58"/>
+    </edge>
+    <edge id=":incoming_0" function="internal">
+        <lane id=":incoming_0_0" index="0" speed="6.62" length="9.16" shape="1181.93,60.51 1181.51,58.01 1180.42,56.22 1178.66,55.14 1176.22,54.77"/>
+    </edge>
+    <edge id=":incoming_1" function="internal">
+        <lane id=":incoming_1_0" index="0" speed="8.66" length="17.04" shape="1185.13,60.42 1185.55,55.16 1187.16,51.38 1189.95,49.11 1193.92,48.32"/>
+    </edge>
+    <edge id=":incoming_2" function="internal">
+        <lane id=":incoming_2_0" index="0" speed="13.89" length="17.73" shape="1193.98,54.72 1176.22,54.77"/>
+        <lane id=":incoming_2_1" index="1" speed="13.89" length="17.73" shape="1193.95,51.52 1176.24,51.57"/>
+    </edge>
+    <edge id=":incoming_4" function="internal">
+        <lane id=":incoming_4_0" index="0" speed="6.41" length="9.04" shape="1188.43,39.50 1188.69,41.98 1189.69,43.74 1191.43,44.79 1193.90,45.12"/>
+    </edge>
+    <edge id=":incoming_5" function="internal">
+        <lane id=":incoming_5_0" index="0" speed="8.81" length="17.01" shape="1185.23,39.38 1184.50,44.73 1182.76,48.55 1180.00,50.83 1176.24,51.57"/>
+    </edge>
+    <edge id=":incoming_6" function="internal">
+        <lane id=":incoming_6_0" index="0" speed="13.89" length="17.65" shape="1176.27,45.18 1193.90,45.12"/>
+        <lane id=":incoming_6_1" index="1" speed="13.89" length="17.65" shape="1176.25,48.38 1193.92,48.32"/>
+    </edge>
+
+    <edge id="EB2incoming" from="EastBoundary" to="incoming" priority="-1">
+        <lane id="EB2incoming_0" index="0" speed="13.89" length="304.25" shape="1498.22,52.15 1193.98,54.72"/>
+        <lane id="EB2incoming_1" index="1" speed="13.89" length="304.25" shape="1498.19,48.95 1193.95,51.52"/>
+    </edge>
+    <edge id="NEB2incoming_LTL" from="NorthEastBoundary" to="incoming" priority="-1" spreadType="center">
+        <lane id="NEB2incoming_LTL_0" index="0" speed="13.89" length="328.63" shape="1190.98,389.01 1181.93,60.51"/>
+        <lane id="NEB2incoming_LTL_1" index="1" speed="13.89" length="328.63" shape="1194.18,388.93 1185.13,60.42"/>
+    </edge>
+    <edge id="NWB2four-arm_LTL" from="NorthWestBoundary" to="four-arm" priority="-1">
+        <lane id="NWB2four-arm_LTL_0" index="0" speed="13.89" length="313.79" shape="388.44,370.43 379.41,56.76"/>
+        <lane id="NWB2four-arm_LTL_1" index="1" speed="13.89" length="313.79" shape="391.64,370.34 382.61,56.67"/>
+    </edge>
+    <edge id="SEB2T-intersection" from="SouthEastBoundary" to="T-intersection" priority="-1">
+        <lane id="SEB2T-intersection_0" index="0" speed="13.89" length="296.94" shape="1502.25,-262.31 1205.42,-270.52"/>
+        <lane id="SEB2T-intersection_1" index="1" speed="13.89" length="296.94" shape="1502.34,-265.51 1205.51,-273.72"/>
+    </edge>
+    <edge id="T-intersection2SEB" from="T-intersection" to="SouthEastBoundary" priority="-1">
+        <lane id="T-intersection2SEB_0" index="0" speed="13.89" length="296.94" shape="1205.68,-280.11 1502.51,-271.91"/>
+        <lane id="T-intersection2SEB_1" index="1" speed="13.89" length="296.94" shape="1205.59,-276.91 1502.42,-268.71"/>
+    </edge>
+    <edge id="T-intersection2bend" from="T-intersection" to="bend" priority="-1">
+        <lane id="T-intersection2bend_0" index="0" speed="13.89" length="802.34" shape="1191.09,-270.91 389.03,-291.98"/>
+        <lane id="T-intersection2bend_1" index="1" speed="13.89" length="802.34" shape="1191.18,-274.11 389.11,-295.18"/>
+    </edge>
+    <edge id="T-intersection2incoming_LTL" from="T-intersection" to="incoming" priority="-1">
+        <lane id="T-intersection2incoming_LTL_0" index="0" speed="13.89" length="304.77" shape="1199.66,-265.07 1188.43,39.50"/>
+        <lane id="T-intersection2incoming_LTL_1" index="1" speed="13.89" length="304.77" shape="1196.47,-265.18 1185.23,39.38"/>
+    </edge>
+    <edge id="WB2four-arm_LTL" from="westBoundary" to="four-arm" priority="-1">
+        <lane id="WB2four-arm_LTL_0" index="0" speed="13.89" length="759.55" shape="-386.08,39.88 373.47,41.19"/>
+        <lane id="WB2four-arm_LTL_1" index="1" speed="13.89" length="759.55" shape="-386.09,43.08 373.47,44.39"/>
+    </edge>
+    <edge id="bend2T-intersection_LTL" from="bend" to="T-intersection" priority="-1">
+        <lane id="bend2T-intersection_LTL_0" index="0" speed="13.89" length="802.34" shape="389.28,-301.58 1191.35,-280.50"/>
+        <lane id="bend2T-intersection_LTL_1" index="1" speed="13.89" length="802.34" shape="389.20,-298.38 1191.26,-277.31"/>
+    </edge>
+    <edge id="bend2four-arm_LTL" from="bend" to="four-arm" priority="-1">
+        <lane id="bend2four-arm_LTL_0" index="0" speed="13.89" length="325.93" shape="387.39,-290.37 388.66,35.56"/>
+        <lane id="bend2four-arm_LTL_1" index="1" speed="13.89" length="325.93" shape="384.19,-290.36 385.46,35.57"/>
+    </edge>
+    <edge id="four-arm2NWB" from="four-arm" to="NorthWestBoundary" priority="-1">
+        <lane id="four-arm2NWB_0" index="0" speed="13.89" length="313.79" shape="389.00,56.49 398.04,370.15"/>
+        <lane id="four-arm2NWB_1" index="1" speed="13.89" length="313.79" shape="385.81,56.58 394.84,370.24"/>
+    </edge>
+    <edge id="four-arm2WB" from="four-arm" to="westBoundary" priority="-1">
+        <lane id="four-arm2WB_0" index="0" speed="13.89" length="759.55" shape="373.46,50.79 -386.10,49.48"/>
+        <lane id="four-arm2WB_1" index="1" speed="13.89" length="759.55" shape="373.46,47.59 -386.09,46.28"/>
+    </edge>
+    <edge id="four-arm2bend" from="four-arm" to="bend" priority="-1">
+        <lane id="four-arm2bend_0" index="0" speed="13.89" length="325.93" shape="379.06,35.59 377.79,-290.34"/>
+        <lane id="four-arm2bend_1" index="1" speed="13.89" length="325.93" shape="382.26,35.58 380.99,-290.35"/>
+    </edge>
+    <edge id="four-arm2incoming" from="four-arm" to="incoming" priority="-1">
+        <lane id="four-arm2incoming_0" index="0" speed="13.89" length="781.74" shape="394.54,41.26 1176.27,45.18"/>
+        <lane id="four-arm2incoming_1" index="1" speed="13.89" length="781.74" shape="394.53,44.46 1176.25,48.38"/>
+    </edge>
+    <edge id="incoming2EB" from="incoming" to="EastBoundary" priority="-1">
+        <lane id="incoming2EB_0" index="0" speed="13.89" length="304.25" shape="1193.90,45.12 1498.14,42.55"/>
+        <lane id="incoming2EB_1" index="1" speed="13.89" length="304.25" shape="1193.92,48.32 1498.17,45.75"/>
+    </edge>
+    <edge id="incoming2four-arm_LTL" from="incoming" to="four-arm" priority="-1">
+        <lane id="incoming2four-arm_LTL_0" index="0" speed="13.89" length="781.74" shape="1176.22,54.77 394.50,50.86"/>
+        <lane id="incoming2four-arm_LTL_1" index="1" speed="13.89" length="781.74" shape="1176.24,51.57 394.51,47.66"/>
+    </edge>
+
+    <tlLogic id="T-intersection" type="actuated" programID="0" offset="0">
+        <phase duration="100" state="GGGGr" name="H_S_G"/>
+        <phase duration="100" state="yyyyr" name="H_S_Y"/>
+        <phase duration="100" state="rrrGG" name="EW_SL_G"/>
+        <phase duration="100" state="rrryy" name="EW_SL_Y"/>
+    </tlLogic>
+    <tlLogic id="four-arm" type="actuated" programID="0" offset="0">
+        <phase duration="100" state="rrrGGrrrrGGr" name="H_S_G"/>
+        <phase duration="100" state="rrryyrrrryyr" name="H_S_Y"/>
+        <phase duration="100" state="rrrrrGrrrrrG" name="H_L_G"/>
+        <phase duration="100" state="rrrrryrrrrry" name="H_L_Y"/>
+        <phase duration="100" state="GGrrrrGGrrrr" name="V_S_G"/>
+        <phase duration="100" state="yyrrrryyrrrr" name="V_S_Y"/>
+        <phase duration="100" state="rrGrrrrrGrrr" name="V_L_G"/>
+        <phase duration="100" state="rryrrrrryrrr" name="V_L_Y"/>
+    </tlLogic>
+    <tlLogic id="incoming" type="actuated" programID="0" offset="0">
+        <phase duration="100" state="rrGGrrGG" name="H_S_G"/>
+        <phase duration="100" state="rryyrryy" name="H_S_Y"/>
+        <phase duration="100" state="rrrrGGrr" name="SN_L_G"/>
+        <phase duration="100" state="rrrryyrr" name="SN_L_Y"/>
+        <phase duration="100" state="GGrrrrrr" name="NS_L_G"/>
+        <phase duration="100" state="yyrrrrrr" name="NS_L_Y"/>
+    </tlLogic>
+
+    <junction id="EastBoundary" type="dead_end" x="1498.18" y="47.35" incLanes="incoming2EB_0 incoming2EB_1" intLanes="" shape="1498.18,47.35 1498.13,40.95 1498.18,47.35"/>
+    <junction id="NorthEastBoundary" type="dead_end" x="1192.58" y="388.97" incLanes="" intLanes="" shape="1195.78,388.88 1189.38,389.06"/>
+    <junction id="NorthWestBoundary" type="dead_end" x="393.24" y="370.29" incLanes="four-arm2NWB_0 four-arm2NWB_1" intLanes="" shape="393.24,370.29 399.64,370.11 393.24,370.29"/>
+    <junction id="SouthEastBoundary" type="dead_end" x="1502.38" y="-267.11" incLanes="T-intersection2SEB_0 T-intersection2SEB_1" intLanes="" shape="1502.38,-267.11 1502.56,-273.51 1502.38,-267.11"/>
+    <junction id="T-intersection" type="traffic_light" x="1195.25" y="-275.60" incLanes="SEB2T-intersection_0 SEB2T-intersection_1 bend2T-intersection_LTL_0 bend2T-intersection_LTL_1" intLanes=":T-intersection_0_0 :T-intersection_1_0 :T-intersection_1_1 :T-intersection_3_0 :T-intersection_4_0" shape="1205.37,-268.92 1205.73,-281.71 1191.39,-282.10 1191.05,-269.31 1193.24,-268.81 1193.99,-268.24 1194.51,-267.46 1194.80,-266.46 1194.87,-265.24 1201.26,-265.01 1201.79,-267.23 1202.37,-267.99 1203.16,-268.53 1204.16,-268.84">
+        <request index="0" response="00000" foes="00000" cont="0"/>
+        <request index="1" response="00000" foes="10000" cont="0"/>
+        <request index="2" response="00000" foes="10000" cont="0"/>
+        <request index="3" response="00000" foes="00000" cont="0"/>
+        <request index="4" response="00110" foes="00110" cont="0"/>
+    </junction>
+    <junction id="bend" type="priority" x="382.56" y="-296.95" incLanes="four-arm2bend_0 four-arm2bend_1 T-intersection2bend_0 T-intersection2bend_1" intLanes=":bend_0_0 :bend_1_0 :bend_2_0 :bend_3_0" shape="376.19,-290.33 388.99,-290.38 389.32,-303.17 385.29,-302.91 382.00,-301.90 379.44,-300.14 377.62,-297.62 376.54,-294.35">
+        <request index="0" response="0000" foes="0000" cont="0"/>
+        <request index="1" response="0000" foes="0000" cont="0"/>
+        <request index="2" response="0000" foes="0000" cont="0"/>
+        <request index="3" response="0000" foes="0000" cont="0"/>
+    </junction>
+    <junction id="four-arm" type="traffic_light" x="383.90" y="46.01" incLanes="NWB2four-arm_LTL_0 NWB2four-arm_LTL_1 incoming2four-arm_LTL_0 incoming2four-arm_LTL_1 bend2four-arm_LTL_0 bend2four-arm_LTL_1 WB2four-arm_LTL_0 WB2four-arm_LTL_1" intLanes=":four-arm_0_0 :four-arm_1_0 :four-arm_2_0 :four-arm_3_0 :four-arm_4_0 :four-arm_5_0 :four-arm_6_0 :four-arm_7_0 :four-arm_8_0 :four-arm_9_0 :four-arm_10_0 :four-arm_11_0" shape="377.81,56.81 390.60,56.44 390.98,54.22 391.52,53.45 392.28,52.90 393.27,52.57 394.49,52.46 394.55,39.66 392.17,39.20 391.34,38.62 390.74,37.83 390.38,36.80 390.26,35.55 377.46,35.60 377.02,37.82 376.47,38.60 375.70,39.15 374.70,39.48 373.47,39.59 373.45,52.39 375.82,52.89 376.66,53.50 377.27,54.36 377.65,55.46">
+        <request index="0"  response="000000010000" foes="000000010000" cont="0"/>
+        <request index="1"  response="111000010000" foes="111100010000" cont="0"/>
+        <request index="2"  response="100010110000" foes="100010110000" cont="0"/>
+        <request index="3"  response="000000000000" foes="000010000000" cont="0"/>
+        <request index="4"  response="000000000000" foes="100010000111" cont="0"/>
+        <request index="5"  response="010000000000" foes="010110000100" cont="0"/>
+        <request index="6"  response="010000000000" foes="010000000000" cont="0"/>
+        <request index="7"  response="010000111000" foes="010000111100" cont="0"/>
+        <request index="8"  response="110000100010" foes="110000100010" cont="0"/>
+        <request index="9"  response="000000000000" foes="000000000010" cont="0"/>
+        <request index="10" response="000000000000" foes="000111100010" cont="0"/>
+        <request index="11" response="000000010000" foes="000100010110" cont="0"/>
+    </junction>
+    <junction id="incoming" type="traffic_light" x="1183.24" y="50.01" incLanes="NEB2incoming_LTL_0 NEB2incoming_LTL_1 EB2incoming_0 EB2incoming_1 T-intersection2incoming_LTL_0 T-intersection2incoming_LTL_1 four-arm2incoming_0 four-arm2incoming_1" intLanes=":incoming_0_0 :incoming_1_0 :incoming_2_0 :incoming_2_1 :incoming_4_0 :incoming_5_0 :incoming_6_0 :incoming_6_1" shape="1180.33,60.56 1186.73,60.38 1187.49,58.15 1188.49,57.37 1189.91,56.80 1191.74,56.45 1193.99,56.32 1193.88,43.52 1191.68,43.09 1190.92,42.55 1190.39,41.77 1190.10,40.78 1190.03,39.56 1183.63,39.32 1182.75,41.70 1181.72,42.53 1180.29,43.12 1178.48,43.47 1176.28,43.58 1176.21,56.37 1178.45,56.85 1179.24,57.43 1179.82,58.24 1180.18,59.28">
+        <request index="0" response="00001100" foes="00001100" cont="0"/>
+        <request index="1" response="11001100" foes="11001100" cont="0"/>
+        <request index="2" response="00000000" foes="00100011" cont="0"/>
+        <request index="3" response="00000000" foes="00100011" cont="0"/>
+        <request index="4" response="11000000" foes="11000000" cont="0"/>
+        <request index="5" response="11001100" foes="11001100" cont="0"/>
+        <request index="6" response="00000000" foes="00110010" cont="0"/>
+        <request index="7" response="00000000" foes="00110010" cont="0"/>
+    </junction>
+    <junction id="westBoundary" type="dead_end" x="-386.09" y="44.68" incLanes="four-arm2WB_0 four-arm2WB_1" intLanes="" shape="-386.09,44.68 -386.10,51.08 -386.09,44.68"/>
+
+    <connection from="EB2incoming" to="incoming2four-arm_LTL" fromLane="0" toLane="0" via=":incoming_2_0" tl="incoming" linkIndex="2" dir="s" state="O"/>
+    <connection from="EB2incoming" to="incoming2four-arm_LTL" fromLane="1" toLane="1" via=":incoming_2_1" tl="incoming" linkIndex="3" dir="s" state="O"/>
+    <connection from="NEB2incoming_LTL" to="incoming2four-arm_LTL" fromLane="0" toLane="0" via=":incoming_0_0" tl="incoming" linkIndex="0" dir="r" state="o"/>
+    <connection from="NEB2incoming_LTL" to="incoming2EB" fromLane="1" toLane="1" via=":incoming_1_0" tl="incoming" linkIndex="1" dir="l" state="o"/>
+    <connection from="NWB2four-arm_LTL" to="four-arm2WB" fromLane="0" toLane="0" via=":four-arm_0_0" tl="four-arm" linkIndex="0" dir="r" state="o"/>
+    <connection from="NWB2four-arm_LTL" to="four-arm2bend" fromLane="0" toLane="0" via=":four-arm_1_0" tl="four-arm" linkIndex="1" dir="s" state="o"/>
+    <connection from="NWB2four-arm_LTL" to="four-arm2incoming" fromLane="1" toLane="1" via=":four-arm_2_0" tl="four-arm" linkIndex="2" dir="l" state="o"/>
+    <connection from="SEB2T-intersection" to="T-intersection2incoming_LTL" fromLane="0" toLane="0" via=":T-intersection_0_0" tl="T-intersection" linkIndex="0" dir="r" state="O"/>
+    <connection from="SEB2T-intersection" to="T-intersection2bend" fromLane="0" toLane="0" via=":T-intersection_1_0" tl="T-intersection" linkIndex="1" dir="s" state="O"/>
+    <connection from="SEB2T-intersection" to="T-intersection2bend" fromLane="1" toLane="1" via=":T-intersection_1_1" tl="T-intersection" linkIndex="2" dir="s" state="O"/>
+    <connection from="T-intersection2bend" to="bend2four-arm_LTL" fromLane="0" toLane="0" via=":bend_2_0" dir="r" state="M"/>
+    <connection from="T-intersection2bend" to="bend2four-arm_LTL" fromLane="1" toLane="1" via=":bend_3_0" dir="r" state="M"/>
+    <connection from="T-intersection2incoming_LTL" to="incoming2EB" fromLane="0" toLane="0" via=":incoming_4_0" tl="incoming" linkIndex="4" dir="r" state="o"/>
+    <connection from="T-intersection2incoming_LTL" to="incoming2four-arm_LTL" fromLane="1" toLane="1" via=":incoming_5_0" tl="incoming" linkIndex="5" dir="l" state="o"/>
+    <connection from="WB2four-arm_LTL" to="four-arm2bend" fromLane="0" toLane="0" via=":four-arm_9_0" tl="four-arm" linkIndex="9" dir="r" state="O"/>
+    <connection from="WB2four-arm_LTL" to="four-arm2incoming" fromLane="0" toLane="0" via=":four-arm_10_0" tl="four-arm" linkIndex="10" dir="s" state="O"/>
+    <connection from="WB2four-arm_LTL" to="four-arm2NWB" fromLane="1" toLane="1" via=":four-arm_11_0" tl="four-arm" linkIndex="11" dir="l" state="o"/>
+    <connection from="bend2T-intersection_LTL" to="T-intersection2SEB" fromLane="0" toLane="0" via=":T-intersection_3_0" tl="T-intersection" linkIndex="3" dir="s" state="O"/>
+    <connection from="bend2T-intersection_LTL" to="T-intersection2incoming_LTL" fromLane="1" toLane="1" via=":T-intersection_4_0" tl="T-intersection" linkIndex="4" dir="l" state="o"/>
+    <connection from="bend2four-arm_LTL" to="four-arm2incoming" fromLane="0" toLane="0" via=":four-arm_6_0" tl="four-arm" linkIndex="6" dir="r" state="o"/>
+    <connection from="bend2four-arm_LTL" to="four-arm2NWB" fromLane="0" toLane="0" via=":four-arm_7_0" tl="four-arm" linkIndex="7" dir="s" state="o"/>
+    <connection from="bend2four-arm_LTL" to="four-arm2WB" fromLane="1" toLane="1" via=":four-arm_8_0" tl="four-arm" linkIndex="8" dir="l" state="o"/>
+    <connection from="four-arm2bend" to="bend2T-intersection_LTL" fromLane="0" toLane="0" via=":bend_0_0" dir="l" state="M"/>
+    <connection from="four-arm2bend" to="bend2T-intersection_LTL" fromLane="1" toLane="1" via=":bend_1_0" dir="l" state="M"/>
+    <connection from="four-arm2incoming" to="incoming2EB" fromLane="0" toLane="0" via=":incoming_6_0" tl="incoming" linkIndex="6" dir="s" state="O"/>
+    <connection from="four-arm2incoming" to="incoming2EB" fromLane="1" toLane="1" via=":incoming_6_1" tl="incoming" linkIndex="7" dir="s" state="O"/>
+    <connection from="incoming2four-arm_LTL" to="four-arm2NWB" fromLane="0" toLane="0" via=":four-arm_3_0" tl="four-arm" linkIndex="3" dir="r" state="O"/>
+    <connection from="incoming2four-arm_LTL" to="four-arm2WB" fromLane="0" toLane="0" via=":four-arm_4_0" tl="four-arm" linkIndex="4" dir="s" state="O"/>
+    <connection from="incoming2four-arm_LTL" to="four-arm2bend" fromLane="1" toLane="1" via=":four-arm_5_0" tl="four-arm" linkIndex="5" dir="l" state="o"/>
+
+    <connection from=":T-intersection_0" to="T-intersection2incoming_LTL" fromLane="0" toLane="0" dir="r" state="M"/>
+    <connection from=":T-intersection_1" to="T-intersection2bend" fromLane="0" toLane="0" dir="s" state="M"/>
+    <connection from=":T-intersection_1" to="T-intersection2bend" fromLane="1" toLane="1" dir="s" state="M"/>
+    <connection from=":T-intersection_3" to="T-intersection2SEB" fromLane="0" toLane="0" dir="s" state="M"/>
+    <connection from=":T-intersection_4" to="T-intersection2incoming_LTL" fromLane="0" toLane="1" dir="l" state="M"/>
+    <connection from=":bend_0" to="bend2T-intersection_LTL" fromLane="0" toLane="0" dir="l" state="M"/>
+    <connection from=":bend_1" to="bend2T-intersection_LTL" fromLane="0" toLane="1" dir="l" state="M"/>
+    <connection from=":bend_2" to="bend2four-arm_LTL" fromLane="0" toLane="0" dir="r" state="M"/>
+    <connection from=":bend_3" to="bend2four-arm_LTL" fromLane="0" toLane="1" dir="r" state="M"/>
+    <connection from=":four-arm_0" to="four-arm2WB" fromLane="0" toLane="0" dir="r" state="M"/>
+    <connection from=":four-arm_1" to="four-arm2bend" fromLane="0" toLane="0" dir="s" state="M"/>
+    <connection from=":four-arm_2" to="four-arm2incoming" fromLane="0" toLane="1" dir="l" state="M"/>
+    <connection from=":four-arm_3" to="four-arm2NWB" fromLane="0" toLane="0" dir="r" state="M"/>
+    <connection from=":four-arm_4" to="four-arm2WB" fromLane="0" toLane="0" dir="s" state="M"/>
+    <connection from=":four-arm_5" to="four-arm2bend" fromLane="0" toLane="1" dir="l" state="M"/>
+    <connection from=":four-arm_6" to="four-arm2incoming" fromLane="0" toLane="0" dir="r" state="M"/>
+    <connection from=":four-arm_7" to="four-arm2NWB" fromLane="0" toLane="0" dir="s" state="M"/>
+    <connection from=":four-arm_8" to="four-arm2WB" fromLane="0" toLane="1" dir="l" state="M"/>
+    <connection from=":four-arm_9" to="four-arm2bend" fromLane="0" toLane="0" dir="r" state="M"/>
+    <connection from=":four-arm_10" to="four-arm2incoming" fromLane="0" toLane="0" dir="s" state="M"/>
+    <connection from=":four-arm_11" to="four-arm2NWB" fromLane="0" toLane="1" dir="l" state="M"/>
+    <connection from=":incoming_0" to="incoming2four-arm_LTL" fromLane="0" toLane="0" dir="r" state="M"/>
+    <connection from=":incoming_1" to="incoming2EB" fromLane="0" toLane="1" dir="l" state="M"/>
+    <connection from=":incoming_2" to="incoming2four-arm_LTL" fromLane="0" toLane="0" dir="s" state="M"/>
+    <connection from=":incoming_2" to="incoming2four-arm_LTL" fromLane="1" toLane="1" dir="s" state="M"/>
+    <connection from=":incoming_4" to="incoming2EB" fromLane="0" toLane="0" dir="r" state="M"/>
+    <connection from=":incoming_5" to="incoming2four-arm_LTL" fromLane="0" toLane="1" dir="l" state="M"/>
+    <connection from=":incoming_6" to="incoming2EB" fromLane="0" toLane="0" dir="s" state="M"/>
+    <connection from=":incoming_6" to="incoming2EB" fromLane="1" toLane="1" dir="s" state="M"/>
+
+</net>
