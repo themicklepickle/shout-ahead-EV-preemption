@@ -1,0 +1,579 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/routes_file.xsd">
+
+    <!-- Emergency Vehicle Type -->
+    <vType id="FireTruck" vClass="emergency" guiShape="firebrigade"/>
+    <vType id="Ambulance" vClass="emergency" guiShape="emergency"/>
+    <vType id="PoliceCar" vClass="emergency" guiShape="police"/>
+<vehicle id="257" depart="257">
+    <route edges="EB2incoming incoming2four-arm_LTL four-arm2bend"/>
+</vehicle>
+<vehicle id="32" depart="32" type="FireTruck">
+    <route edges="bend2T-intersection_LTL T-intersection2incoming_LTL incoming2four-arm_LTL"/>
+</vehicle>
+<vehicle id="109" depart="109">
+    <route edges="NEB2incoming_LTL incoming2four-arm_LTL four-arm2bend"/>
+</vehicle>
+<vehicle id="17" depart="17" type="Ambulance">
+    <route edges="bend2T-intersection_LTL T-intersection2incoming_LTL incoming2EB"/>
+</vehicle>
+<vehicle id="165" depart="165" type="Ambulance">
+    <route edges="T-intersection2incoming_LTL incoming2four-arm_LTL four-arm2bend bend2T-intersection_LTL T-intersection2SEB"/>
+</vehicle>
+<vehicle id="114" depart="114" type="Ambulance">
+    <route edges="bend2four-arm_LTL"/>
+</vehicle>
+<vehicle id="218" depart="218" type="PoliceCar">
+    <route edges="four-arm2bend bend2T-intersection_LTL T-intersection2incoming_LTL incoming2four-arm_LTL four-arm2WB"/>
+</vehicle>
+<vehicle id="293" depart="293">
+    <route edges="NWB2four-arm_LTL four-arm2bend bend2T-intersection_LTL T-intersection2incoming_LTL incoming2four-arm_LTL"/>
+</vehicle>
+<vehicle id="193" depart="193">
+    <route edges="NWB2four-arm_LTL four-arm2WB"/>
+</vehicle>
+<vehicle id="94" depart="94" type="Ambulance">
+    <route edges="four-arm2bend bend2T-intersection_LTL T-intersection2incoming_LTL incoming2four-arm_LTL four-arm2WB"/>
+</vehicle>
+<vehicle id="180" depart="180" type="Ambulance">
+    <route edges="NWB2four-arm_LTL four-arm2bend bend2T-intersection_LTL T-intersection2incoming_LTL incoming2four-arm_LTL"/>
+</vehicle>
+<vehicle id="209" depart="209" type="PoliceCar">
+    <route edges="SEB2T-intersection T-intersection2incoming_LTL incoming2four-arm_LTL four-arm2WB"/>
+</vehicle>
+<vehicle id="77" depart="77" type="FireTruck">
+    <route edges="incoming2four-arm_LTL four-arm2bend bend2T-intersection_LTL"/>
+</vehicle>
+<vehicle id="219" depart="219">
+    <route edges="four-arm2bend bend2T-intersection_LTL T-intersection2SEB"/>
+</vehicle>
+<vehicle id="114" depart="114">
+    <route edges="incoming2four-arm_LTL four-arm2bend bend2T-intersection_LTL T-intersection2SEB"/>
+</vehicle>
+<vehicle id="215" depart="215">
+    <route edges="NWB2four-arm_LTL four-arm2bend bend2T-intersection_LTL"/>
+</vehicle>
+<vehicle id="228" depart="228">
+    <route edges="SEB2T-intersection T-intersection2bend"/>
+</vehicle>
+<vehicle id="236" depart="236" type="Ambulance">
+    <route edges="NEB2incoming_LTL incoming2four-arm_LTL four-arm2NWB"/>
+</vehicle>
+<vehicle id="170" depart="170" type="PoliceCar">
+    <route edges="SEB2T-intersection T-intersection2incoming_LTL incoming2four-arm_LTL four-arm2bend bend2T-intersection_LTL T-intersection2SEB"/>
+</vehicle>
+<vehicle id="5" depart="5" type="Ambulance">
+    <route edges="four-arm2bend bend2T-intersection_LTL T-intersection2incoming_LTL incoming2EB"/>
+</vehicle>
+<vehicle id="235" depart="235" type="Ambulance">
+    <route edges="EB2incoming incoming2four-arm_LTL four-arm2WB"/>
+</vehicle>
+<vehicle id="180" depart="180">
+    <route edges="bend2four-arm_LTL four-arm2incoming"/>
+</vehicle>
+<vehicle id="21" depart="21">
+    <route edges="SEB2T-intersection T-intersection2bend"/>
+</vehicle>
+<vehicle id="157" depart="157">
+    <route edges="EB2incoming incoming2four-arm_LTL four-arm2WB"/>
+</vehicle>
+<vehicle id="123" depart="123" type="PoliceCar">
+    <route edges="T-intersection2incoming_LTL incoming2four-arm_LTL four-arm2bend bend2T-intersection_LTL T-intersection2SEB"/>
+</vehicle>
+<vehicle id="232" depart="232" type="PoliceCar">
+    <route edges="T-intersection2bend bend2four-arm_LTL four-arm2incoming"/>
+</vehicle>
+<vehicle id="129" depart="129" type="PoliceCar">
+    <route edges="SEB2T-intersection T-intersection2bend bend2four-arm_LTL four-arm2incoming"/>
+</vehicle>
+<vehicle id="148" depart="148" type="PoliceCar">
+    <route edges="NEB2incoming_LTL incoming2four-arm_LTL four-arm2bend bend2T-intersection_LTL T-intersection2incoming_LTL"/>
+</vehicle>
+<vehicle id="181" depart="181">
+    <route edges="four-arm2incoming incoming2EB"/>
+</vehicle>
+<vehicle id="161" depart="161" type="Ambulance">
+    <route edges="T-intersection2bend bend2four-arm_LTL four-arm2WB"/>
+</vehicle>
+<vehicle id="53" depart="53" type="Ambulance">
+    <route edges="T-intersection2incoming_LTL incoming2four-arm_LTL four-arm2WB"/>
+</vehicle>
+<vehicle id="145" depart="145">
+    <route edges="bend2T-intersection_LTL T-intersection2incoming_LTL incoming2EB"/>
+</vehicle>
+<vehicle id="55" depart="55" type="Ambulance">
+    <route edges="incoming2four-arm_LTL four-arm2bend bend2T-intersection_LTL"/>
+</vehicle>
+<vehicle id="294" depart="294" type="FireTruck">
+    <route edges="SEB2T-intersection T-intersection2incoming_LTL incoming2four-arm_LTL"/>
+</vehicle>
+<vehicle id="69" depart="69">
+    <route edges="SEB2T-intersection T-intersection2incoming_LTL incoming2four-arm_LTL four-arm2WB"/>
+</vehicle>
+<vehicle id="151" depart="151" type="FireTruck">
+    <route edges="WB2four-arm_LTL four-arm2bend bend2T-intersection_LTL T-intersection2incoming_LTL"/>
+</vehicle>
+<vehicle id="88" depart="88" type="PoliceCar">
+    <route edges="NWB2four-arm_LTL four-arm2bend bend2T-intersection_LTL T-intersection2incoming_LTL"/>
+</vehicle>
+<vehicle id="283" depart="283">
+    <route edges="incoming2four-arm_LTL four-arm2WB"/>
+</vehicle>
+<vehicle id="254" depart="254" type="Ambulance">
+    <route edges="T-intersection2incoming_LTL incoming2four-arm_LTL four-arm2WB"/>
+</vehicle>
+<vehicle id="105" depart="105" type="PoliceCar">
+    <route edges="NWB2four-arm_LTL four-arm2bend bend2T-intersection_LTL T-intersection2incoming_LTL"/>
+</vehicle>
+<vehicle id="212" depart="212" type="PoliceCar">
+    <route edges="incoming2four-arm_LTL four-arm2bend bend2T-intersection_LTL T-intersection2SEB"/>
+</vehicle>
+<vehicle id="238" depart="238" type="PoliceCar">
+    <route edges="T-intersection2incoming_LTL incoming2four-arm_LTL four-arm2bend bend2T-intersection_LTL T-intersection2SEB"/>
+</vehicle>
+<vehicle id="256" depart="256" type="Ambulance">
+    <route edges="NEB2incoming_LTL incoming2four-arm_LTL four-arm2NWB"/>
+</vehicle>
+<vehicle id="275" depart="275" type="PoliceCar">
+    <route edges="EB2incoming incoming2four-arm_LTL four-arm2bend bend2T-intersection_LTL T-intersection2SEB"/>
+</vehicle>
+<vehicle id="258" depart="258">
+    <route edges="bend2four-arm_LTL"/>
+</vehicle>
+<vehicle id="47" depart="47">
+    <route edges="WB2four-arm_LTL four-arm2bend"/>
+</vehicle>
+<vehicle id="291" depart="291">
+    <route edges="NEB2incoming_LTL incoming2four-arm_LTL"/>
+</vehicle>
+<vehicle id="146" depart="146" type="PoliceCar">
+    <route edges="EB2incoming incoming2four-arm_LTL four-arm2bend bend2T-intersection_LTL"/>
+</vehicle>
+<vehicle id="79" depart="79">
+    <route edges="NEB2incoming_LTL incoming2EB"/>
+</vehicle>
+<vehicle id="34" depart="34" type="PoliceCar">
+    <route edges="T-intersection2incoming_LTL incoming2EB"/>
+</vehicle>
+<vehicle id="90" depart="90">
+    <route edges="four-arm2bend bend2T-intersection_LTL T-intersection2incoming_LTL incoming2four-arm_LTL four-arm2NWB"/>
+</vehicle>
+<vehicle id="198" depart="198" type="FireTruck">
+    <route edges="SEB2T-intersection T-intersection2incoming_LTL incoming2four-arm_LTL"/>
+</vehicle>
+<vehicle id="128" depart="128" type="PoliceCar">
+    <route edges="NWB2four-arm_LTL four-arm2incoming"/>
+</vehicle>
+<vehicle id="32" depart="32">
+    <route edges="NEB2incoming_LTL incoming2four-arm_LTL four-arm2bend"/>
+</vehicle>
+<vehicle id="220" depart="220">
+    <route edges="WB2four-arm_LTL four-arm2bend bend2T-intersection_LTL"/>
+</vehicle>
+<vehicle id="145" depart="145" type="FireTruck">
+    <route edges="T-intersection2incoming_LTL incoming2four-arm_LTL"/>
+</vehicle>
+<vehicle id="14" depart="14">
+    <route edges="WB2four-arm_LTL four-arm2bend"/>
+</vehicle>
+<vehicle id="277" depart="277">
+    <route edges="four-arm2bend bend2T-intersection_LTL T-intersection2incoming_LTL incoming2four-arm_LTL four-arm2NWB"/>
+</vehicle>
+<vehicle id="158" depart="158" type="FireTruck">
+    <route edges="four-arm2bend bend2T-intersection_LTL T-intersection2incoming_LTL incoming2four-arm_LTL"/>
+</vehicle>
+<vehicle id="64" depart="64" type="FireTruck">
+    <route edges="four-arm2bend bend2T-intersection_LTL T-intersection2incoming_LTL incoming2four-arm_LTL four-arm2NWB"/>
+</vehicle>
+<vehicle id="251" depart="251" type="FireTruck">
+    <route edges="NWB2four-arm_LTL four-arm2bend bend2T-intersection_LTL T-intersection2incoming_LTL incoming2four-arm_LTL"/>
+</vehicle>
+<vehicle id="275" depart="275" type="Ambulance">
+    <route edges="SEB2T-intersection T-intersection2incoming_LTL incoming2four-arm_LTL four-arm2bend"/>
+</vehicle>
+<vehicle id="93" depart="93">
+    <route edges="four-arm2bend bend2T-intersection_LTL T-intersection2incoming_LTL"/>
+</vehicle>
+<vehicle id="241" depart="241" type="PoliceCar">
+    <route edges="SEB2T-intersection T-intersection2incoming_LTL incoming2four-arm_LTL four-arm2bend bend2T-intersection_LTL"/>
+</vehicle>
+<vehicle id="42" depart="42" type="Ambulance">
+    <route edges="bend2T-intersection_LTL T-intersection2incoming_LTL"/>
+</vehicle>
+<vehicle id="203" depart="203">
+    <route edges="T-intersection2bend bend2four-arm_LTL four-arm2incoming incoming2EB"/>
+</vehicle>
+<vehicle id="159" depart="159" type="PoliceCar">
+    <route edges="incoming2four-arm_LTL four-arm2NWB"/>
+</vehicle>
+<vehicle id="5" depart="5" type="PoliceCar">
+    <route edges="WB2four-arm_LTL four-arm2bend bend2T-intersection_LTL"/>
+</vehicle>
+<vehicle id="228" depart="228" type="FireTruck">
+    <route edges="incoming2four-arm_LTL four-arm2bend bend2T-intersection_LTL T-intersection2incoming_LTL"/>
+</vehicle>
+<vehicle id="175" depart="175" type="FireTruck">
+    <route edges="four-arm2bend bend2T-intersection_LTL T-intersection2incoming_LTL"/>
+</vehicle>
+<vehicle id="15" depart="15" type="FireTruck">
+    <route edges="EB2incoming incoming2four-arm_LTL"/>
+</vehicle>
+<vehicle id="206" depart="206" type="PoliceCar">
+    <route edges="NWB2four-arm_LTL four-arm2bend bend2T-intersection_LTL"/>
+</vehicle>
+<vehicle id="168" depart="168">
+    <route edges="bend2T-intersection_LTL T-intersection2incoming_LTL incoming2four-arm_LTL four-arm2NWB"/>
+</vehicle>
+<vehicle id="296" depart="296">
+    <route edges="bend2four-arm_LTL"/>
+</vehicle>
+<vehicle id="274" depart="274">
+    <route edges="WB2four-arm_LTL four-arm2bend bend2T-intersection_LTL T-intersection2incoming_LTL"/>
+</vehicle>
+<vehicle id="216" depart="216" type="Ambulance">
+    <route edges="four-arm2incoming"/>
+</vehicle>
+<vehicle id="282" depart="282">
+    <route edges="SEB2T-intersection T-intersection2bend"/>
+</vehicle>
+<vehicle id="105" depart="105" type="FireTruck">
+    <route edges="T-intersection2incoming_LTL incoming2four-arm_LTL four-arm2bend bend2T-intersection_LTL T-intersection2SEB"/>
+</vehicle>
+<vehicle id="38" depart="38" type="PoliceCar">
+    <route edges="NWB2four-arm_LTL four-arm2WB"/>
+</vehicle>
+<vehicle id="130" depart="130" type="Ambulance">
+    <route edges="NWB2four-arm_LTL four-arm2bend bend2T-intersection_LTL T-intersection2incoming_LTL incoming2four-arm_LTL"/>
+</vehicle>
+<vehicle id="177" depart="177">
+    <route edges="SEB2T-intersection T-intersection2bend"/>
+</vehicle>
+<vehicle id="146" depart="146">
+    <route edges="WB2four-arm_LTL four-arm2NWB"/>
+</vehicle>
+<vehicle id="182" depart="182">
+    <route edges="bend2T-intersection_LTL T-intersection2incoming_LTL incoming2EB"/>
+</vehicle>
+<vehicle id="138" depart="138" type="FireTruck">
+    <route edges="SEB2T-intersection T-intersection2incoming_LTL incoming2four-arm_LTL four-arm2WB"/>
+</vehicle>
+<vehicle id="277" depart="277">
+    <route edges="EB2incoming incoming2four-arm_LTL four-arm2bend bend2T-intersection_LTL T-intersection2SEB"/>
+</vehicle>
+<vehicle id="229" depart="229" type="Ambulance">
+    <route edges="T-intersection2incoming_LTL"/>
+</vehicle>
+<vehicle id="111" depart="111" type="Ambulance">
+    <route edges="four-arm2incoming"/>
+</vehicle>
+<vehicle id="248" depart="248">
+    <route edges="WB2four-arm_LTL four-arm2incoming incoming2EB"/>
+</vehicle>
+<vehicle id="211" depart="211" type="FireTruck">
+    <route edges="bend2T-intersection_LTL T-intersection2incoming_LTL incoming2four-arm_LTL four-arm2WB"/>
+</vehicle>
+<vehicle id="7" depart="7">
+    <route edges="WB2four-arm_LTL four-arm2NWB"/>
+</vehicle>
+<vehicle id="132" depart="132">
+    <route edges="bend2four-arm_LTL"/>
+</vehicle>
+<vehicle id="166" depart="166" type="PoliceCar">
+    <route edges="bend2T-intersection_LTL T-intersection2incoming_LTL incoming2four-arm_LTL four-arm2NWB"/>
+</vehicle>
+<vehicle id="132" depart="132">
+    <route edges="four-arm2incoming"/>
+</vehicle>
+<vehicle id="182" depart="182" type="Ambulance">
+    <route edges="NWB2four-arm_LTL four-arm2bend bend2T-intersection_LTL T-intersection2SEB"/>
+</vehicle>
+<vehicle id="298" depart="298" type="FireTruck">
+    <route edges="NWB2four-arm_LTL four-arm2WB"/>
+</vehicle>
+<vehicle id="20" depart="20" type="Ambulance">
+    <route edges="WB2four-arm_LTL four-arm2NWB"/>
+</vehicle>
+<vehicle id="22" depart="22">
+    <route edges="SEB2T-intersection T-intersection2bend bend2four-arm_LTL four-arm2incoming"/>
+</vehicle>
+<vehicle id="136" depart="136" type="PoliceCar">
+    <route edges="SEB2T-intersection T-intersection2incoming_LTL"/>
+</vehicle>
+<vehicle id="96" depart="96" type="Ambulance">
+    <route edges="NWB2four-arm_LTL four-arm2bend"/>
+</vehicle>
+<vehicle id="175" depart="175" type="Ambulance">
+    <route edges="WB2four-arm_LTL four-arm2NWB"/>
+</vehicle>
+<vehicle id="238" depart="238" type="PoliceCar">
+    <route edges="NWB2four-arm_LTL four-arm2incoming"/>
+</vehicle>
+<vehicle id="249" depart="249" type="PoliceCar">
+    <route edges="EB2incoming incoming2four-arm_LTL four-arm2NWB"/>
+</vehicle>
+<vehicle id="251" depart="251" type="FireTruck">
+    <route edges="four-arm2bend bend2T-intersection_LTL T-intersection2incoming_LTL incoming2four-arm_LTL four-arm2NWB"/>
+</vehicle>
+<vehicle id="246" depart="246" type="FireTruck">
+    <route edges="WB2four-arm_LTL four-arm2bend bend2T-intersection_LTL"/>
+</vehicle>
+<vehicle id="229" depart="229">
+    <route edges="four-arm2bend bend2T-intersection_LTL T-intersection2SEB"/>
+</vehicle>
+<vehicle id="81" depart="81" type="FireTruck">
+    <route edges="WB2four-arm_LTL four-arm2bend bend2T-intersection_LTL T-intersection2incoming_LTL"/>
+</vehicle>
+<vehicle id="127" depart="127">
+    <route edges="WB2four-arm_LTL four-arm2bend bend2T-intersection_LTL T-intersection2incoming_LTL"/>
+</vehicle>
+<vehicle id="238" depart="238" type="FireTruck">
+    <route edges="bend2T-intersection_LTL T-intersection2SEB"/>
+</vehicle>
+<vehicle id="234" depart="234" type="PoliceCar">
+    <route edges="T-intersection2incoming_LTL incoming2four-arm_LTL"/>
+</vehicle>
+<vehicle id="29" depart="29" type="PoliceCar">
+    <route edges="SEB2T-intersection T-intersection2incoming_LTL incoming2four-arm_LTL four-arm2NWB"/>
+</vehicle>
+<vehicle id="69" depart="69" type="PoliceCar">
+    <route edges="NWB2four-arm_LTL four-arm2bend bend2T-intersection_LTL T-intersection2incoming_LTL"/>
+</vehicle>
+<vehicle id="162" depart="162">
+    <route edges="bend2T-intersection_LTL T-intersection2incoming_LTL incoming2four-arm_LTL four-arm2WB"/>
+</vehicle>
+<vehicle id="93" depart="93">
+    <route edges="incoming2four-arm_LTL four-arm2bend bend2T-intersection_LTL T-intersection2incoming_LTL incoming2EB"/>
+</vehicle>
+<vehicle id="128" depart="128" type="Ambulance">
+    <route edges="T-intersection2incoming_LTL incoming2four-arm_LTL"/>
+</vehicle>
+<vehicle id="65" depart="65" type="PoliceCar">
+    <route edges="bend2T-intersection_LTL T-intersection2incoming_LTL incoming2four-arm_LTL four-arm2WB"/>
+</vehicle>
+<vehicle id="38" depart="38" type="FireTruck">
+    <route edges="NWB2four-arm_LTL four-arm2bend bend2T-intersection_LTL T-intersection2incoming_LTL incoming2four-arm_LTL four-arm2NWB"/>
+</vehicle>
+<vehicle id="276" depart="276">
+    <route edges="four-arm2bend bend2T-intersection_LTL T-intersection2incoming_LTL incoming2EB"/>
+</vehicle>
+<vehicle id="109" depart="109" type="PoliceCar">
+    <route edges="incoming2four-arm_LTL four-arm2bend bend2T-intersection_LTL T-intersection2incoming_LTL"/>
+</vehicle>
+<vehicle id="105" depart="105">
+    <route edges="NWB2four-arm_LTL four-arm2incoming"/>
+</vehicle>
+<vehicle id="83" depart="83">
+    <route edges="four-arm2bend bend2T-intersection_LTL T-intersection2incoming_LTL incoming2four-arm_LTL"/>
+</vehicle>
+<vehicle id="250" depart="250" type="PoliceCar">
+    <route edges="SEB2T-intersection T-intersection2incoming_LTL incoming2four-arm_LTL four-arm2NWB"/>
+</vehicle>
+<vehicle id="22" depart="22">
+    <route edges="T-intersection2incoming_LTL incoming2four-arm_LTL four-arm2bend bend2T-intersection_LTL"/>
+</vehicle>
+<vehicle id="83" depart="83">
+    <route edges="NEB2incoming_LTL incoming2four-arm_LTL four-arm2bend"/>
+</vehicle>
+<vehicle id="204" depart="204">
+    <route edges="four-arm2bend bend2T-intersection_LTL T-intersection2incoming_LTL incoming2four-arm_LTL"/>
+</vehicle>
+<vehicle id="139" depart="139">
+    <route edges="SEB2T-intersection T-intersection2incoming_LTL incoming2four-arm_LTL four-arm2bend"/>
+</vehicle>
+<vehicle id="95" depart="95">
+    <route edges="bend2four-arm_LTL four-arm2incoming incoming2EB"/>
+</vehicle>
+<vehicle id="286" depart="286">
+    <route edges="SEB2T-intersection T-intersection2incoming_LTL incoming2EB"/>
+</vehicle>
+<vehicle id="166" depart="166">
+    <route edges="NEB2incoming_LTL incoming2four-arm_LTL four-arm2bend"/>
+</vehicle>
+<vehicle id="272" depart="272" type="FireTruck">
+    <route edges="SEB2T-intersection T-intersection2incoming_LTL incoming2four-arm_LTL four-arm2WB"/>
+</vehicle>
+<vehicle id="186" depart="186">
+    <route edges="EB2incoming incoming2four-arm_LTL four-arm2bend bend2T-intersection_LTL"/>
+</vehicle>
+<vehicle id="195" depart="195" type="FireTruck">
+    <route edges="SEB2T-intersection T-intersection2incoming_LTL incoming2EB"/>
+</vehicle>
+<vehicle id="298" depart="298">
+    <route edges="four-arm2bend bend2T-intersection_LTL T-intersection2incoming_LTL incoming2four-arm_LTL four-arm2WB"/>
+</vehicle>
+<vehicle id="193" depart="193" type="Ambulance">
+    <route edges="T-intersection2incoming_LTL incoming2four-arm_LTL four-arm2bend"/>
+</vehicle>
+<vehicle id="206" depart="206" type="PoliceCar">
+    <route edges="incoming2four-arm_LTL four-arm2NWB"/>
+</vehicle>
+<vehicle id="174" depart="174" type="Ambulance">
+    <route edges="SEB2T-intersection T-intersection2incoming_LTL incoming2four-arm_LTL four-arm2bend bend2T-intersection_LTL T-intersection2SEB"/>
+</vehicle>
+<vehicle id="10" depart="10" type="PoliceCar">
+    <route edges="SEB2T-intersection T-intersection2incoming_LTL incoming2four-arm_LTL four-arm2WB"/>
+</vehicle>
+<vehicle id="294" depart="294" type="PoliceCar">
+    <route edges="T-intersection2bend bend2four-arm_LTL four-arm2NWB"/>
+</vehicle>
+<vehicle id="152" depart="152" type="PoliceCar">
+    <route edges="T-intersection2incoming_LTL incoming2four-arm_LTL four-arm2bend bend2T-intersection_LTL T-intersection2SEB"/>
+</vehicle>
+<vehicle id="94" depart="94">
+    <route edges="NEB2incoming_LTL incoming2four-arm_LTL four-arm2bend"/>
+</vehicle>
+<vehicle id="160" depart="160" type="FireTruck">
+    <route edges="NEB2incoming_LTL incoming2four-arm_LTL"/>
+</vehicle>
+<vehicle id="209" depart="209" type="PoliceCar">
+    <route edges="NWB2four-arm_LTL four-arm2bend bend2T-intersection_LTL T-intersection2SEB"/>
+</vehicle>
+<vehicle id="231" depart="231" type="PoliceCar">
+    <route edges="NWB2four-arm_LTL four-arm2bend bend2T-intersection_LTL T-intersection2incoming_LTL incoming2four-arm_LTL four-arm2NWB"/>
+</vehicle>
+<vehicle id="266" depart="266" type="Ambulance">
+    <route edges="SEB2T-intersection T-intersection2incoming_LTL incoming2four-arm_LTL four-arm2NWB"/>
+</vehicle>
+<vehicle id="57" depart="57">
+    <route edges="SEB2T-intersection T-intersection2incoming_LTL incoming2EB"/>
+</vehicle>
+<vehicle id="137" depart="137" type="PoliceCar">
+    <route edges="T-intersection2incoming_LTL incoming2four-arm_LTL four-arm2bend bend2T-intersection_LTL"/>
+</vehicle>
+<vehicle id="174" depart="174">
+    <route edges="bend2four-arm_LTL four-arm2incoming incoming2EB"/>
+</vehicle>
+<vehicle id="270" depart="270" type="Ambulance">
+    <route edges="EB2incoming incoming2four-arm_LTL four-arm2NWB"/>
+</vehicle>
+<vehicle id="0" depart="0">
+    <route edges="NWB2four-arm_LTL four-arm2bend bend2T-intersection_LTL T-intersection2incoming_LTL incoming2four-arm_LTL"/>
+</vehicle>
+<vehicle id="29" depart="29">
+    <route edges="T-intersection2bend bend2four-arm_LTL four-arm2incoming"/>
+</vehicle>
+<vehicle id="123" depart="123" type="PoliceCar">
+    <route edges="four-arm2bend bend2T-intersection_LTL T-intersection2incoming_LTL"/>
+</vehicle>
+<vehicle id="167" depart="167" type="PoliceCar">
+    <route edges="T-intersection2incoming_LTL incoming2EB"/>
+</vehicle>
+<vehicle id="133" depart="133" type="FireTruck">
+    <route edges="SEB2T-intersection T-intersection2incoming_LTL incoming2four-arm_LTL"/>
+</vehicle>
+<vehicle id="289" depart="289">
+    <route edges="incoming2four-arm_LTL four-arm2bend bend2T-intersection_LTL"/>
+</vehicle>
+<vehicle id="49" depart="49" type="FireTruck">
+    <route edges="incoming2four-arm_LTL four-arm2NWB"/>
+</vehicle>
+<vehicle id="269" depart="269" type="FireTruck">
+    <route edges="WB2four-arm_LTL four-arm2bend bend2T-intersection_LTL"/>
+</vehicle>
+<vehicle id="62" depart="62">
+    <route edges="NEB2incoming_LTL incoming2four-arm_LTL four-arm2bend"/>
+</vehicle>
+<vehicle id="275" depart="275">
+    <route edges="NWB2four-arm_LTL four-arm2bend bend2T-intersection_LTL"/>
+</vehicle>
+<vehicle id="159" depart="159">
+    <route edges="NEB2incoming_LTL incoming2four-arm_LTL four-arm2bend"/>
+</vehicle>
+<vehicle id="57" depart="57">
+    <route edges="NEB2incoming_LTL incoming2four-arm_LTL four-arm2bend bend2T-intersection_LTL"/>
+</vehicle>
+<vehicle id="155" depart="155">
+    <route edges="WB2four-arm_LTL four-arm2incoming"/>
+</vehicle>
+<vehicle id="240" depart="240" type="FireTruck">
+    <route edges="SEB2T-intersection T-intersection2incoming_LTL incoming2four-arm_LTL four-arm2WB"/>
+</vehicle>
+<vehicle id="59" depart="59">
+    <route edges="EB2incoming incoming2four-arm_LTL four-arm2bend"/>
+</vehicle>
+<vehicle id="272" depart="272">
+    <route edges="WB2four-arm_LTL four-arm2bend bend2T-intersection_LTL"/>
+</vehicle>
+<vehicle id="107" depart="107" type="PoliceCar">
+    <route edges="incoming2four-arm_LTL four-arm2bend bend2T-intersection_LTL T-intersection2SEB"/>
+</vehicle>
+<vehicle id="22" depart="22" type="PoliceCar">
+    <route edges="incoming2four-arm_LTL four-arm2bend"/>
+</vehicle>
+<vehicle id="173" depart="173" type="FireTruck">
+    <route edges="T-intersection2bend bend2four-arm_LTL four-arm2NWB"/>
+</vehicle>
+<vehicle id="197" depart="197">
+    <route edges="WB2four-arm_LTL four-arm2bend bend2T-intersection_LTL T-intersection2incoming_LTL incoming2four-arm_LTL four-arm2WB"/>
+</vehicle>
+<vehicle id="83" depart="83" type="FireTruck">
+    <route edges="bend2T-intersection_LTL T-intersection2incoming_LTL incoming2four-arm_LTL four-arm2NWB"/>
+</vehicle>
+<vehicle id="18" depart="18">
+    <route edges="SEB2T-intersection T-intersection2incoming_LTL incoming2EB"/>
+</vehicle>
+<vehicle id="86" depart="86">
+    <route edges="incoming2four-arm_LTL four-arm2bend bend2T-intersection_LTL"/>
+</vehicle>
+<vehicle id="123" depart="123">
+    <route edges="NWB2four-arm_LTL four-arm2bend bend2T-intersection_LTL T-intersection2incoming_LTL incoming2four-arm_LTL four-arm2NWB"/>
+</vehicle>
+<vehicle id="160" depart="160">
+    <route edges="SEB2T-intersection T-intersection2incoming_LTL incoming2EB"/>
+</vehicle>
+<vehicle id="289" depart="289">
+    <route edges="SEB2T-intersection T-intersection2incoming_LTL incoming2EB"/>
+</vehicle>
+<vehicle id="4" depart="4">
+    <route edges="SEB2T-intersection T-intersection2incoming_LTL incoming2four-arm_LTL four-arm2WB"/>
+</vehicle>
+<vehicle id="39" depart="39" type="FireTruck">
+    <route edges="SEB2T-intersection T-intersection2incoming_LTL incoming2four-arm_LTL four-arm2NWB"/>
+</vehicle>
+<vehicle id="56" depart="56" type="PoliceCar">
+    <route edges="WB2four-arm_LTL four-arm2bend bend2T-intersection_LTL T-intersection2incoming_LTL"/>
+</vehicle>
+<vehicle id="233" depart="233" type="PoliceCar">
+    <route edges="NEB2incoming_LTL incoming2EB"/>
+</vehicle>
+<vehicle id="274" depart="274" type="FireTruck">
+    <route edges="NWB2four-arm_LTL four-arm2bend bend2T-intersection_LTL T-intersection2incoming_LTL"/>
+</vehicle>
+<vehicle id="289" depart="289" type="PoliceCar">
+    <route edges="T-intersection2incoming_LTL incoming2four-arm_LTL four-arm2WB"/>
+</vehicle>
+<vehicle id="167" depart="167" type="PoliceCar">
+    <route edges="NWB2four-arm_LTL four-arm2WB"/>
+</vehicle>
+<vehicle id="147" depart="147">
+    <route edges="WB2four-arm_LTL four-arm2NWB"/>
+</vehicle>
+<vehicle id="54" depart="54" type="FireTruck">
+    <route edges="EB2incoming incoming2four-arm_LTL four-arm2bend"/>
+</vehicle>
+<vehicle id="257" depart="257" type="PoliceCar">
+    <route edges="bend2four-arm_LTL four-arm2WB"/>
+</vehicle>
+<vehicle id="71" depart="71" type="FireTruck">
+    <route edges="bend2T-intersection_LTL T-intersection2incoming_LTL incoming2four-arm_LTL four-arm2NWB"/>
+</vehicle>
+<vehicle id="85" depart="85" type="FireTruck">
+    <route edges="WB2four-arm_LTL four-arm2incoming"/>
+</vehicle>
+<vehicle id="113" depart="113" type="Ambulance">
+    <route edges="SEB2T-intersection T-intersection2incoming_LTL incoming2EB"/>
+</vehicle>
+<vehicle id="58" depart="58" type="FireTruck">
+    <route edges="NEB2incoming_LTL incoming2four-arm_LTL"/>
+</vehicle>
+<vehicle id="155" depart="155">
+    <route edges="T-intersection2incoming_LTL incoming2four-arm_LTL four-arm2WB"/>
+</vehicle>
+<vehicle id="125" depart="125" type="PoliceCar">
+    <route edges="bend2T-intersection_LTL T-intersection2incoming_LTL"/>
+</vehicle>
+<vehicle id="59" depart="59">
+    <route edges="incoming2four-arm_LTL four-arm2bend bend2T-intersection_LTL"/>
+</vehicle>
+</routes>
