@@ -67,7 +67,6 @@ class Tester(Simulation):
         with open("traffic_flows/evaluation/config_file.sumocfg", "w") as f:
             f.write(modifiedConfigFile)
 
-
     def testRules(self, name: str, ruleSetFolder: str, UDRulesTuple, gui: bool, iterations: int,  saveResults: bool = True, docID=None):
         # override options
         self.maxGreenAndYellowPhaseTime_UDRule = UDRulesTuple[0]
