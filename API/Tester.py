@@ -3,6 +3,7 @@ from __future__ import annotations
 import os
 import json
 import csv
+import re
 from bson.objectid import ObjectId
 import pymongo
 from pathlib import Path
@@ -57,6 +58,16 @@ class Tester(Simulation):
         for ap in self.setUpTuple[2]:
             self.initTestIndividual(ap)
 
+    def setRouteNumber(self, routeNumber):
+        with open("traffic_flows/evaluation/config_file.sumocfg") as f:
+            configFile = f.read()
+
+        modifiedConfigFile = re.sub("routes.*xml", f"routes{routeNumber}.rou.xml", configFile)
+
+        with open("traffic_flows/evaluation/config_file.sumocfg", "w") as f:
+            f.write(modifiedConfigFile)
+
+
     def testRules(self, name: str, ruleSetFolder: str, UDRulesTuple, gui: bool, iterations: int,  saveResults: bool = True, docID=None):
         # override options
         self.maxGreenAndYellowPhaseTime_UDRule = UDRulesTuple[0]
@@ -64,8 +75,9 @@ class Tester(Simulation):
         self.assignGreenPhaseToSingleWaitingPhase_UDRule = UDRulesTuple[2]
         self.gui = gui
         self.ruleSetFolder = ruleSetFolder
-
+        self.sumoNetworkName = "evaluation"
         self.databaseName = "evaluation"
+
         self.initClient()
         self.initCmd()
         self.initSetUpTuple()
@@ -83,6 +95,8 @@ class Tester(Simulation):
         results = []
         for i in range(iterations):
             print(f"Iteration {i+1}/{iterations}")
+
+            self.setRouteNumber(i)
 
             simRunner = self.getTestSimRunner()
             simRunner.runTest()
