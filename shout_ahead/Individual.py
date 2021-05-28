@@ -143,8 +143,10 @@ class Individual:
         return self.averageEVSpeed
 
     def updateAverageEVSpeed(self, averageEVSpeed: float):
-        self.averageEVSpeedsList.append(averageEVSpeed)
-        self.averageEVSpeed = sum(self.averageEVSpeedsList) / len(self.averageEVSpeedsList)
+        if averageEVSpeed is not None:
+            self.averageEVSpeedsList.append(averageEVSpeed)
+        if len(self.averageEVSpeedsList) > 0:
+            self.averageEVSpeed = sum(self.averageEVSpeedsList) / len(self.averageEVSpeedsList)
 
     def resetAverageEVSpeed(self):
         self.averageEVSpeedsList = []

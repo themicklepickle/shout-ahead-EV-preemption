@@ -3,6 +3,8 @@ from __future__ import annotations
 import os
 import json
 import csv
+import re
+from bson.objectid import ObjectId
 import pymongo
 from pathlib import Path
 
@@ -56,25 +58,53 @@ class Tester(Simulation):
         for ap in self.setUpTuple[2]:
             self.initTestIndividual(ap)
 
-    def testRules(self, ruleSetFolder: str, UDRulesTuple, gui: bool, iterations: int):
+    def setRouteNumber(self, routeNumber):
+        with open("traffic_flows/evaluation/config_file.sumocfg") as f:
+            configFile = f.read()
+
+        modifiedConfigFile = re.sub("routes.*xml", f"routes{routeNumber}.rou.xml", configFile)
+
+        with open("traffic_flows/evaluation/config_file.sumocfg", "w") as f:
+            f.write(modifiedConfigFile)
+
+    def testRules(self, name: str, ruleSetFolder: str, UDRulesTuple, gui: bool, iterations: int,  saveResults: bool = True, docID=None):
         # override options
         self.maxGreenAndYellowPhaseTime_UDRule = UDRulesTuple[0]
         self.maxRedPhaseTime_UDRule = UDRulesTuple[1]
         self.assignGreenPhaseToSingleWaitingPhase_UDRule = UDRulesTuple[2]
         self.gui = gui
         self.ruleSetFolder = ruleSetFolder
+        self.sumoNetworkName = "evaluation"
+        self.databaseName = "evaluation"
 
+        self.initClient()
         self.initCmd()
         self.initSetUpTuple()
         self.config()
 
+        if saveResults:
+            docID = docID or self.db["test results"].insert_one({
+                "name": name,
+                "ruleSetFolder": ruleSetFolder,
+                "time": self.getTime(),
+                "iterations": iterations,
+                "results": []
+            }).inserted_id
+
         results = []
         for i in range(iterations):
+            print(f"Iteration {i+1}/{iterations}")
+
+            self.setRouteNumber(i)
+
             simRunner = self.getTestSimRunner()
             simRunner.runTest()
 
             res = simRunner.getResults()
             results.append(res)
+
+            if saveResults:
+                self.db["test results"].update_one({"_id": docID}, {"$set": {"results": results}})
 
         print("\n")
         print(ruleSetFolder, UDRulesTuple, gui)
@@ -328,4 +358,42 @@ class Tester(Simulation):
             writer = csv.DictWriter(f, fieldnames=fieldnames)
             writer.writeheader()
             for row in data:
+                writer.writerow(row)
+
+    def addRuleSetToRuleSet(self, mainRuleSetName: str, otherRuleSetName: str):
+        for apID in ["AP" + str(i) for i in range(1, 4)]:
+            # get rule sets from files
+            with open(f"rules/{mainRuleSetName}/{apID}.json", "r") as f:
+                mainRules = json.load(f)
+            with open(f"rules/{otherRuleSetName}/{apID}.json", "r") as f:
+                otherRules = json.load(f)
+
+            # combine them
+            for key, val in otherRules.items():
+                for rule in val:
+                    mainRules[key].append(rule)
+
+            # rewrite the
+            with open(f"rules/{mainRuleSetName}/{apID}.json", "w") as f:
+                json.dump(mainRules, f, indent=2)
+
+    def removeOneRuleSet(self, ruleSetFolderName, ruleSetName: Literal["RS", "RSint"]):
+        for apID in ["AP" + str(i) for i in range(1, 4)]:
+            with open(f"rules/{ruleSetFolderName}/{apID}.json", "r") as f:
+                ruleSets = json.load(f)
+            ruleSets[ruleSetName] = []
+            with open(f"rules/{ruleSetFolderName}/{apID}.json", "w") as f:
+                json.dump(ruleSets, f, indent=2)
+
+    def getTestResultsFromDB(self, docID, outputFileName):
+        self.databaseName = "evaluation"
+        self.initClient()
+        testResults = self.db["test results"]
+
+        results = testResults.find_one(ObjectId(docID))["results"]
+
+        with open(f"results/final/{outputFileName}.csv", "w") as f:
+            writer = csv.DictWriter(f, fieldnames=results[0].keys())
+            writer.writeheader()
+            for row in results:
                 writer.writerow(row)

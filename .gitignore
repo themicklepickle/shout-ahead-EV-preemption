@@ -10,3 +10,4 @@ credentials.json
 **/Archive
 *~
 .env
+**/evaluation_results

@@ -1,0 +1,11 @@
+<configuration> 
+    <input> 
+        <net-file value="simpleNetwork.net.xml"/> 
+        <route-files value="routes8.rou.xml"/> 
+    </input> 
+    
+    <time> 
+        <begin value="0"/>
+    </time> 
+
+</configuration>
